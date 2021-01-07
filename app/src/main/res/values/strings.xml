@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Parental Control App</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_locate_on_map">Map</string>
+
+    <string name="sorry">Sorry!</string>
+    <string name="nothing_found_driver">No Driver Found</string>
+    <string name="nothing_found_class">No Class Found</string>
+    <string name="nothing_found_section">No Section Found</string>
+    <string name="nothing_found_student">No Student Found</string>
+    <string name="nothing_found_teacher">No Teacher Found</string>
+</resources>

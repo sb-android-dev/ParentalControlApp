@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="black">#FF000000</color>
+    <color name="grey_black">#FF121212</color>
+    <color name="white">#FFFFFFFF</color>
+
+<!--    <color name="primary_color">#FFC9D439</color>-->
+<!--    <color name="primary_dark_color">#FF95A300</color>-->
+<!--    <color name="primary_light_color">#FFFFFF6D</color>-->
+<!--    <color name="transparent_primary_color">#22C9D439</color>-->
+
+<!--    <color name="secondary_color">#FF4339D4</color>-->
+<!--    <color name="secondary_dark_color">#FF000EA1</color>-->
+<!--    <color name="secondary_light_color">#FF7F65FF</color>-->
+
+    <color name="primary_color">#FF4F37B3</color>
+    <color name="primary_dark_color">#FF3F2C8F</color>
+    <color name="primary_light_color">#FF8463E6</color>
+    <color name="transparent_primary_color">#224F37B3</color>
+
+    <color name="secondary_color">#FF9AB337</color>
+    <color name="secondary_dark_color">#FF698300</color>
+    <color name="secondary_light_color">#FFCDE568</color>
+
+    <color name="purple_light">#0A4F37B3</color>
+    <color name="light_gray">#C6C0C0</color>
+    <color name="dark_gray">#6E6E6E</color>
+    <color name="extra_light_gray">#E1E1E1</color>
+
+    <color name="aponnet_message_cell_bg">#F2F0F8</color>
+    <color name="black_trans">#12000000</color>
+    <color name="empty_view_color">#C9D438</color>
+    <color name="transwhite">#68FFFFFF</color>
+
+    <color name="caption_color">#89000000</color>
+</resources>

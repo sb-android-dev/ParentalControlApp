@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="handler"
+            type="com.schoolmanager.ComplainList.HanlderComplaintList" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        tools:context="com.schoolmanager.ComplainList">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:background="@color/primary_color"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:onClick="@{(view)-> handler.onBackClick(view)}"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ef_ic_arrow_back"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"/>
+
+                    <TextView
+                        android:layout_weight="1.0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Complaints"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:onClick="@{(view)-> handler.onSearchClick(view)}"
+                        android:layout_marginEnd="-16dp"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/white"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"/>
+
+                    <ImageView
+                        android:onClick="@{(view)-> handler.onMenuClick(view)}"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_more"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"/>
+                </LinearLayout>
+
+                <com.ferfalk.simplesearchview.SimpleSearchView
+                    android:id="@+id/searchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:type="card"
+                    android:backgroundTint="@color/primary_color"
+                    app:backIconTint="@color/primary_color"
+                    app:searchBackIcon="@drawable/ef_ic_arrow_back"
+                    android:background="@color/primary_color" />
+
+            </FrameLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <RelativeLayout
+            android:layout_weight="1.0"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+            <ImageView
+                android:contentDescription="@string/app_name"
+                android:background="@drawable/bg_chat_gradient"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipy_ComplaintLlist_chatList"
+                android:layout_width="match_parent"
+                android:layout_above="@+id/pBar_CompaintList"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:overScrollMode="never"
+                    tools:itemCount="0"
+                    android:id="@+id/resView_ComplaintLlist_chatList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_margin="16dp"
+                android:onClick="@{(view)-> handler.onAddButtonClick(view)}"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_add_user"
+                app:tint="@android:color/white"
+                app:backgroundTint="@color/primary_color"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:scaleType="center"
+                app:maxImageSize="20dp"
+                android:layout_height="wrap_content"/>
+
+            <ProgressBar
+                android:id="@+id/pBar_CompaintList"
+                android:layout_centerHorizontal="true"
+                android:layout_width="25dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"
+                android:theme="@style/ProgressPrimary"
+                android:layout_height="25dp"/>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/ll_Complaint_emptyView"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:alpha="0.5"
+                    android:src="@drawable/logo"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"/>
+
+                <TextView
+                    android:id="@+id/txt_ComplaintList_emptyMessage"
+                    android:alpha="0.5"
+                    android:layout_gravity="center"
+                    android:layout_marginHorizontal="16dp"
+                    android:text="No Any Complaint Yet"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+</layout>
