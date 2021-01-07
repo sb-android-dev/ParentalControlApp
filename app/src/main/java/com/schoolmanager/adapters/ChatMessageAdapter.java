@@ -2,6 +2,7 @@ package com.schoolmanager.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -252,13 +253,26 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private String getTimeOfMessage(String time) {
+
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(Long.parseLong(time));
+        String str_fromated_time = formatter.format(calendar.getTime());
+        Log.e("TIME ", time);
+        Log.e("TIME", str_fromated_time);
+        return str_fromated_time;
+
+      /*
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
         Date date = new Date();
         date.setTime(Long.parseLong(time));
         String str_fromated_time = simpleDateFormat.format(date);
         Log.e("TIME ", time);
         Log.e("TIME", str_fromated_time);
-        return str_fromated_time;
+        return str_fromated_time;*/
     }
 
     public void addData(boolean clear, ArrayList<ChatMessageModal> mList) {

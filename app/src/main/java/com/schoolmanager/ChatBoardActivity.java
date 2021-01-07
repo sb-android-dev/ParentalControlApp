@@ -436,7 +436,7 @@ public class ChatBoardActivity extends AppCompatActivity {
             @Override
             public void onStart() {
 
-                binding.llChatBoardMessage.setVisibility(View.GONE);
+                binding.cardChatBoardMessage.setVisibility(View.INVISIBLE);
 
                 Dexter.withContext(ChatBoardActivity.this)
                         .withPermissions(
@@ -458,8 +458,6 @@ public class ChatBoardActivity extends AppCompatActivity {
                                         }
                                     }, 1000);
 
-                                } else {
-                                    Toast.makeText(ChatBoardActivity.this, "HERE", Toast.LENGTH_SHORT).show();
                                 }
                             }
 
@@ -474,19 +472,28 @@ public class ChatBoardActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                binding.llChatBoardMessage.setVisibility(View.VISIBLE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.cardChatBoardMessage.setVisibility(View.VISIBLE);
+                    }
+                },1500);
+
 
                 if (mediaRecorder != null) {
+                    try {
+                        mediaRecorder.stop();
+                        mediaRecorder.release();
+                        mediaRecorder = null;
 
-                    mediaRecorder.stop();
-                    mediaRecorder.release();
-                    mediaRecorder = null;
-
-                    if (StringUtils.isNotEmpty(mAudioFile)) {
-                        File file = new File(mAudioFile);
-                        if (file.exists()) {
-                            file.delete();
+                        if (StringUtils.isNotEmpty(mAudioFile)) {
+                            File file = new File(mAudioFile);
+                            if (file.exists()) {
+                                file.delete();
+                            }
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
 
@@ -494,29 +501,34 @@ public class ChatBoardActivity extends AppCompatActivity {
 
             @Override
             public void onFinish(long recordTime) {
-                binding.llChatBoardMessage.setVisibility(View.VISIBLE);
+                binding.cardChatBoardMessage.setVisibility(View.VISIBLE);
 
                 if (mediaRecorder != null) {
-                    mediaRecorder.stop();
-                    mediaRecorder.release();
-                    mediaRecorder = null;
+                    try {
+                        mediaRecorder.stop();
+                        mediaRecorder.release();
+                        mediaRecorder = null;
 
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e("RECORDTIME==>",recordTime+"");
+                                if(recordTime >= 2000){
+                                    apiCallSendMessage(3, "", mAudioFile);
+                                }
+                            }
+                        }, 1000);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            apiCallSendMessage(3, "", mAudioFile);
-                        }
-                    }, 1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                 }
-
-
             }
 
             @Override
             public void onLessThanSecond() {
-                binding.llChatBoardMessage.setVisibility(View.VISIBLE);
+                binding.cardChatBoardMessage.setVisibility(View.VISIBLE);
             }
         });
     }

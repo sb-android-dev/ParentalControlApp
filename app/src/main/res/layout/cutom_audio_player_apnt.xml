@@ -62,6 +62,7 @@
             android:layout_below="@+id/seekbar_audio"
             android:layout_alignParentEnd="true"
             android:layout_marginTop="4dp"
+            android:visibility="invisible"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp" />
 

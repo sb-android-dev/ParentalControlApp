@@ -128,76 +128,64 @@
                 android:layout_height="wrap_content">
 
 
-                <androidx.cardview.widget.CardView
-                    android:layout_weight="1.0"
-                    android:layout_width="0dp"
-                    app:cardCornerRadius="24dp"
-                    android:layout_marginVertical="8dp"
-                    android:layout_marginHorizontal="8dp"
-                    app:cardBackgroundColor="#f8f8f8"
-                    app:cardElevation="1dp"
-                    android:minHeight="48dp"
-                    android:layout_height="wrap_content">
-
-                    <com.devlomi.record_view.RecordView
-                        android:id="@+id/recordView_ChatBoard"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="5dp"
-                        android:background="#f8f8f8"
-                        app:counter_time_color="#ff0000"
-                        app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
-                        app:slide_to_cancel_arrow_color="#000000"
-                        app:slide_to_cancel_bounds="8dp"
-                        app:slide_to_cancel_margin_right="10dp"
-                        app:slide_to_cancel_text="Slide To Cancel" />
-
-
-                    <LinearLayout
-                        android:id="@+id/ll_ChatBoard_message"
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center_vertical"
-                        android:layout_height="match_parent">
-
-                        <EditText
-                            android:id="@+id/ed_Chatboard_message"
-                            android:layout_weight="1.0"
-                            android:textColorHint="@color/dark_gray"
-                            android:textColor="@color/black"
-                            android:textSize="14sp"
-                            android:text=""
-                            android:minHeight="48dp"
-                            android:inputType="textMultiLine"
-                            android:imeOptions="actionDone"
-                            android:paddingHorizontal="16dp"
-                            android:hint="Type a message"
-                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
-                            android:background="@android:color/transparent"
-                            android:layout_width="0dp"
-                            android:maxHeight="150dp"
-                            android:layout_height="wrap_content"/>
-
-                        <ImageView
-                            android:layout_gravity="center_vertical"
-                            android:onClick="@{(view)->handler.onImageAttachmentClick(view)}"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_baseline_camera_alt_24"
-                            android:layout_width="48dp"
-                            android:paddingTop="2dp"
-                            android:layout_height="48dp"/>
-                    </LinearLayout>
-
-
-
-                </androidx.cardview.widget.CardView>
-
                 <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize">
+
 
                     <androidx.cardview.widget.CardView
-                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        app:cardCornerRadius="24dp"
+                        android:layout_marginHorizontal="8dp"
+                        app:cardBackgroundColor="#f8f8f8"
+                        android:layout_toLeftOf="@+id/img_Chatboard_send"
+                        android:layout_toStartOf="@+id/img_Chatboard_send"
+                        app:cardElevation="0.5dp"
+                        android:id="@+id/card_ChatBoard_message"
+                        android:minHeight="48dp"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/ll_ChatBoard_message"
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center_vertical"
+                            android:layout_height="match_parent">
+
+                            <EditText
+                                android:id="@+id/ed_Chatboard_message"
+                                android:layout_weight="1.0"
+                                android:textColorHint="@color/dark_gray"
+                                android:textColor="@color/black"
+                                android:textSize="14sp"
+                                android:text=""
+                                android:minHeight="40dp"
+                                android:inputType="textMultiLine"
+                                android:imeOptions="actionDone"
+                                android:paddingHorizontal="16dp"
+                                android:hint="Type a message"
+                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
+                                android:background="@android:color/transparent"
+                                android:layout_width="0dp"
+                                android:maxHeight="150dp"
+                                android:layout_height="match_parent"/>
+
+                            <ImageView
+                                android:layout_gravity="center_vertical"
+                                android:onClick="@{(view)->handler.onImageAttachmentClick(view)}"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_baseline_camera_alt_24"
+                                android:layout_width="48dp"
+                                android:paddingTop="2dp"
+                                android:layout_height="48dp"/>
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView
+                        android:visibility="invisible"
+                        android:layout_alignParentEnd="true"
                         android:onClick="@{(view)-> handler.onSend(view)}"
                         app:cardCornerRadius="24dp"
                         android:layout_marginEnd="8dp"
@@ -221,7 +209,22 @@
 
                     </androidx.cardview.widget.CardView>
 
+
+                    <com.devlomi.record_view.RecordView
+                        android:id="@+id/recordView_ChatBoard"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="5dp"
+                        android:background="#f8f8f8"
+                        app:counter_time_color="#ff0000"
+                        app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                        app:slide_to_cancel_arrow_color="#000000"
+                        app:slide_to_cancel_bounds="56dp"
+                        app:slide_to_cancel_margin_right="10dp"
+                        app:slide_to_cancel_text="Slide To Cancel..." />
+
                     <com.devlomi.record_view.RecordButton
+                        android:layout_alignParentEnd="true"
                         android:id="@+id/img_Chatboard_audio"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -233,8 +236,9 @@
                         android:src="@drawable/ic_baseline_mic_24"
                         android:tint="@color/white"
                         app:mic_icon="@drawable/recv_ic_mic_white" />
-
                 </RelativeLayout>
+
+
 
 
 

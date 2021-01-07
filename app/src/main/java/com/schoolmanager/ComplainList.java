@@ -146,6 +146,7 @@ public class ComplainList extends AppCompatActivity {
                             int success = response.getInt("success");
                             String message = response.getString("message");
 
+
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
 
@@ -186,6 +187,7 @@ public class ComplainList extends AppCompatActivity {
                                 binding.swipyComplaintLlistChatList.setRefreshing(false);
                             isNextPageCalled = false;
                             binding.pBarCompaintList.setVisibility(View.GONE);
+
 
                         } catch (Exception e) {
                             e.printStackTrace();
