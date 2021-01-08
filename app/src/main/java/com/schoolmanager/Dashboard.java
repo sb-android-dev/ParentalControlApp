@@ -60,7 +60,7 @@ public class Dashboard extends AppCompatActivity {
     private static final String TAG = "dashboard_activity";
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
-            locateChildLayout, arrivedLayout;
+            locateChildLayout, teachersLayout, arrivedLayout;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -116,6 +116,7 @@ public class Dashboard extends AppCompatActivity {
         studentsLayout = findViewById(R.id.clStudents);
         giveComplaintLayout = findViewById(R.id.clGiveComplaint);
         locateChildLayout = findViewById(R.id.clLocateChild);
+        teachersLayout = findViewById(R.id.clTeacherList);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -138,6 +139,7 @@ public class Dashboard extends AppCompatActivity {
                 studentsLayout.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
@@ -189,6 +191,7 @@ public class Dashboard extends AppCompatActivity {
                 locationCard.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
         }
 
@@ -228,6 +231,10 @@ public class Dashboard extends AppCompatActivity {
         });
         locateChildLayout.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, DriversList.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+        teachersLayout.setOnClickListener(v -> {
+            startActivity(new Intent(Dashboard.this, TeachersList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         arrived.setOnClickListener(v -> {

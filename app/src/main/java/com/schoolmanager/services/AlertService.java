@@ -214,8 +214,10 @@ public class AlertService extends FirebaseMessagingService {
 //            mp = MediaPlayer.create(getApplicationContext(), notificationSound);
 //            mp.setLooping(true);
 //        }
-
-        mp.start();
+//
+//        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+//        mp.setLooping(true);
+//        mp.start();
 
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
