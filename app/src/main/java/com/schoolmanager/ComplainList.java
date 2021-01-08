@@ -48,7 +48,7 @@ public class ComplainList extends AppCompatActivity {
 
     private ActivityCompaintListBinding binding;
     private String mFilter = "";
-    private ArrayList<ComplaintItem> mList = new ArrayList<>();
+    private ArrayList<ComplaintItem> mList = new ArrayList<ComplaintItem>();
     private ConnectionDetector detector;
     private ComplaintRecyclerAdapter adapter;
 
@@ -165,7 +165,7 @@ public class ComplainList extends AppCompatActivity {
                                 if (mChatList.size() > 0) {
                                     mList.addAll(mChatList);
                                     if (currentPage == Common.PAGE_START) {
-                                        adapter.notifyDataSetChanged();
+                                        initRecyclerview(mList);
                                     } else {
                                         adapter.notifyItemRangeInserted(itemsInList, chat_list.length());
                                     }
