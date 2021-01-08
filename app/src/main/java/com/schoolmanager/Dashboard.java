@@ -52,12 +52,14 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.schoolmanager.MyApplication.mp;
+
 public class Dashboard extends AppCompatActivity {
 
     private static final String TAG = "dashboard_activity";
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
-            locateChildLayout, arrivedLayout;
+            locateChildLayout, teachersLayout, arrivedLayout;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -113,6 +115,7 @@ public class Dashboard extends AppCompatActivity {
         studentsLayout = findViewById(R.id.clStudents);
         giveComplaintLayout = findViewById(R.id.clGiveComplaint);
         locateChildLayout = findViewById(R.id.clLocateChild);
+        teachersLayout = findViewById(R.id.clTeacherList);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -127,15 +130,15 @@ public class Dashboard extends AppCompatActivity {
                 .into(userImage);
 //        String uType = getIntent().getStringExtra("type");
         switch (uType) {
+            // For Drivers
             case "3":
-//                userName.setText("Rakeshbhai");
-//                userTypeName.setText("GJ03AJ4972");
                 complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
@@ -154,9 +157,9 @@ public class Dashboard extends AppCompatActivity {
                     locationSwitch.setChecked(true);
                 }
                 break;
+
+            //For Parents
             case "1":
-//                userName.setText("Savan Patel");
-//                userTypeName.setText("9th / B");
                 complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
@@ -180,13 +183,14 @@ public class Dashboard extends AppCompatActivity {
                     locationSwitch.setChecked(true);
                 }
                 break;
+
+            // For Teachers or default
             case "2":
             default:
-//                userName.setText("H. K. Vala");
-//                userTypeName.setText("Mathematics");
                 locationCard.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
         }
 
@@ -195,6 +199,12 @@ public class Dashboard extends AppCompatActivity {
         logOut.setOnClickListener(v -> {
             LogoutDialog dialogF = new LogoutDialog();
             dialogF.show(getSupportFragmentManager(), LogoutDialog.TAG);
+        });
+
+        complaintCard.setOnClickListener(v -> {
+            // Open chat list of parents that have messaged for teacher.
+            startActivity(new Intent(Dashboard.this, ComplainList.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         complaintLayout.setOnClickListener(v -> {
             /**
@@ -220,6 +230,10 @@ public class Dashboard extends AppCompatActivity {
         });
         locateChildLayout.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, DriversList.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+        teachersLayout.setOnClickListener(v -> {
+            startActivity(new Intent(Dashboard.this, TeachersList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         arrived.setOnClickListener(v -> {
@@ -281,6 +295,7 @@ public class Dashboard extends AppCompatActivity {
                                 ChildArrivedDialog dialogA = new ChildArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildArrivedDialog.TAG);
                                 arrivedLayout.setVisibility(View.GONE);
+                                sessionManager.registerComplaint(false);
                             } else if (success == 2) {
                                 onLogOut();
                             } else  {
@@ -325,7 +340,7 @@ public class Dashboard extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Log.e(TAG, "onResponse: " + response.toString());
                         try {
-                            int success = response.getInt("success");
+                            int success = response.getInt("status");
                             String message = response.getString("message");
                             if (success == 1) {
                                 if(mp.isPlaying()){
@@ -337,6 +352,7 @@ public class Dashboard extends AppCompatActivity {
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
                                 sessionManager.updateNotificationStatus(false);
+//                                sessionManager.registerComplaint(true);
                                 notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
                                 onLogOut();
@@ -395,6 +411,10 @@ public class Dashboard extends AppCompatActivity {
                                         } else {
                                             arrivedLayout.setVisibility(View.GONE);
                                         }
+
+                                        if(sessionManager.getIsComplaintRegistered()){
+                                            notArrivedLayout.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             } else if (success == 2) {
@@ -446,6 +466,16 @@ public class Dashboard extends AppCompatActivity {
             locationSwitch.setChecked(true);
         }
         fecthGeneralData();
+
+        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+            Uri notificationSound = Uri.parse("android.resource://"
+                    + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
+            MyApplication.mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+            mp.setLooping(true);
+        }
 
     }
 

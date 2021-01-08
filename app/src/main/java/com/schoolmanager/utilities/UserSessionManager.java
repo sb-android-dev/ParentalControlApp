@@ -30,6 +30,7 @@ public class UserSessionManager {
 
     public static final String KEY_IS_BUS_NOTIFICATION_RECEIVED = "is_bus_notification_received";
     public static final String KEY_TODAY_S_DAY = "today_s_day";
+    public static final String KEY_IS_COMPLAINT_REGISTERED = "is_complaint_registered";
 //
 
 
@@ -107,6 +108,11 @@ public class UserSessionManager {
         editor.commit();
     }
 
+    public void registerComplaint(boolean registerComplaint){
+        editor.putBoolean(KEY_IS_COMPLAINT_REGISTERED, registerComplaint);
+        editor.commit();
+    }
+
     public void UserLoginSession(String accId){
         Log.e("UserLoginSession","UserLoginSession");
         editor.putString(KEY_USER_ID, accId);
@@ -150,6 +156,10 @@ public class UserSessionManager {
         return pref.getInt(KEY_TODAY_S_DAY, 0);
     }
 
+    public boolean getIsComplaintRegistered(){
+        return pref.getBoolean(KEY_IS_COMPLAINT_REGISTERED, false);
+    }
+
 //    public HashMap<String, Integer> getLTime(){
 //        HashMap<String, Integer> lTime = new HashMap<>();
 //        if(pref.getString(KEY_lTime,"").equals("")){
@@ -168,6 +178,9 @@ public class UserSessionManager {
         editor.remove(KEY_USER_PHONE);
         editor.remove(KEY_USER_IMAGE);
         editor.remove(KEY_FCM_TOKEN);
+        editor.remove(KEY_STUDENT_ID);
+        editor.remove(KEY_IS_BUS_NOTIFICATION_RECEIVED);
+        editor.remove(KEY_IS_COMPLAINT_REGISTERED);
         editor.commit();
     }
 
