@@ -208,28 +208,26 @@ public class AlertService extends FirebaseMessagingService {
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
-//        if(mp.isPlaying()){
-//            mp.stop();
-//            mp.release();
-//            mp = MediaPlayer.create(getApplicationContext(), notificationSound);
-//            mp.setLooping(true);
-//        }
-//
-//        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
-//        mp.setLooping(true);
-//        mp.start();
+        if(mp != null && mp.isPlaying()){
+            mp.stop();
+            mp.release();
+        }
+
+        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+        mp.setLooping(true);
+        mp.start();
 
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
-                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
+//                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
 
         Notification notification = notificationBuilder.build();
-        notification.flags = Notification.FLAG_INSISTENT;
+        notification.flags |= Notification.FLAG_INSISTENT;
 
         notificationManager.notify((int) notificationId, notification);
 
@@ -269,7 +267,7 @@ public class AlertService extends FirebaseMessagingService {
         notificationChannel.setDescription("Alert Notification Channel");
         notificationChannel.setLightColor(Color.YELLOW);
 
-        notificationChannel.setSound(notificationSound, audioAttributes);
+//        notificationChannel.setSound(notificationSound, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
         notificationChannel.enableVibration(true);
         notificationChannel.enableLights(true);

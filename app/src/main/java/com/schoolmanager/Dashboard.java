@@ -468,15 +468,15 @@ public class Dashboard extends AppCompatActivity {
         }
         fecthGeneralData();
 
-//        if(MyApplication.mp.isPlaying()){
-//            Uri notificationSound = Uri.parse("android.resource://"
-//                    + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
-//
-//            MyApplication.mp.stop();
-//            MyApplication.mp.release();
-//            MyApplication.mp = MediaPlayer.create(getApplicationContext(), notificationSound);
-//            mp.setLooping(true);
-//        }
+        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+            Uri notificationSound = Uri.parse("android.resource://"
+                    + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
+            MyApplication.mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+            mp.setLooping(true);
+        }
 
     }
 

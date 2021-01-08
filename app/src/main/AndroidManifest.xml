@@ -115,7 +115,8 @@
             android:name=".services.TrackingService"
             android:foregroundServiceType="location" />
 
-        <service android:name=".services.AlertService">
+        <service android:name=".services.AlertService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
