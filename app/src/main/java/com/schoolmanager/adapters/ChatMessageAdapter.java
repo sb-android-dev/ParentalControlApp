@@ -30,9 +30,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -259,7 +257,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(time));
+        long time_sec = Long.parseLong(time);
+        long time_mili_sec = time_sec * 1000;
+        calendar.setTimeInMillis(time_mili_sec);
         String str_fromated_time = formatter.format(calendar.getTime());
         Log.e("TIME ", time);
         Log.e("TIME", str_fromated_time);

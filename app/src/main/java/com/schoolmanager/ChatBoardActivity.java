@@ -11,7 +11,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -331,13 +330,13 @@ public class ChatBoardActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, anError.getLocalizedMessage());
+                        Log.e(TAG, anError.getMessage());
                     }
                 });
     }
 
     private void pushLocalTextMessage(String message, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis()/1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -355,7 +354,7 @@ public class ChatBoardActivity extends AppCompatActivity {
     }
 
     private void pushLocalImageMessage(String file_url, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis()/1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -373,7 +372,7 @@ public class ChatBoardActivity extends AppCompatActivity {
     }
 
     private void pushLocalAudioMessage(String file_url, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis()/1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -477,7 +476,7 @@ public class ChatBoardActivity extends AppCompatActivity {
                     public void run() {
                         binding.cardChatBoardMessage.setVisibility(View.VISIBLE);
                     }
-                },1500);
+                },1000);
 
 
                 if (mediaRecorder != null) {

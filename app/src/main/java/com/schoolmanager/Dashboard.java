@@ -10,7 +10,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
