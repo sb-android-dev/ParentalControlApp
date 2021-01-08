@@ -28,6 +28,11 @@ public class Splash extends AppCompatActivity {
         HashMap<String, String> hashMap = sessionManager.getEssentials();
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
 
+        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
+        }
+
         assert deviceId != null;
         if(deviceId.isEmpty()){
             String dId = UUID.randomUUID().toString();
