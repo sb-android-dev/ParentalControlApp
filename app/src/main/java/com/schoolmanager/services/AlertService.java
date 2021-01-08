@@ -205,7 +205,7 @@ public class AlertService extends FirebaseMessagingService {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
-                .setSound(Settings.System.DEFAULT_RINGTONE_URI, AudioManager.STREAM_NOTIFICATION)
+                .setSound(Settings.System.DEFAULT_RINGTONE_URI, AudioManager.STREAM_RING)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
@@ -235,8 +235,8 @@ public class AlertService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createAlertNotificationChannel(NotificationManager notificationManager) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID,

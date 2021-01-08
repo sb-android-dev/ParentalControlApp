@@ -128,9 +128,8 @@ public class Dashboard extends AppCompatActivity {
                 .into(userImage);
 //        String uType = getIntent().getStringExtra("type");
         switch (uType) {
+            // For Drivers
             case "3":
-//                userName.setText("Rakeshbhai");
-//                userTypeName.setText("GJ03AJ4972");
                 complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
@@ -155,14 +154,14 @@ public class Dashboard extends AppCompatActivity {
                     locationSwitch.setChecked(true);
                 }
                 break;
+
+            //For Parents
             case "1":
-//                userName.setText("Savan Patel");
-//                userTypeName.setText("9th / B");
                 complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
-                arrivedLayout.setVisibility(View.VISIBLE);
+                arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -181,10 +180,10 @@ public class Dashboard extends AppCompatActivity {
                     locationSwitch.setChecked(true);
                 }
                 break;
+
+            // For Teachers or default
             case "2":
             default:
-//                userName.setText("H. K. Vala");
-//                userTypeName.setText("Mathematics");
                 locationCard.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
@@ -199,7 +198,9 @@ public class Dashboard extends AppCompatActivity {
         });
 
         complaintCard.setOnClickListener(v -> {
-
+            // Open chat list of parents that have messaged for teacher.
+            startActivity(new Intent(Dashboard.this, ComplainList.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         complaintLayout.setOnClickListener(v -> {
             /**
@@ -286,6 +287,7 @@ public class Dashboard extends AppCompatActivity {
                                 ChildArrivedDialog dialogA = new ChildArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildArrivedDialog.TAG);
                                 arrivedLayout.setVisibility(View.GONE);
+                                sessionManager.registerComplaint(false);
                             } else if (success == 2) {
                                 onLogOut();
                             } else  {
@@ -342,6 +344,7 @@ public class Dashboard extends AppCompatActivity {
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
                                 sessionManager.updateNotificationStatus(false);
+                                sessionManager.registerComplaint(true);
                                 notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
                                 onLogOut();
@@ -399,6 +402,10 @@ public class Dashboard extends AppCompatActivity {
                                             arrivedLayout.setVisibility(View.VISIBLE);
                                         } else {
                                             arrivedLayout.setVisibility(View.GONE);
+                                        }
+
+                                        if(sessionManager.getIsComplaintRegistered()){
+                                            notArrivedLayout.setVisibility(View.GONE);
                                         }
                                     }
                                 }
