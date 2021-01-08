@@ -67,6 +67,7 @@ public class SectionList extends AppCompatActivity {
 //            Toast.makeText(SectionList.this, sectionItem.getSectionName(), Toast.LENGTH_SHORT).show();
             Intent nextIntent = new Intent(SectionList.this, StudentsList.class);
             nextIntent.putExtra("section_id", sectionItem.getSectionId());
+            nextIntent.putExtra("class_id", classItem.getClassId());
             startActivity(nextIntent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
