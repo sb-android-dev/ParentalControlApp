@@ -53,6 +53,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.schoolmanager.MyApplication.mp;
+
 public class Dashboard extends AppCompatActivity {
 
     private static final String TAG = "dashboard_activity";
@@ -344,7 +346,7 @@ public class Dashboard extends AppCompatActivity {
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
                                 sessionManager.updateNotificationStatus(false);
-                                sessionManager.registerComplaint(true);
+//                                sessionManager.registerComplaint(true);
                                 notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
                                 onLogOut();
@@ -458,6 +460,16 @@ public class Dashboard extends AppCompatActivity {
             locationSwitch.setChecked(true);
         }
         fecthGeneralData();
+
+//        if(MyApplication.mp.isPlaying()){
+//            Uri notificationSound = Uri.parse("android.resource://"
+//                    + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+//
+//            MyApplication.mp.stop();
+//            MyApplication.mp.release();
+//            MyApplication.mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+//            mp.setLooping(true);
+//        }
 
     }
 

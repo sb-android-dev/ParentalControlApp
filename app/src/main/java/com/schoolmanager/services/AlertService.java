@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -39,6 +41,8 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+import static com.schoolmanager.MyApplication.mp;
 
 public class AlertService extends FirebaseMessagingService {
 
@@ -201,16 +205,31 @@ public class AlertService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_ID);
 
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
+//        if(mp.isPlaying()){
+//            mp.stop();
+//            mp.release();
+//            mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+//            mp.setLooping(true);
+//        }
+
+        mp.start();
+
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
-                .setSound(Settings.System.DEFAULT_RINGTONE_URI, AudioManager.STREAM_RING)
+                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
 
-        notificationManager.notify((int) notificationId, notificationBuilder.build());
+        Notification notification = notificationBuilder.build();
+        notification.flags = Notification.FLAG_INSISTENT;
+
+        notificationManager.notify((int) notificationId, notification);
 
         new UserSessionManager(this).updateNotificationStatus(true);
     }
@@ -234,9 +253,12 @@ public class AlertService extends FirebaseMessagingService {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createAlertNotificationChannel(NotificationManager notificationManager) {
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID,
@@ -245,7 +267,7 @@ public class AlertService extends FirebaseMessagingService {
         notificationChannel.setDescription("Alert Notification Channel");
         notificationChannel.setLightColor(Color.YELLOW);
 
-        notificationChannel.setSound(Settings.System.DEFAULT_RINGTONE_URI, audioAttributes);
+        notificationChannel.setSound(notificationSound, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
         notificationChannel.enableVibration(true);
         notificationChannel.enableLights(true);
