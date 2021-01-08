@@ -162,7 +162,7 @@ public class Dashboard extends AppCompatActivity {
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
-                arrivedLayout.setVisibility(View.GONE);
+                arrivedLayout.setVisibility(View.VISIBLE);
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -196,6 +196,10 @@ public class Dashboard extends AppCompatActivity {
         logOut.setOnClickListener(v -> {
             LogoutDialog dialogF = new LogoutDialog();
             dialogF.show(getSupportFragmentManager(), LogoutDialog.TAG);
+        });
+
+        complaintCard.setOnClickListener(v -> {
+
         });
         complaintLayout.setOnClickListener(v -> {
             /**
@@ -326,7 +330,7 @@ public class Dashboard extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Log.e(TAG, "onResponse: " + response.toString());
                         try {
-                            int success = response.getInt("success");
+                            int success = response.getInt("status");
                             String message = response.getString("message");
                             if (success == 1) {
                                 if(mp.isPlaying()){
