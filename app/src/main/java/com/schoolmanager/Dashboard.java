@@ -100,6 +100,11 @@ public class Dashboard extends AppCompatActivity {
         studentId = hashMap.get(UserSessionManager.KEY_STUDENT_ID);
         fcmToken = sessionManager.getFcmToken();
 
+        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
+        }
+
         mp = MediaPlayer.create(getApplicationContext(), alarmSound);
 
         userName = findViewById(R.id.tvUsername);
