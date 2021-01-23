@@ -2,11 +2,11 @@
     <!-- Base application theme. -->
     <style name="Theme.SchoolManager" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primary_color_day</item>
+        <item name="colorPrimary">@color/primary_color_night</item>
         <item name="colorPrimaryVariant">@color/primary_dark_color</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/primary_color_day</item>
+        <item name="colorSecondary">@color/primary_color_night</item>
         <item name="colorSecondaryVariant">@color/primary_dark_color</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
@@ -14,19 +14,19 @@
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
 
         <item name="android:navigationBarColor">?colorSurface</item>
-        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
 
-<!--        <item name="fontFamily">@font/montserrat</item>-->
+        <!--        <item name="fontFamily">@font/montserrat</item>-->
         <item name="titleTextColor">@color/white</item>
 
         <item name="searchViewStyle">@style/SearchViewStyle</item>
         <!-- Customize your theme here. -->
-        <item name="colorSurface">@color/surface_color_day</item>
-        <item name="caption_color">@color/caption_color_day</item>
-        <item name="pure_bg_color">@color/white</item>
-        <item name="pure_txt_color">@color/black</item>
-        <item name="bubble_color_top">@color/bubble_color_top_day</item>
-        <item name="bubble_color_bottom">@color/bubble_color_bottom_day</item>
+        <item name="colorSurface">@color/surface_color_night</item>
+        <item name="caption_color">@color/caption_color_night</item>
+        <item name="pure_bg_color">@color/black</item>
+        <item name="pure_txt_color">@color/white</item>
+        <item name="bubble_color_top">@color/bubble_color_top_night</item>
+        <item name="bubble_color_bottom">@color/bubble_color_bottom_night</item>
     </style>
 
     <style name="Theme.SchoolManager.NoActionBar" parent="Theme.SchoolManager">
@@ -36,13 +36,13 @@
 
     <style name="Theme.SchoolManager.Splash" parent="Theme.SchoolManager.NoActionBar">
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorSurface</item>
-        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
         <!--        <item name="android:windowBackground">@drawable/splash_background</item>-->
     </style>
 
     <style name="Theme.SchoolManager.LogIn" parent="Theme.SchoolManager.NoActionBar">
-<!--        <item name="android:windowBackground">@drawable/ic_log_in_bg</item>-->
-<!--        <item name="android:navigationBarColor">#</item>-->
+        <!--        <item name="android:windowBackground">@drawable/ic_log_in_bg</item>-->
+        <!--        <item name="android:navigationBarColor">#</item>-->
         <item name="android:statusBarColor" tools:targetApi="l">#EE4F37B3</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
@@ -74,12 +74,8 @@
     <style name="TextButtonStyle" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_height">48dp</item>
         <item name="cornerRadius">10dp</item>
-        <item name="rippleColor">@color/primary_color_day</item>
+        <item name="rippleColor">@color/primary_color_night</item>
     </style>
-
-    <style name="Theme.SchoolManager.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.SchoolManager.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView.ActionBar">
         <item name="queryBackground">@color/white</item>
@@ -95,9 +91,9 @@
 
 
     <style name="ImagePickerTheme" parent="ef_BaseTheme">
-        <item name="colorPrimary">@color/primary_color_day</item>
-        <item name="colorPrimaryDark">@color/primary_color_day</item>
-        <item name="colorAccent">@color/primary_color_day</item>
+        <item name="colorPrimary">@color/primary_color_night</item>
+        <item name="colorPrimaryDark">@color/primary_color_night</item>
+        <item name="colorAccent">@color/primary_color_night</item>
     </style>
 
 </resources>

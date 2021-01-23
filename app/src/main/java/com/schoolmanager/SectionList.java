@@ -3,6 +3,7 @@ package com.schoolmanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
@@ -73,7 +74,9 @@ public class SectionList extends AppCompatActivity {
         });
         sectionRecycler.setAdapter(adapter);
 
-        swipeRefreshLayout.setColorSchemeResources(R.color.primary_color);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        swipeRefreshLayout.setColorSchemeResources(typedValue.resourceId);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

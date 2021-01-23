@@ -25,7 +25,7 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
-                    android:background="@color/primary_color"
+                    android:background="?attr/colorPrimary"
                     android:gravity="center_vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -71,10 +71,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:type="card"
-                    android:backgroundTint="@color/primary_color"
-                    app:backIconTint="@color/primary_color"
+                    android:backgroundTint="?attr/colorPrimary"
+                    app:backIconTint="?attr/colorPrimary"
                     app:searchBackIcon="@drawable/ef_ic_arrow_back"
-                    android:background="@color/primary_color" />
+                    android:background="?attr/colorPrimary"
+                    app:searchBackground="?attr/colorSurface"
+                    app:hintColor="?attr/caption_color"
+                    android:textColor="?attr/pure_txt_color"/>
 
             </FrameLayout>
 
@@ -83,7 +86,7 @@
 
         <RelativeLayout
             android:layout_weight="1.0"
-            android:background="@color/white"
+            android:background="?attr/colorSurface"
             android:layout_width="match_parent"
             android:layout_height="0dp">
 
@@ -115,7 +118,7 @@
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_add_user"
                 app:tint="@android:color/white"
-                app:backgroundTint="@color/primary_color"
+                app:backgroundTint="?attr/colorPrimary"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:scaleType="center"

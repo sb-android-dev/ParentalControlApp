@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="?attr/pure_bg_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,16 +19,17 @@
             android:layout_height="wrap_content"
             android:drawablePadding="5dp"
             android:text="Log Out"
-            android:textColor="@color/black"
+            android:textColor="?attr/pure_txt_color"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:drawableStartCompat="@drawable/ic_log_out" />
+            app:drawableStartCompat="@drawable/ic_log_out"
+            android:drawableTint="?attr/pure_txt_color"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Are you sure you want to log out?"
-            android:textColor="@color/caption_color"
+            android:textColor="?attr/caption_color"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
         <LinearLayout

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    tools:context=".MyProfile">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.SchoolManager.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolBar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:contentInsetEnd="56dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/Theme.SchoolManager.PopupOverlay">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="My Profile"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srlMyProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="30dp">
+
+                <RelativeLayout
+                    android:id="@+id/rlProfile"
+                    android:layout_width="115dp"
+                    android:layout_height="115dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivProfile"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/bg_transparent_black"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/white" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvNameHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="30dp"
+                    android:text="Name"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/rlProfile" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_edittext"
+                    android:elevation="2dp"
+                    android:enabled="false"
+                    android:hint="Name"
+                    android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions"
+                    android:padding="15dp"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textColorHint="?attr/caption_color"
+                    app:layout_constraintTop_toBottomOf="@id/tvNameHeading" />
+
+                <TextView
+                    android:id="@+id/tvPhoneHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Phone Number"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/etName" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_edittext"
+                    android:elevation="2dp"
+                    android:enabled="false"
+                    android:hint="Phone Number"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword"
+                    android:padding="15dp"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textColorHint="?attr/caption_color"
+                    app:layout_constraintTop_toBottomOf="@id/tvPhoneHeading" />
+
+                <TextView
+                    android:id="@+id/tvUserNameHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Username"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/etPhone" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_edittext"
+                    android:elevation="2dp"
+                    android:hint="Username"
+                    android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions"
+                    android:padding="15dp"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textColorHint="?attr/caption_color"
+                    app:layout_constraintTop_toBottomOf="@id/tvUserNameHeading" />
+
+                <TextView
+                    android:id="@+id/tvPasswordHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Password"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/etUserName" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_edittext"
+                    android:elevation="2dp"
+                    android:hint="Password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:padding="15dp"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textColorHint="?attr/caption_color"
+                    app:layout_constraintTop_toBottomOf="@id/tvPasswordHeading" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/etPassword">
+
+                    <ProgressBar
+                        android:id="@+id/progressUpdate"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerInParent="true"
+                        android:indeterminate="true"
+                        android:indeterminateTint="?attr/colorPrimary" />
+
+                    <Button
+                        android:id="@+id/btnUpdate"
+                        style="@style/RegularButtonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        android:text="Update" />
+
+                </RelativeLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

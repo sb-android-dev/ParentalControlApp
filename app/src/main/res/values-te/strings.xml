@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Parental Control App</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_locate_on_map">మ్యాప్</string>
+
+    <string name="sorry">క్షమించండి!</string>
+    <string name="nothing_found_driver">డ్రైవర్ కనుగొనబడలేదు</string>
+    <string name="nothing_found_class">తరగతి కనుగొనబడలేదు</string>
+    <string name="nothing_found_section">విభాగం కనుగొనబడలేదు</string>
+    <string name="nothing_found_student">విద్యార్థి దొరకలేదు</string>
+    <string name="nothing_found_teacher">ఉపాధ్యాయుడు కనుగొనబడలేదు</string>
+</resources>

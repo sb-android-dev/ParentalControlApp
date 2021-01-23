@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -81,7 +82,9 @@ public class ComplainList extends AppCompatActivity {
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
         fcmToken = sessionManager.getFcmToken();
 
-        binding.swipyComplaintLlistChatList.setColorSchemeResources(R.color.primary_color);
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        binding.swipyComplaintLlistChatList.setColorSchemeResources(typedValue.resourceId);
         binding.swipyComplaintLlistChatList.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

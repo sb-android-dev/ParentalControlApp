@@ -2,7 +2,9 @@ package com.schoolmanager.common;
 
 public class Common {
 
-    public static final String BASE_URL = "http://aksharcomposite.in/parent_app/api/";
+//    public static final String BASE_URL = "http://aksharcomposite.in/parent_app/api/";
+//    public static final String BASE_URL = "http://139.59.58.40/api/";
+    public static final String BASE_URL = "http://139.59.58.40/dev/api/";
     public static final String APP_CODE = "758368";
 
 
@@ -30,5 +32,6 @@ public class Common {
     public static final String CHAT_NOTIFICATION_CHANNEL_ID = "chat_channel";
     public static final String CHAT_NOTIFICATION_CHANNEL_NAME = "Messages";
     public static final int CHAT_NOTIFICATION_ID = 3;
-    
+
+    public static final int REQUEST_IMAGE_PICKER = 1002;
 }

@@ -41,7 +41,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F7F6F4">
+            android:background="?attr/colorSurface">
 
             <com.schoolmanager.utilities.RecyclerViewWithEmptyView
                 android:id="@+id/rvSection"
@@ -76,14 +76,14 @@
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                     android:textStyle="bold"
-                    android:textColor="@color/caption_color"/>
+                    android:textColor="?attr/caption_color"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@string/nothing_found_section"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/pure_txt_color"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
             </LinearLayout>
 

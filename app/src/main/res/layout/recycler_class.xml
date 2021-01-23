@@ -18,7 +18,7 @@
         android:text="1st"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:textColor="@color/black"
+        android:textColor="?attr/pure_txt_color"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent" />
 

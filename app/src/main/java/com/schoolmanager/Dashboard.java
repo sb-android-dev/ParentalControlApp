@@ -74,7 +74,7 @@ public class Dashboard extends AppCompatActivity {
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
-    private String userId,userType, userToken, uType, uName, uImage, deviceId, fcmToken;
+    private String userId, userType, userToken, uName, uImage, deviceId, fcmToken;
     private String studentId;
 
     private MediaPlayer mp;
@@ -91,12 +91,15 @@ public class Dashboard extends AppCompatActivity {
         sessionManager = new UserSessionManager(this);
         HashMap<String, String> hashMap = sessionManager.getUserDetails();
         userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        Log.e(TAG, "onCreate: userId -> " + userId);
         userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        Log.e(TAG, "onCreate: userToken -> " + userToken);
         uName = hashMap.get(UserSessionManager.KEY_USER_NAME);
-        uType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
         uImage = hashMap.get(UserSessionManager.KEY_USER_IMAGE);
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        Log.e(TAG, "onCreate: userType -> " + userType);
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        Log.e(TAG, "onCreate: deviceId -> " + deviceId);
         studentId = hashMap.get(UserSessionManager.KEY_STUDENT_ID);
         fcmToken = sessionManager.getFcmToken();
 
@@ -129,12 +132,8 @@ public class Dashboard extends AppCompatActivity {
         progressComplaint = findViewById(R.id.progressNotArrived);
 
         userName.setText(uName);
-        Glide.with(this).load(uImage)
-                .placeholder(R.drawable.ic_avatar)
-                .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
-                .into(userImage);
 //        String uType = getIntent().getStringExtra("type");
-        switch (uType) {
+        switch (userType) {
             // For Drivers
             case "3":
                 complaintCard.setVisibility(View.GONE);
@@ -202,8 +201,7 @@ public class Dashboard extends AppCompatActivity {
         fecthGeneralData();
 
         logOut.setOnClickListener(v -> {
-            LogoutDialog dialogF = new LogoutDialog();
-            dialogF.show(getSupportFragmentManager(), LogoutDialog.TAG);
+            startActivity(new Intent(this, Settings.class));
         });
 
         complaintCard.setOnClickListener(v -> {
@@ -277,7 +275,7 @@ public class Dashboard extends AppCompatActivity {
                 .addBodyParameter("user_app_code", Common.APP_CODE) /* App code for app */
                 .addBodyParameter("user_id", userId)
                 .addBodyParameter("user_token", userToken)
-                .addBodyParameter("user_type", uType)
+                .addBodyParameter("user_type", userType)
                 .addBodyParameter("device_id", deviceId)
                 .addBodyParameter("device_type", "1")
                 .addBodyParameter("fcm_token", fcmToken)
@@ -334,7 +332,7 @@ public class Dashboard extends AppCompatActivity {
                 .addBodyParameter("user_app_code", Common.APP_CODE) /* App code for app */
                 .addBodyParameter("user_id", userId)
                 .addBodyParameter("user_token", userToken)
-                .addBodyParameter("user_type", uType)
+                .addBodyParameter("user_type", userType)
                 .addBodyParameter("device_id", deviceId)
                 .addBodyParameter("device_type", "1")
                 .addBodyParameter("fcm_token", fcmToken)
@@ -452,7 +450,7 @@ public class Dashboard extends AppCompatActivity {
                             Intent serviceIntent = new Intent(Dashboard.this, TrackingService.class);
                             serviceIntent.setAction(action);
                             serviceIntent.putExtra("name", uName);
-                            serviceIntent.putExtra("type", Integer.valueOf(uType));
+                            serviceIntent.putExtra("type", Integer.valueOf(userType));
                             startService(serviceIntent);
                         }
                     }
@@ -514,6 +512,12 @@ public class Dashboard extends AppCompatActivity {
         if (TrackingService.isTracking) {
             locationSwitch.setChecked(true);
         }
+
+        uImage = sessionManager.getUserImage();
+        Glide.with(this).load(uImage)
+                .placeholder(R.drawable.ic_avatar)
+                .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
+                .into(userImage);
     }
 
     @Override

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="?attr/pure_bg_color">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-            app:tint="@color/black"
+            app:tint="?attr/pure_txt_color"
             android:src="@drawable/ic_worried"/>
 
         <TextView
@@ -29,7 +29,7 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textAllCaps="false"
-            android:textColor="@color/black" />
+            android:textColor="?attr/pure_txt_color" />
 
         <Button
             android:id="@+id/btnThankYou"

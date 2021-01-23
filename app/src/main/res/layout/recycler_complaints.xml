@@ -48,7 +48,7 @@
                         android:layout_marginHorizontal="16dp"
                         android:id="@+id/txt_rawChatList_name"
                         android:textSize="16sp"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/pure_txt_color"
                         android:text="Devon Lane"
                         android:layout_weight="1.0"
                         android:layout_width="0dp"

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.schoolmanager.Dashboard;
 import com.schoolmanager.R;
+import com.schoolmanager.Settings;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class LogoutDialog extends BottomSheetDialogFragment implements View.OnCl
             dismiss();
         } else if (id == R.id.btnLogout) {
             dismiss();
-            ((Dashboard)mActivity).onLogOut();
+            ((Settings)mActivity).onLogOut();
             //                ((MainActivity)getActivity()).logout();
 //            logOutUser();
 //            dismiss();

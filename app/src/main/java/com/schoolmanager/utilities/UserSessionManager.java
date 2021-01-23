@@ -98,6 +98,11 @@ public class UserSessionManager {
 //        editor.commit();
 //    }
 
+    public void updateImageUrl(String imageUrl){
+        editor.putString(KEY_USER_IMAGE, imageUrl);
+        editor.commit();
+    }
+
     public void updateNotificationStatus(boolean isReceived){
         editor.putBoolean(KEY_IS_BUS_NOTIFICATION_RECEIVED, isReceived);
         editor.commit();
@@ -142,6 +147,10 @@ public class UserSessionManager {
         id.put(KEY_USER_TYPE, String.valueOf(pref.getInt(KEY_USER_TYPE, 0)));
         id.put(KEY_DEVICE_ID, pref.getString(KEY_DEVICE_ID, ""));
         return id;
+    }
+
+    public String getUserImage() {
+        return pref.getString(KEY_USER_IMAGE, null);
     }
 
     public String getFcmToken(){

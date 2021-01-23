@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -198,7 +199,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+//        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         uiSettings = mMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);
@@ -246,6 +247,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
                                 Looper.myLooper());
+
                     }
 
                     @Override
@@ -256,16 +258,20 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                 .check();
     }
 
+    @SuppressLint("MissingPermission")
     public void updateLocation(Location location) {
+        mMap.setMyLocationEnabled(true);
         if (location != null) {
             if (locationAccuracy == -1) {
                 locationAccuracy = location.getAccuracy();
                 currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 Log.e(TAG, "updateLocation: " + currentLatLng.latitude + ", " + currentLatLng.longitude);
                 if (myLocationOption == null) {
-                    myLocationOption = new MarkerOptions().position(currentLatLng).title("My Location")
-                            .icon(bitmapDescriptorFromVector(this, R.drawable.ic_my_location_pin));
-                    myLocation = mMap.addMarker(myLocationOption);
+//                    if(!mMap.isMyLocationEnabled()) {
+//                        myLocationOption = new MarkerOptions().position(currentLatLng).title("My Location");
+//                                .icon(bitmapDescriptorFromVector(this, R.drawable.ic_my_location_pin));
+//                        myLocation = mMap.addMarker(myLocationOption);
+//                    }
 //                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 17);
 //                    mMap.animateCamera(cameraUpdate);
                 } else {
@@ -278,9 +284,11 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                 currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 //                Log.e(TAG, "updateLocation: " + currentLatLng.latitude + ", " + currentLatLng.longitude);
                 if (myLocationOption == null) {
-                    myLocationOption = new MarkerOptions().position(currentLatLng).title("My Location")
-                            .icon(bitmapDescriptorFromVector(this, R.drawable.ic_my_location_pin));
-                    myLocation = mMap.addMarker(myLocationOption);
+//                    if(!mMap.isMyLocationEnabled()) {
+//                        myLocationOption = new MarkerOptions().position(currentLatLng).title("My Location")
+//                                .icon(bitmapDescriptorFromVector(this, R.drawable.ic_my_location_pin));
+//                        myLocation = mMap.addMarker(myLocationOption);
+//                    }
 //                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 17);
 //                    mMap.animateCamera(cameraUpdate);
                 } else {
@@ -370,11 +378,16 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                driverLatLng = new LatLng(Double.parseDouble(data.getString("lat")),
-                                        Double.parseDouble(data.getString("long")));
-                                driverLocation.setPosition(driverLatLng);
-                                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
-                                mMap.animateCamera(cameraUpdate);
+                                if(data.getString("lat")!=null
+                                        && !data.getString("lat").isEmpty()
+                                        && data.getString("long")!=null
+                                        && !data.getString("long").isEmpty()) {
+                                    driverLatLng = new LatLng(Double.parseDouble(data.getString("lat")),
+                                            Double.parseDouble(data.getString("long")));
+                                    driverLocation.setPosition(driverLatLng);
+                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
+                                    mMap.animateCamera(cameraUpdate);
+                                }
                             } else if (success == 2) {
                                 onLogOut();
                             } else {
@@ -432,9 +445,25 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.map_menu, menu);
+        menu.findItem(R.id.menu_satellite).setChecked(true);
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        } else if(item.getItemId() == R.id.menu_default) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            item.setChecked(true);
+            return true;
+        } else if(item.getItemId() == R.id.menu_satellite) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+            item.setChecked(true);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
