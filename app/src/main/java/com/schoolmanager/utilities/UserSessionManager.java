@@ -25,13 +25,16 @@ public class UserSessionManager {
     public static final String KEY_USER_PHONE = "user_phone";
     public static final String KEY_USER_IMAGE = "user_image";
     public static final String KEY_STUDENT_ID = "student_id";
+    public static final String KEY_DRIVER_ID = "student_id";
     public static final String KEY_DEVICE_ID = "device_id";
     public static final String KEY_FCM_TOKEN = "fcm_token";
 
     public static final String KEY_IS_BUS_NOTIFICATION_RECEIVED = "is_bus_notification_received";
     public static final String KEY_TODAY_S_DAY = "today_s_day";
     public static final String KEY_IS_COMPLAINT_REGISTERED = "is_complaint_registered";
-//
+
+    public static final String KEY_IS_LAST_SEEN_ENABLED = "is_last_seen_enabled";
+    public static final String KEY_IS_READ_UNREAD_MESSAGES_ENABLED = "is_read_unread_message_enabled";
 
 
     public UserSessionManager(Context context) {
@@ -64,7 +67,7 @@ public class UserSessionManager {
     }
 
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
-                                       String userPhone, String userImage, int studentId) {
+                                       String userPhone, String userImage, int studentId, int driverId) {
         Log.e("createUserLoginSession","createUserLoginSession");
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USER_TOKEN, userToken);
@@ -73,6 +76,17 @@ public class UserSessionManager {
         editor.putString(KEY_USER_PHONE, userPhone);
         editor.putString(KEY_USER_IMAGE, userImage);
         editor.putInt(KEY_STUDENT_ID, studentId);
+        editor.putInt(KEY_DRIVER_ID, driverId);
+        editor.commit();
+    }
+
+    public void updateLastSeenFlag(boolean isLastSeenEnabled){
+        editor.putBoolean(KEY_IS_LAST_SEEN_ENABLED, isLastSeenEnabled);
+        editor.commit();
+    }
+
+    public void updateReadUnreadMessagesFlag(boolean isReadUnreadMessagesEnabled){
+        editor.putBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, isReadUnreadMessagesEnabled);
         editor.commit();
     }
 
@@ -137,6 +151,7 @@ public class UserSessionManager {
         user.put(KEY_USER_IMAGE, pref.getString(KEY_USER_IMAGE, ""));
         user.put(KEY_DEVICE_ID, pref.getString(KEY_DEVICE_ID, ""));
         user.put(KEY_STUDENT_ID, String.valueOf(pref.getInt(KEY_STUDENT_ID, 0)));
+        user.put(KEY_DRIVER_ID, String.valueOf(pref.getInt(KEY_DRIVER_ID, 0)));
         return user;
     }
 
@@ -147,6 +162,10 @@ public class UserSessionManager {
         id.put(KEY_USER_TYPE, String.valueOf(pref.getInt(KEY_USER_TYPE, 0)));
         id.put(KEY_DEVICE_ID, pref.getString(KEY_DEVICE_ID, ""));
         return id;
+    }
+
+    public int getDriverId(){
+        return pref.getInt(KEY_DRIVER_ID, 0);
     }
 
     public String getUserImage() {
@@ -167,6 +186,14 @@ public class UserSessionManager {
 
     public boolean getIsComplaintRegistered(){
         return pref.getBoolean(KEY_IS_COMPLAINT_REGISTERED, false);
+    }
+
+    public boolean getLastSeenFlag(){
+        return pref.getBoolean(KEY_IS_LAST_SEEN_ENABLED, true);
+    }
+
+    public boolean getReadUnreadMessagesFlag(){
+        return pref.getBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, false);
     }
 
 //    public HashMap<String, Integer> getLTime(){
@@ -190,6 +217,8 @@ public class UserSessionManager {
         editor.remove(KEY_STUDENT_ID);
         editor.remove(KEY_IS_BUS_NOTIFICATION_RECEIVED);
         editor.remove(KEY_IS_COMPLAINT_REGISTERED);
+        editor.remove(KEY_IS_LAST_SEEN_ENABLED);
+        editor.remove(KEY_IS_READ_UNREAD_MESSAGES_ENABLED);
         editor.commit();
     }
 

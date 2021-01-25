@@ -19,7 +19,7 @@
         android:textColor="?attr/pure_txt_color"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/tvVehicleNo"
-        app:layout_constraintEnd_toStartOf="@id/ivDriverImage"
+        app:layout_constraintEnd_toStartOf="@id/rlImage"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,18 +33,33 @@
         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
         android:textColor="?attr/caption_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivDriverImage"
+        app:layout_constraintEnd_toStartOf="@id/rlImage"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvDriver" />
 
-    <ImageView
-        android:id="@+id/ivDriverImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_person"
+    <RelativeLayout
+        android:id="@+id/rlImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+        <ImageView
+            android:id="@+id/ivDriverImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_card"
+            android:padding="2dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_person"/>
+        <ImageView
+            android:id="@+id/ivChecked"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_check"
+            app:tint="@color/teal_200"/>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

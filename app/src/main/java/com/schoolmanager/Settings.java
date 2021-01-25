@@ -68,7 +68,7 @@ public class Settings extends AppCompatActivity {
         });
 
         driverLayout.setOnClickListener(v -> {
-//            startActivity(new Intent(this, SelectDriver.class));
+            startActivity(new Intent(this, SelectDriver.class));
         });
 
         signOutLayout.setOnClickListener(v -> {

@@ -4,11 +4,11 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary_color_night</item>
         <item name="colorPrimaryVariant">@color/primary_dark_color</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/primary_color_night</item>
+        <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/primary_dark_color</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/primary_color_night</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
@@ -27,6 +27,7 @@
         <item name="pure_txt_color">@color/white</item>
         <item name="bubble_color_top">@color/bubble_color_top_night</item>
         <item name="bubble_color_bottom">@color/bubble_color_bottom_night</item>
+        <item name="dashboard_icon_color">@color/light_gray</item>
     </style>
 
     <style name="Theme.SchoolManager.NoActionBar" parent="Theme.SchoolManager">

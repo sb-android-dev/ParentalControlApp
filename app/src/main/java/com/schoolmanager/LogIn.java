@@ -202,13 +202,16 @@ public class LogIn extends AppCompatActivity {
                                 String userName = data.getString("user_name");
                                 String userPhoneNo = data.getString("user_phone_no");
                                 String userImage = data.getString("user_image_url");
-                                int student_id;
-                                if(userType == 1){
-                                    student_id = data.getInt("user_student_id");
-                                }
 
-                                sessionManager.createUserLoginSession(userId, userToken, userName,
-                                        userType, userPhoneNo, userImage);
+                                if(userType == 1){
+                                    int studentId = data.getInt("user_student_id");
+                                    int driverId = data.getInt("user_driver_id");
+                                    sessionManager.createUserLoginSession(userId, userToken, userName,
+                                            userType, userPhoneNo, userImage, studentId, driverId);
+                                }else{
+                                    sessionManager.createUserLoginSession(userId, userToken, userName,
+                                            userType, userPhoneNo, userImage);
+                                }
 
 //                                Snackbar.make(logIn, "Done!!!", Snackbar.LENGTH_SHORT).show();
 

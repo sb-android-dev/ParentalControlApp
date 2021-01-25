@@ -10,18 +10,22 @@ public class DriverItem {
     private String phoneNo;
     private String driverAddress;
     private LatLng driverLocation;
+    private String driverImage;
+    private boolean isSelected;
 
     public DriverItem() {
     }
 
     public DriverItem(int driverId, String driverName, String vehicleNo, String phoneNo,
-                      String driverAddress, LatLng driverLocation) {
+                      String driverAddress, LatLng driverLocation, String driverImage, boolean isSelected) {
         this.driverId = driverId;
         this.driverName = driverName;
         this.vehicleNo = vehicleNo;
         this.phoneNo = phoneNo;
         this.driverAddress = driverAddress;
         this.driverLocation = driverLocation;
+        this.driverImage = driverImage;
+        this.isSelected = isSelected;
     }
 
     public int getDriverId() {
@@ -70,5 +74,21 @@ public class DriverItem {
 
     public void setDriverLocation(LatLng driverLocation) {
         this.driverLocation = driverLocation;
+    }
+
+    public String getDriverImage() {
+        return driverImage;
+    }
+
+    public void setDriverImage(String driverImage) {
+        this.driverImage = driverImage;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

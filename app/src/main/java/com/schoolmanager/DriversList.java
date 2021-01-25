@@ -209,9 +209,13 @@ public class DriversList extends AppCompatActivity {
                                         DriverItem driverItem = new DriverItem();
                                         driverItem.setDriverId(driver.getInt("driver_id"));
                                         driverItem.setDriverName(driver.getString("driver_name"));
-                                        if (!driver.isNull("driver_phone_no"))
+                                        if (!driver.isNull("driver_phone_no")
+                                                && !driver.getString("driver_phone_no").isEmpty()
+                                                && !driver.getString("driver_phone_no").equals("null"))
                                         driverItem.setPhoneNo(driver.getString("driver_phone_no"));
-                                        if (!driver.isNull("driver_address"))
+                                        if (!driver.isNull("driver_address")
+                                                && !driver.getString("driver_address").isEmpty()
+                                                && !driver.getString("driver_address").equals("null"))
                                             driverItem.setDriverAddress(driver.getString("driver_address"));
                                         if (!driver.isNull("driver_location")){
                                             JSONObject location = new JSONObject(driver.getString("driver_location"));
@@ -219,6 +223,10 @@ public class DriversList extends AppCompatActivity {
                                                     Double.parseDouble(location.getString("long")));
                                             driverItem.setDriverLocation(latLng);
                                         }
+                                        if(!driver.isNull("driver_profile")
+                                                && !driver.getString("driver_profile").isEmpty()
+                                                && !driver.getString("driver_profile").equals("null"))
+                                            driverItem.setDriverImage(driver.getString("driver_profile"));
 
                                         driverList.add(driverItem);
                                     }

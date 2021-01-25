@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -29,8 +30,10 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.karumi.dexter.Dexter;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.model.DriverItem;
 import com.schoolmanager.services.TrackingService;
@@ -58,6 +61,7 @@ public class MyProfile extends AppCompatActivity {
     private RelativeLayout profileImageLayout;
     private ImageView profileImage;
     private TextInputEditText name, phone, userName, password;
+    private SwitchMaterial lastSeen, readUnread;
     private Button update;
     private ProgressBar progressUpdate;
 
@@ -72,6 +76,7 @@ public class MyProfile extends AppCompatActivity {
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
     private String userId, userToken, userType, deviceId, fcmToken;
+    private boolean isLastSeenEnabled, isReadUnreadMessagesEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +94,8 @@ public class MyProfile extends AppCompatActivity {
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
         fcmToken = sessionManager.getFcmToken();
+        isLastSeenEnabled = sessionManager.getLastSeenFlag();
+        isReadUnreadMessagesEnabled = sessionManager.getReadUnreadMessagesFlag();
 
         swipeRefreshLayout = findViewById(R.id.srlMyProfile);
         profileImageLayout = findViewById(R.id.rlProfile);
@@ -97,6 +104,8 @@ public class MyProfile extends AppCompatActivity {
         phone = findViewById(R.id.etPhone);
         userName = findViewById(R.id.etUserName);
         password = findViewById(R.id.etPassword);
+        lastSeen = findViewById(R.id.switchLastSeen);
+        readUnread = findViewById(R.id.switchReadUnreadMsg);
         update = findViewById(R.id.btnUpdate);
         progressUpdate = findViewById(R.id.progressUpdate);
 
@@ -118,6 +127,10 @@ public class MyProfile extends AppCompatActivity {
             intentPick.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
             startActivityForResult(intentPick, Common.REQUEST_IMAGE_PICKER);
         });
+
+        lastSeen.setOnCheckedChangeListener((buttonView, isChecked) -> isLastSeenEnabled = isChecked);
+
+        readUnread.setOnCheckedChangeListener((buttonView, isChecked) -> isReadUnreadMessagesEnabled = isChecked);
 
     }
 
@@ -141,6 +154,7 @@ public class MyProfile extends AppCompatActivity {
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Log.e(TAG, "onResponse: " + response);
                             try {
                                 int success = response.getInt("success");
                                 String message = response.getString("message");
@@ -152,6 +166,9 @@ public class MyProfile extends AppCompatActivity {
                                     String uImage = userProfile.getString("user_image");
                                     String uCode = userProfile.getString("user_access_code");
 
+                                    isLastSeenEnabled = userProfile.getInt("user_last_seen_status") == 1;
+                                    isReadUnreadMessagesEnabled = userProfile.getInt("user_read_status") == 1;
+
                                     name.setText(uName);
                                     phone.setText(pNumber);
                                     Glide.with(MyProfile.this)
@@ -162,7 +179,13 @@ public class MyProfile extends AppCompatActivity {
                                                                     getDimensionPixelSize(R.dimen.image_corner_radius))))
                                             .into(profileImage);
                                     userName.setText(uCode);
+
                                     sessionManager.updateImageUrl(uImage);
+                                    sessionManager.updateLastSeenFlag(isLastSeenEnabled);
+                                    sessionManager.updateReadUnreadMessagesFlag(isReadUnreadMessagesEnabled);
+
+                                    lastSeen.setChecked(isLastSeenEnabled);
+                                    readUnread.setChecked(isReadUnreadMessagesEnabled);
 
                                 } else if (success == 2) {
                                     onLogOut();
@@ -254,6 +277,8 @@ public class MyProfile extends AppCompatActivity {
                     .addBodyParameter("device_type", "1")
                     .addBodyParameter("fcm_token", fcmToken)
                     .addBodyParameter("user_access_code", userAccessCode)
+                    .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
+                    .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -306,6 +331,8 @@ public class MyProfile extends AppCompatActivity {
                     .addBodyParameter("fcm_token", fcmToken)
                     .addBodyParameter("user_access_code", userAccessCode)
                     .addBodyParameter("user_password", userPassword)
+                    .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
+                    .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -359,6 +386,8 @@ public class MyProfile extends AppCompatActivity {
                     .addMultipartParameter("fcm_token", fcmToken)
                     .addMultipartParameter("user_access_code", userAccessCode)
                     .addMultipartParameter("user_password", userPassword)
+                    .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
+                    .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -413,6 +442,8 @@ public class MyProfile extends AppCompatActivity {
                     .addMultipartParameter("device_type", "1")
                     .addMultipartParameter("fcm_token", fcmToken)
                     .addMultipartParameter("user_access_code", userAccessCode)
+                    .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
+                    .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override

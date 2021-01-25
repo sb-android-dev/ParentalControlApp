@@ -34,6 +34,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srlSelectDriver"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -44,22 +45,22 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp">
+                android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clSelectedDriver"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:layout_margin="10dp"
+                    android:padding="15dp"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:background="?attr/pure_bg_color">
+                    android:background="@drawable/bg_dashboard_button">
 
                     <TextView
                         android:id="@+id/tvDriver"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Rameshbhai"
+                        tools:text="Rameshbhai"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                         android:textColor="?attr/pure_txt_color"
                         android:textStyle="bold"
@@ -74,7 +75,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="GJ03ED4556"
+                        tools:text="GJ03ED4556"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textColor="?attr/caption_color"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -85,8 +86,9 @@
 
                     <ImageView
                         android:id="@+id/ivDriverImage"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:padding="10dp"
                         android:src="@drawable/ic_check"
                         app:tint="@color/teal_200"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -100,6 +102,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:text="List of drivers:"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                     android:textStyle="bold"
@@ -110,6 +114,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/tvDriverListHeading"/>
+
+                <ProgressBar
+                    android:id="@+id/progressLoading"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/rvDriverList"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="invisible"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

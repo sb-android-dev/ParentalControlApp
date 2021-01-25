@@ -60,6 +60,8 @@
                         android:id="@+id/ivProfile"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
+                        android:background="@drawable/bg_card"
+                        android:padding="2dp"
                         android:scaleType="centerCrop" />
 
                     <ImageView
@@ -173,10 +175,30 @@
                     android:textColorHint="?attr/caption_color"
                     app:layout_constraintTop_toBottomOf="@id/tvPasswordHeading" />
 
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchLastSeen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="Show last seen"
+                    app:layout_constraintTop_toBottomOf="@id/etPassword"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchReadUnreadMsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="Show read - unread messages"
+                    app:layout_constraintTop_toBottomOf="@id/switchLastSeen"/>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/etPassword">
+                    app:layout_constraintTop_toBottomOf="@id/switchReadUnreadMsg">
 
                     <ProgressBar
                         android:id="@+id/progressUpdate"
