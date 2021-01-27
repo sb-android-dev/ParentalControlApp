@@ -17,4 +17,7 @@
     <string name="nothing_found_section">విభాగం కనుగొనబడలేదు</string>
     <string name="nothing_found_student">విద్యార్థి దొరకలేదు</string>
     <string name="nothing_found_teacher">ఉపాధ్యాయుడు కనుగొనబడలేదు</string>
+    <string name="nothing_found_notice">No Notice Found</string>
+
+    <string name="clear_date">Clear Date</string>
 </resources>

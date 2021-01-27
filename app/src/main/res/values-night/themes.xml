@@ -28,6 +28,7 @@
         <item name="bubble_color_top">@color/bubble_color_top_night</item>
         <item name="bubble_color_bottom">@color/bubble_color_bottom_night</item>
         <item name="dashboard_icon_color">@color/light_gray</item>
+        <item name="noticeboard_bg_color">@color/surface_color_night</item>
     </style>
 
     <style name="Theme.SchoolManager.NoActionBar" parent="Theme.SchoolManager">
@@ -95,6 +96,12 @@
         <item name="colorPrimary">@color/primary_color_night</item>
         <item name="colorPrimaryDark">@color/primary_color_night</item>
         <item name="colorAccent">@color/primary_color_night</item>
+    </style>
+
+    <style name="DatePickerSpinner">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColorPrimary">?attr/pure_txt_color</item>
+        <item name="android:colorControlNormal">?attr/colorPrimary</item>
     </style>
 
 </resources>

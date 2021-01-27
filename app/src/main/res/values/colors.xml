@@ -58,5 +58,6 @@
     <attr name="bubble_color_top" format="color" />
     <attr name="bubble_color_bottom" format="color" />
     <attr name="dashboard_icon_color" format="color" />
+    <attr name="noticeboard_bg_color" format="color" />
 
 </resources>

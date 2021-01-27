@@ -32,7 +32,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SchoolManager"
         android:usesCleartextTraffic="true">
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -118,6 +117,10 @@
             android:theme="@style/Theme.SchoolManager.NoActionBar" />
         <activity
             android:name=".SelectDriver"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+        <activity
+            android:name=".NoticeBoard"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.SchoolManager.NoActionBar" />
 

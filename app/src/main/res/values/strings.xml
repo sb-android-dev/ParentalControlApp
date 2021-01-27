@@ -16,4 +16,7 @@
     <string name="nothing_found_section">No Section Found</string>
     <string name="nothing_found_student">No Student Found</string>
     <string name="nothing_found_teacher">No Teacher Found</string>
+    <string name="nothing_found_notice">No Notice Found</string>
+
+    <string name="clear_date">Clear Date</string>
 </resources>

@@ -59,7 +59,7 @@ public class Dashboard extends AppCompatActivity {
     private static final String TAG = "dashboard_activity";
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
-            locateChildLayout, teachersLayout, arrivedLayout;
+            locateChildLayout, teachersLayout, noticeLayout, arrivedLayout;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -124,6 +124,7 @@ public class Dashboard extends AppCompatActivity {
         giveComplaintLayout = findViewById(R.id.clGiveComplaint);
         locateChildLayout = findViewById(R.id.clLocateChild);
         teachersLayout = findViewById(R.id.clTeacherList);
+        noticeLayout = findViewById(R.id.clNoticeBoard);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -143,6 +144,7 @@ public class Dashboard extends AppCompatActivity {
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
                 teachersLayout.setVisibility(View.GONE);
+//                noticeLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
@@ -239,6 +241,10 @@ public class Dashboard extends AppCompatActivity {
             startActivity(new Intent(Dashboard.this, TeachersList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
+        noticeLayout.setOnClickListener(v -> {
+            startActivity(new Intent(Dashboard.this, NoticeBoard.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
         arrived.setOnClickListener(v -> {
             childArrived();
         });
@@ -246,26 +252,21 @@ public class Dashboard extends AppCompatActivity {
             childNotArrived();
         });
 
-        locationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-                    new GpsUtils(Dashboard.this).turnGPSOn(isGPSEnable -> {
-                        // turn on GPS
-                        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                            locationSwitch.setChecked(true);
-                        }
+        locationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                new GpsUtils(Dashboard.this).turnGPSOn(isGPSEnable -> {
+                    // turn on GPS
+                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        locationSwitch.setChecked(true);
+                    }
 //                isGPS = isGPSEnable;
 //                askLocationPermission();
-                    });
-                    sendCommandToService(Common.ACTION_START_SERVICE);
-                } else {
-                    sendCommandToService(Common.ACTION_STOP_SERVICE);
-                }
+                });
+                sendCommandToService(Common.ACTION_START_SERVICE);
+            } else {
+                sendCommandToService(Common.ACTION_STOP_SERVICE);
             }
         });
-
     }
 
     private void childArrived() {

@@ -15,4 +15,7 @@
 
     <dimen name="image_corner_radius">7dp</dimen>
 
+    <dimen name="_0dp">0dp</dimen>
+    <dimen name="_5dp">5dp</dimen>
+
 </resources>

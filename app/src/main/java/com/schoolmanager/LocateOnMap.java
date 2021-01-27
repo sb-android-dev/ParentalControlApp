@@ -207,7 +207,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         if (mMap != null) {
             if(driverLatLng != null) {
                 driverLocationOption = new MarkerOptions().position(driverLatLng).title(driverName)
-                        .icon(bitmapDescriptorFromVector(this, R.drawable.ic_location_pin));
+                        .icon(bitmapDescriptorFromVector(this, R.drawable.ic_driver_pin));
                 driverLocation = mMap.addMarker(driverLocationOption);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
                 mMap.animateCamera(cameraUpdate);
