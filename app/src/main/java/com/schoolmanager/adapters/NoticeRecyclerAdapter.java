@@ -8,9 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.card.MaterialCardView;
 import com.schoolmanager.R;
 import com.schoolmanager.model.NoticeItem;
 
@@ -50,13 +55,17 @@ public class NoticeRecyclerAdapter extends RecyclerView.Adapter<NoticeRecyclerAd
     class NoticeViewHolder extends RecyclerView.ViewHolder{
         TextView noticeName, noticeTime, noticeDetail;
         ImageView noticeImage;
+        ConstraintLayout noticeDetailLayout;
+        MaterialCardView noticeImageCard;
 
         public NoticeViewHolder(@NonNull View itemView) {
             super(itemView);
             noticeName = itemView.findViewById(R.id.tvNoticeName);
             noticeTime = itemView.findViewById(R.id.tvNoticeTime);
+            noticeDetailLayout = itemView.findViewById(R.id.clNoticeDetail);
             noticeDetail = itemView.findViewById(R.id.tvNoticeDetail);
             noticeImage = itemView.findViewById(R.id.ivNoticeImage);
+            noticeImageCard = itemView.findViewById(R.id.mcvNoticeImage);
         }
 
         public void bindView(NoticeItem noticeItem) {
@@ -68,9 +77,9 @@ public class NoticeRecyclerAdapter extends RecyclerView.Adapter<NoticeRecyclerAd
             if(noticeItem.getNoticeDetail() != null && !noticeItem.getNoticeDetail().isEmpty()
                     && !noticeItem.getNoticeDetail().equals("null")) {
                 noticeDetail.setText(noticeItem.getNoticeDetail());
-                noticeDetail.setVisibility(View.VISIBLE);
+                noticeDetailLayout.setVisibility(View.VISIBLE);
             }else {
-                noticeDetail.setVisibility(View.GONE);
+                noticeDetailLayout.setVisibility(View.GONE);
             }
 
             if((noticeItem.getNoticeThumbImage() != null || noticeItem.getNoticeMainImage() != null)
@@ -78,11 +87,11 @@ public class NoticeRecyclerAdapter extends RecyclerView.Adapter<NoticeRecyclerAd
                     && (!noticeItem.getNoticeThumbImage().equals("null") || !noticeItem.getNoticeMainImage().equals("null"))){
                 Glide.with(context)
                         .load(noticeItem.getNoticeMainImage())
-                        .thumbnail(Glide.with(context).load(noticeItem.getNoticeThumbImage()))
+//                        .thumbnail(Glide.with(context).load(noticeItem.getNoticeThumbImage()))
                         .into(noticeImage);
-                noticeImage.setVisibility(View.VISIBLE);
+                noticeImageCard.setVisibility(View.VISIBLE);
             } else {
-                noticeImage.setVisibility(View.GONE);
+                noticeImageCard.setVisibility(View.GONE);
             }
 
         }

@@ -51,7 +51,7 @@ public class ClassList extends AppCompatActivity {
     private LinearLayout noDataLayout;
     private ProgressBar loadingProgress;
 
-    private List<ClassItem> classList = new ArrayList<>();
+    private final List<ClassItem> classList = new ArrayList<>();
     private ClassRecyclerAdapter adapter;
 
     private String search = "";
@@ -131,23 +131,6 @@ public class ClassList extends AppCompatActivity {
         getListOfClass(currentPage);
     }
 
-//    private List<ClassItem> getClassList(){
-//        List<ClassItem> classes = new ArrayList<>();
-//        classes.add(new ClassItem(0, "1st"));
-//        classes.add(new ClassItem(1, "2nd"));
-//        classes.add(new ClassItem(2, "3rd"));
-//        classes.add(new ClassItem(3, "4th"));
-//        classes.add(new ClassItem(4, "5th"));
-//        classes.add(new ClassItem(5, "6th"));
-//        classes.add(new ClassItem(6, "7th"));
-//        classes.add(new ClassItem(7, "8th"));
-//        classes.add(new ClassItem(8, "9th"));
-//        classes.add(new ClassItem(9, "10th"));
-//        classes.add(new ClassItem(10, "11th"));
-//        classes.add(new ClassItem(11, "12th"));
-//
-//        return classes;
-//    }
     private void loadMoreItems() {
         currentPage++;
 //        progressLoading.setVisibility(View.VISIBLE);
@@ -157,7 +140,7 @@ public class ClassList extends AppCompatActivity {
 
     private void getListOfClass(int pageNumber){
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(classRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(classRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;

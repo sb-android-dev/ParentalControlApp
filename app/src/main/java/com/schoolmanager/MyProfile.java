@@ -1,5 +1,6 @@
 package com.schoolmanager;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -34,6 +35,11 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.model.DriverItem;
 import com.schoolmanager.services.TrackingService;
@@ -121,11 +127,28 @@ public class MyProfile extends AppCompatActivity {
         });
 
         profileImageLayout.setOnClickListener(v -> {
-            Intent intentPick = new Intent(Intent.ACTION_PICK);
-            intentPick.setType("image/*");
-            String[] mimeTypes = {"image/jpeg", "image/png"};
-            intentPick.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-            startActivityForResult(intentPick, Common.REQUEST_IMAGE_PICKER);
+            Dexter.withContext(this)
+                    .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .withListener(new MultiplePermissionsListener() {
+                        @Override
+                        public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                            if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                                Intent intentPick = new Intent(Intent.ACTION_PICK);
+                                // Sets the type as image/*. This ensures only components of type image are selected
+                                intentPick.setType("image/*");
+                                //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+                                String[] mimeTypes = {"image/jpeg", "image/png"};
+                                intentPick.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                                startActivityForResult(intentPick, Common.REQUEST_IMAGE_PICKER);
+                            }
+                        }
+
+                        @Override
+                        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                            permissionToken.continuePermissionRequest();
+                        }
+                    }).check();
         });
 
         lastSeen.setOnCheckedChangeListener((buttonView, isChecked) -> isLastSeenEnabled = isChecked);
@@ -136,7 +159,7 @@ public class MyProfile extends AppCompatActivity {
 
     private void getUserProfile() {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         } else {
@@ -262,7 +285,7 @@ public class MyProfile extends AppCompatActivity {
 
     private void updateProfile(String userAccessCode) {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             progressUpdate.setVisibility(View.INVISIBLE);
             update.setVisibility(View.VISIBLE);
@@ -315,7 +338,7 @@ public class MyProfile extends AppCompatActivity {
 
     private void updateProfile(String userAccessCode, String userPassword) {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             progressUpdate.setVisibility(View.INVISIBLE);
             update.setVisibility(View.VISIBLE);
@@ -369,7 +392,7 @@ public class MyProfile extends AppCompatActivity {
 
     private void updateProfile(File profileImageFile, String userAccessCode, String userPassword) {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             progressUpdate.setVisibility(View.INVISIBLE);
             update.setVisibility(View.VISIBLE);
@@ -426,7 +449,7 @@ public class MyProfile extends AppCompatActivity {
 
     private void updateProfile(File profileImageFile, String userAccessCode) {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             progressUpdate.setVisibility(View.INVISIBLE);
             update.setVisibility(View.VISIBLE);
@@ -486,6 +509,7 @@ public class MyProfile extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == Common.REQUEST_IMAGE_PICKER && resultCode == RESULT_OK && data != null){
             selectedImageUri = data.getData();
+            Log.e(TAG, "onActivityResult: selectedImageUri -> " + selectedImageUri);
             Glide.with(this).load(selectedImageUri).into(profileImage);
         }
     }

@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Feeling Happy to Listen"
+            android:text="@string/feeling_happy_to_listen"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textAllCaps="false"
             android:textColor="?attr/pure_txt_color" />
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="20dp"
             android:textAllCaps="false"
-            android:text="Okay" />
+            android:text="@string/okay" />
 
     </LinearLayout>
 

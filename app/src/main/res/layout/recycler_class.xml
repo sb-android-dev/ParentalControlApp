@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dashboard_button"
@@ -15,7 +16,7 @@
         android:id="@+id/tvClass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1st"
+        tools:text="1st"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
         android:textColor="?attr/pure_txt_color"

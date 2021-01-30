@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:orientation="vertical"
@@ -49,7 +50,7 @@
                         android:id="@+id/txt_rawChatList_name"
                         android:textSize="16sp"
                         android:textColor="?attr/pure_txt_color"
-                        android:text="Devon Lane"
+                        tools:text="Devon Lane"
                         android:layout_weight="1.0"
                         android:layout_width="0dp"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
@@ -59,7 +60,7 @@
                         android:id="@+id/txt_rawChatList_time"
                         android:textSize="12sp"
                         android:textColor="@color/light_gray"
-                        android:text="3 m"
+                        tools:text="3 m"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -72,7 +73,7 @@
                     android:id="@+id/txt_rawChatList_lastMessage"
                     android:textSize="14sp"
                     android:textColor="@color/dark_gray"
-                    android:text="Hi... How are you ?"
+                    tools:text="Hi... How are you ?"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                     android:maxLines="1"
                     android:ellipsize="end"

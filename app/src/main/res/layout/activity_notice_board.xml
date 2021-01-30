@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Notice Board"
+                android:text="@string/noticeboard"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textStyle="bold"/>
@@ -41,7 +41,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?attr/noticeboard_bg_color">
+            android:background="?attr/colorSurface">
 
             <com.schoolmanager.utilities.RecyclerViewWithEmptyView
                 android:id="@+id/rvNotice"

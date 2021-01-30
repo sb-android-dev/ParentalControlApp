@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="We have informed the driver and school."
+            android:text="@string/we_have_informed_the_driver_and_school"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
             android:textAllCaps="false"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="20dp"
             android:textAllCaps="false"
-            android:text="Thank you" />
+            android:text="@string/thank_you" />
 
     </LinearLayout>
 

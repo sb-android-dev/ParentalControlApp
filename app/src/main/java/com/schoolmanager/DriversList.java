@@ -140,26 +140,9 @@ public class DriversList extends AppCompatActivity {
         getListOfDrivers(currentPage);
     }
 
-//    private List<DriverItem> getDriverList(){
-//        List<DriverItem> drivers = new ArrayList<>();
-//        drivers.add(new DriverItem(0, "Rameshbhai", "GJ03AJ4512"));
-//        drivers.add(new DriverItem(1, "Munnabhai", "GJ03AN5623"));
-//        drivers.add(new DriverItem(2, "Rakeshbhai", "GJ03DE4215"));
-//        drivers.add(new DriverItem(3, "Bharatbhai", "GJ03EA7812"));
-//        drivers.add(new DriverItem(4, "Ketanbhai", "GJ03FC7912"));
-//        drivers.add(new DriverItem(5, "Rajubhai", "GJ03FG6152"));
-//        drivers.add(new DriverItem(6, "Mohanbhai", "GJ03AZ2564"));
-//        drivers.add(new DriverItem(7, "Hareshbhai", "GJ03CE3481"));
-//        drivers.add(new DriverItem(8, "Sureshbhai", "GJ03BH8673"));
-//        drivers.add(new DriverItem(9, "Rambhai", "GJ03DK4186"));
-//        drivers.add(new DriverItem(10, "Shyambhai", "GJ03ED7936"));
-//
-//        return drivers;
-//    }
-
     private void getListOfDrivers(int pageNumber) {
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(driversRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(driversRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;

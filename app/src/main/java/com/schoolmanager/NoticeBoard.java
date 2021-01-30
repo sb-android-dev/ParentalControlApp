@@ -56,7 +56,7 @@ public class NoticeBoard extends AppCompatActivity {
     private LinearLayout noDataLayout;
     private ProgressBar loadingProgress;
 
-    private List<NoticeItem> noticeList = new ArrayList<>();
+    private final List<NoticeItem> noticeList = new ArrayList<>();
     private NoticeRecyclerAdapter adapter;
 
     private String search = "", noticeDate = "";
@@ -95,7 +95,7 @@ public class NoticeBoard extends AppCompatActivity {
         noticesRecycler.setLayoutManager(new GridLayoutManager(this, 1,
                 RecyclerView.VERTICAL, false));
         noticesRecycler.addItemDecoration(new SpaceItemDecoration(this, RecyclerView.VERTICAL,
-                1, R.dimen._5dp, R.dimen._0dp,
+                1, R.dimen._12dp, R.dimen._12dp,
                 false));
         noticesRecycler.setEmptyView(noDataLayout);
 
@@ -139,7 +139,7 @@ public class NoticeBoard extends AppCompatActivity {
 
     private void getListOfNotice(int pageNumber) {
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(noticesRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(noticesRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;

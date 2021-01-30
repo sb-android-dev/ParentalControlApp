@@ -34,4 +34,9 @@ public class Common {
     public static final int CHAT_NOTIFICATION_ID = 3;
 
     public static final int REQUEST_IMAGE_PICKER = 1002;
+
+    public static final int HOME_TO_SCHOOL = 1;
+    public static final int AT_SCHOOL = 2;
+    public static final int SCHOOL_TO_HOME = 3;
+    public static final int DRIVER_DROPPED = 4;
 }

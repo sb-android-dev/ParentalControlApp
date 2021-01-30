@@ -24,7 +24,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My Profile"
+                android:text="@string/my_profile"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textStyle="bold" />
@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="30dp"
-                    android:text="Name"
+                    android:text="@string/name"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/rlProfile" />
 
@@ -94,7 +94,7 @@
                     android:background="@drawable/bg_edittext"
                     android:elevation="2dp"
                     android:enabled="false"
-                    android:hint="Name"
+                    android:hint="@string/name"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions"
                     android:padding="15dp"
@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
-                    android:text="Phone Number"
+                    android:text="@string/phone_number"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/etName" />
 
@@ -119,7 +119,7 @@
                     android:background="@drawable/bg_edittext"
                     android:elevation="2dp"
                     android:enabled="false"
-                    android:hint="Phone Number"
+                    android:hint="@string/phone_number"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:padding="15dp"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
-                    android:text="Username"
+                    android:text="@string/username"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/etPhone" />
 
@@ -143,7 +143,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_edittext"
                     android:elevation="2dp"
-                    android:hint="Username"
+                    android:hint="@string/username"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions"
                     android:padding="15dp"
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="15dp"
-                    android:text="Password"
+                    android:text="@string/password"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@id/etUserName" />
 
@@ -167,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_edittext"
                     android:elevation="2dp"
-                    android:hint="Password"
+                    android:hint="@string/password"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
                     android:padding="15dp"
@@ -182,7 +182,7 @@
                     android:layout_marginTop="15dp"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Show last seen"
+                    android:text="@string/show_last_seen"
                     app:layout_constraintTop_toBottomOf="@id/etPassword"/>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
@@ -192,7 +192,7 @@
                     android:layout_marginTop="15dp"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
-                    android:text="Show read - unread messages"
+                    android:text="@string/show_read_unread_messages"
                     app:layout_constraintTop_toBottomOf="@id/switchLastSeen"/>
 
                 <RelativeLayout
@@ -217,7 +217,7 @@
                         android:layout_marginStart="30dp"
                         android:layout_marginTop="30dp"
                         android:layout_marginEnd="30dp"
-                        android:text="Update" />
+                        android:text="@string/update" />
 
                 </RelativeLayout>
 

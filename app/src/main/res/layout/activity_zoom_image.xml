@@ -8,8 +8,6 @@
         android:background="#000"
         tools:context="com.schoolmanager.chat.ZoomImageActivity">
 
-
-
         <com.schoolmanager.utilities.TouchImageView
             android:id="@+id/img_ZoomImage_zoom"
             android:layout_width="match_parent"

@@ -202,16 +202,23 @@ public class LogIn extends AppCompatActivity {
                                 String userName = data.getString("user_name");
                                 String userPhoneNo = data.getString("user_phone_no");
                                 String userImage = data.getString("user_image_url");
+                                boolean isLastSeenEnabled = data.getInt("user_last_seen_status")==1;
+                                boolean isReadUnreadMessageEnabled = data.getInt("user_read_status")==1;
 
                                 if(userType == 1){
                                     int studentId = data.getInt("user_student_id");
                                     int driverId = data.getInt("user_driver_id");
+                                    String driverName = data.getString("user_driver_name");
+                                    String driverPhoneNo = data.getString("user_driver_phone_no");
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
-                                            userType, userPhoneNo, userImage, studentId, driverId);
+                                            userType, userPhoneNo, userImage, studentId);
+                                    sessionManager.upsertDriver(driverId, driverName, driverPhoneNo);
                                 }else{
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
                                             userType, userPhoneNo, userImage);
                                 }
+                                sessionManager.updateLastSeenFlag(isLastSeenEnabled);
+                                sessionManager.updateReadUnreadMessagesFlag(isReadUnreadMessageEnabled);
 
 //                                Snackbar.make(logIn, "Done!!!", Snackbar.LENGTH_SHORT).show();
 

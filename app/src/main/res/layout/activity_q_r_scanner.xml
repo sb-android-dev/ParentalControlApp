@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Scan QR Code"
+                android:text="@string/scan_qr_code"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                 android:textStyle="bold"/>
@@ -41,12 +41,12 @@
         app:flashButtonColor="@android:color/white"
         app:flashButtonVisible="true"
         app:frameColor="@android:color/white"
-        app:frameCornersSize="20dp"
+        app:frameCornersSize="50dp"
         app:frameCornersRadius="0dp"
         app:frameAspectRatioWidth="1"
         app:frameAspectRatioHeight="1"
         app:frameSize="0.75"
-        app:frameThickness="1dp"
+        app:frameThickness="2dp"
         app:maskColor="#77000000"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 

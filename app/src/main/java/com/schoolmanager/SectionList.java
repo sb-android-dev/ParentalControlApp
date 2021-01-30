@@ -85,17 +85,6 @@ public class SectionList extends AppCompatActivity {
         });
     }
 
-//    private List<SectionItem> getSectionList(){
-//        List<SectionItem> sections = new ArrayList<>();
-//        sections.add(new SectionItem(0, "A"));
-//        sections.add(new SectionItem(1, "B"));
-//        sections.add(new SectionItem(2, "C"));
-//        sections.add(new SectionItem(3, "D"));
-//        sections.add(new SectionItem(4, "E"));
-//
-//        return sections;
-//    }
-
     private void getListOfSection(String userId, String appCode){
         AndroidNetworking.post(Common.BASE_URL)
                 .addBodyParameter("app_code", appCode) /* App code for app */

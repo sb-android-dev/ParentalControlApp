@@ -17,5 +17,10 @@
 
     <dimen name="_0dp">0dp</dimen>
     <dimen name="_5dp">5dp</dimen>
+    <dimen name="_12dp">12dp</dimen>
+    <dimen name="_15dp">15dp</dimen>
+
+    <dimen name="notice_corner_radius">10dp</dimen>
+    <dimen name="notice_image_corner_radius">40dp</dimen>
 
 </resources>

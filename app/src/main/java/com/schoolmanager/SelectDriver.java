@@ -55,7 +55,7 @@ public class SelectDriver extends AppCompatActivity {
     private RecyclerView driversRecycler;
     private ProgressBar loadingProgress;
 
-    private List<DriverItem> driverList = new ArrayList<>();
+    private final List<DriverItem> driverList = new ArrayList<>();
     private DriversRecyclerAdapter adapter;
 
     private String search = "";
@@ -130,7 +130,7 @@ public class SelectDriver extends AppCompatActivity {
 
     private void getSelectedDriver() {
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         } else {
@@ -161,6 +161,7 @@ public class SelectDriver extends AppCompatActivity {
 
                                     driverName.setText(dName);
                                     driverPhoneNo.setText(dPhone);
+                                    sessionManager.upsertDriver(driverId, dName, dPhone);
 
                                     currentPage = Common.PAGE_START;
                                     getListOfDrivers(currentPage);
@@ -197,7 +198,7 @@ public class SelectDriver extends AppCompatActivity {
 
     private void getListOfDrivers(int pageNumber) {
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(driversRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(driversRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;
@@ -303,7 +304,7 @@ public class SelectDriver extends AppCompatActivity {
 
     private void setDriver(){
         if (!detector.isConnectingToInternet()) {
-            Toast.makeText(this, "Looks like you're not connected with internet!",
+            Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(false);
         } else {

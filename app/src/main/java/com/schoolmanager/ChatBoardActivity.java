@@ -186,7 +186,7 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         if (!detector.isConnectingToInternet()) {
 
-            Snackbar.make(binding.resViewChatBoard, "Looks like you're not connected with internet!",
+            Snackbar.make(binding.resViewChatBoard, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             isNextPageCalled = false;
 
@@ -276,7 +276,7 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         if (!detector.isConnectingToInternet()) {
 
-            Snackbar.make(binding.resViewChatBoard, "Looks like you're not connected with internet!",
+            Snackbar.make(binding.resViewChatBoard, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             return;
         }

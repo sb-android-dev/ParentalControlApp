@@ -107,7 +107,7 @@ public class ComplainList extends AppCompatActivity {
 
         if (!detector.isConnectingToInternet()) {
             binding.llComplaintEmptyView.setVisibility(View.VISIBLE);
-            binding.txtComplaintListEmptyMessage.setText("Looks like you're not connected with internet!");
+            binding.txtComplaintListEmptyMessage.setText(getString(R.string.you_are_not_connected));
 
             if (binding.swipyComplaintLlistChatList.isRefreshing())
                 binding.swipyComplaintLlistChatList.setRefreshing(false);
@@ -326,7 +326,7 @@ public class ComplainList extends AppCompatActivity {
                 binding.llComplaintEmptyView.setVisibility(View.INVISIBLE);
             } else {
                 binding.llComplaintEmptyView.setVisibility(View.VISIBLE);
-                binding.txtComplaintListEmptyMessage.setText("No any complaint found matching your search");
+                binding.txtComplaintListEmptyMessage.setText(R.string.no_any_complaint_matching_search);
             }
         }
     }

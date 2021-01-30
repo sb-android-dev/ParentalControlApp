@@ -224,6 +224,7 @@ public class PathFinder {
 
         switch (type.toLowerCase()){
             case "image":
+            case "content":
                 contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 break;
             case "video":

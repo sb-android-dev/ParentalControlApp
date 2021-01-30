@@ -25,9 +25,12 @@ public class UserSessionManager {
     public static final String KEY_USER_PHONE = "user_phone";
     public static final String KEY_USER_IMAGE = "user_image";
     public static final String KEY_STUDENT_ID = "student_id";
-    public static final String KEY_DRIVER_ID = "student_id";
     public static final String KEY_DEVICE_ID = "device_id";
     public static final String KEY_FCM_TOKEN = "fcm_token";
+
+    public static final String KEY_DRIVER_ID = "driver_id";
+    public static final String KEY_DRIVER_NAME = "driver_name";
+    public static final String KEY_DRIVER_PHONE = "driver_phone";
 
     public static final String KEY_IS_BUS_NOTIFICATION_RECEIVED = "is_bus_notification_received";
     public static final String KEY_TODAY_S_DAY = "today_s_day";
@@ -67,7 +70,7 @@ public class UserSessionManager {
     }
 
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
-                                       String userPhone, String userImage, int studentId, int driverId) {
+                                       String userPhone, String userImage, int studentId) {
         Log.e("createUserLoginSession","createUserLoginSession");
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USER_TOKEN, userToken);
@@ -76,7 +79,13 @@ public class UserSessionManager {
         editor.putString(KEY_USER_PHONE, userPhone);
         editor.putString(KEY_USER_IMAGE, userImage);
         editor.putInt(KEY_STUDENT_ID, studentId);
+        editor.commit();
+    }
+
+    public void upsertDriver(int driverId, String driverName, String driverPhone){
         editor.putInt(KEY_DRIVER_ID, driverId);
+        editor.putString(KEY_DRIVER_NAME, driverName);
+        editor.putString(KEY_DRIVER_PHONE, driverPhone);
         editor.commit();
     }
 
@@ -164,6 +173,18 @@ public class UserSessionManager {
         return id;
     }
 
+    public HashMap<String, String> getDriverDetails(){
+        HashMap<String, String> driver = new HashMap<>();
+        driver.put(KEY_DRIVER_ID, String.valueOf(pref.getInt(KEY_DRIVER_ID, 0)));
+        driver.put(KEY_DRIVER_NAME, pref.getString(KEY_DRIVER_NAME, ""));
+        driver.put(KEY_DRIVER_PHONE, pref.getString(KEY_DRIVER_PHONE, ""));
+        return driver;
+    }
+
+    public String getStudentId(){
+        return String.valueOf(pref.getInt(KEY_STUDENT_ID, 0));
+    }
+
     public int getDriverId(){
         return pref.getInt(KEY_DRIVER_ID, 0);
     }
@@ -215,6 +236,9 @@ public class UserSessionManager {
         editor.remove(KEY_USER_IMAGE);
         editor.remove(KEY_FCM_TOKEN);
         editor.remove(KEY_STUDENT_ID);
+        editor.remove(KEY_DRIVER_ID);
+        editor.remove(KEY_DRIVER_NAME);
+        editor.remove(KEY_DRIVER_PHONE);
         editor.remove(KEY_IS_BUS_NOTIFICATION_RECEIVED);
         editor.remove(KEY_IS_COMPLAINT_REGISTERED);
         editor.remove(KEY_IS_LAST_SEEN_ENABLED);

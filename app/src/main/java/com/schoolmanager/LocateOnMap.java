@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -24,11 +25,18 @@ import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.akexorcist.googledirection.DirectionCallback;
+import com.akexorcist.googledirection.GoogleDirection;
+import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Route;
+import com.akexorcist.googledirection.util.DirectionConverter;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
@@ -48,8 +56,10 @@ import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -58,15 +68,18 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.FetchURL;
+import com.schoolmanager.utilities.TaskLoadedCallback;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback, TrackingService.Callbacks {
+public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback, TrackingService.Callbacks, TaskLoadedCallback {
 
     private static final String TAG = "locate_on_map_activity";
 
@@ -170,7 +183,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
 //        });
 
         if (getIntent() != null) {
-            driverLatLng = getIntent().getParcelableExtra("location");
+//            driverLatLng = getIntent().getParcelableExtra("location");
             driverName = getIntent().getStringExtra("driver_name");
             driverId = getIntent().getIntExtra("driver_id", 0);
         }
@@ -205,13 +218,13 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         uiSettings.setZoomGesturesEnabled(true);
         uiSettings.setCompassEnabled(true);
         if (mMap != null) {
-            if(driverLatLng != null) {
-                driverLocationOption = new MarkerOptions().position(driverLatLng).title(driverName)
-                        .icon(bitmapDescriptorFromVector(this, R.drawable.ic_driver_pin));
-                driverLocation = mMap.addMarker(driverLocationOption);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
-                mMap.animateCamera(cameraUpdate);
-            }
+//            if(driverLatLng != null) {
+//                driverLocationOption = new MarkerOptions().position(driverLatLng).title(driverName)
+//                        .icon(bitmapDescriptorFromVector(this, R.drawable.ic_driver_pin));
+//                driverLocation = mMap.addMarker(driverLocationOption);
+//                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
+//                mMap.animateCamera(cameraUpdate);
+//            }
 
             locateLiveDriver();
 
@@ -328,6 +341,11 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                 });
     }
 
+    @Override
+    public void onTaskDone(Object... values) {
+        mMap.addPolyline((PolylineOptions) values[0]);
+    }
+
     // Define a DialogFragment that displays the error dialog
     public static class ErrorDialogFragment extends DialogFragment {
 
@@ -384,9 +402,54 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                                         && !data.getString("long").isEmpty()) {
                                     driverLatLng = new LatLng(Double.parseDouble(data.getString("lat")),
                                             Double.parseDouble(data.getString("long")));
-                                    driverLocation.setPosition(driverLatLng);
+                                    if(driverLocation == null){
+                                        driverLocationOption = new MarkerOptions()
+                                                .position(driverLatLng).title(driverName)
+                                                .icon(bitmapDescriptorFromVector(LocateOnMap.this, R.drawable.ic_driver_pin));
+                                        driverLocation = mMap.addMarker(driverLocationOption);
+                                    }else {
+                                        driverLocation.setPosition(driverLatLng);
+                                    }
                                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
                                     mMap.animateCamera(cameraUpdate);
+
+//                                    if(TrackingService.isTracking){
+//                                        new FetchURL(LocateOnMap.this)
+//                                                .execute(getUrl(driverLatLng, currentLatLng, "driving"), "driving");
+//                                    }
+
+                                    GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                                            .from(driverLatLng)
+                                            .to(currentLatLng)
+                                            .transportMode(TransportMode.DRIVING)
+                                            .execute(new DirectionCallback() {
+                                                @Override
+                                                public void onDirectionSuccess(@Nullable Direction direction) {
+                                                    if(direction.isOK()){
+                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
+                                                        Route route = direction.getRouteList().get(0);
+                                                        ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
+                                                        mMap.addPolyline(
+                                                                DirectionConverter.createPolyline(
+                                                                        LocateOnMap.this,
+                                                                        directionPositionList,
+                                                                        5,
+                                                                        Color.RED
+                                                                )
+                                                        );
+                                                        setCameraWithCoordinationBounds(route);
+                                                    } else {
+                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
+                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getErrorMessage());
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onDirectionFailure(@NonNull Throwable t) {
+                                                    Log.e(TAG, "onDirectionFailure: " + t.getLocalizedMessage());
+                                                    Log.e(TAG, "onDirectionFailure: " + t.getCause());
+                                                }
+                                            });
                                 }
                             } else if (success == 2) {
                                 onLogOut();
@@ -404,6 +467,25 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                         Log.e(TAG, "onError: " + anError.getErrorBody());
                     }
                 });
+    }
+
+    private void setCameraWithCoordinationBounds(Route route) {
+        LatLng southwest = route.getBound().getSouthwestCoordination().getCoordination();
+        LatLng northeast = route.getBound().getNortheastCoordination().getCoordination();
+        LatLngBounds bounds = new LatLngBounds(southwest, northeast);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        String mode = "mode=" + directionMode;
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        String output = "json";
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters
+                + "&key=" + getString(R.string.google_maps_key);
+
+        return url;
     }
 
     private boolean isGooglePlayServicesAvailable() {

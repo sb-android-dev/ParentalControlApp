@@ -51,7 +51,7 @@ public class TeachersList extends AppCompatActivity {
     private LinearLayout noDataLayout;
     private ProgressBar loadingProgress;
 
-    private List<TeacherItem> teacherList = new ArrayList<>();
+    private final List<TeacherItem> teacherList = new ArrayList<>();
     private TeachersRecyclerAdapter adapter;
 
     private String search = "";
@@ -117,12 +117,9 @@ public class TeachersList extends AppCompatActivity {
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         swipeRefreshLayout.setColorSchemeResources(typedValue.resourceId);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentPage = Common.PAGE_START;
-                getListOfTeachers(currentPage);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            currentPage = Common.PAGE_START;
+            getListOfTeachers(currentPage);
         });
 
         teachersRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -151,20 +148,9 @@ public class TeachersList extends AppCompatActivity {
         getListOfTeachers(currentPage);
     }
 
-//    private List<TeacherItem> getTeacherList(){
-//        List<TeacherItem> teachers = new ArrayList<>();
-//        teachers.add(new TeacherItem(0, "Ladva Sir", "Mathematics"));
-//        teachers.add(new TeacherItem(1, "Sailja Madam", "Science"));
-//        teachers.add(new TeacherItem(2, "Mayur Sir", "English"));
-//        teachers.add(new TeacherItem(3, "Kanchan Madam", "Social Science"));
-//        teachers.add(new TeacherItem(4, "Gautam Sir", "Gujarati"));
-//
-//        return teachers;
-//    }
-
     private void getListOfTeachers(int pageNumber) {
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(teachersRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(teachersRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;

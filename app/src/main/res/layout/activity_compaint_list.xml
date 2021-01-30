@@ -42,7 +42,7 @@
                         android:layout_weight="1.0"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Complaints"
+                        android:text="@string/complaints"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
@@ -154,7 +154,7 @@
                     android:alpha="0.5"
                     android:layout_gravity="center"
                     android:layout_marginHorizontal="16dp"
-                    android:text="No Any Complaint Yet"
+                    android:text="@string/no_any_complaint_yet"
                     android:gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

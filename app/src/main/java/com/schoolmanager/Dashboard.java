@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -40,9 +39,10 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.dialogs.ChildArrivedDialog;
 import com.schoolmanager.dialogs.ChildNotArrivedDialog;
-import com.schoolmanager.dialogs.LogoutDialog;
+import com.schoolmanager.model.ScanItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.DBHandler;
 import com.schoolmanager.utilities.GpsUtils;
 import com.schoolmanager.utilities.UserSessionManager;
 
@@ -52,14 +52,15 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.schoolmanager.MyApplication.mp;
+import static com.schoolmanager.common.Common.APP_CODE;
+import static com.schoolmanager.common.Common.BASE_URL;
 
 public class Dashboard extends AppCompatActivity {
 
     private static final String TAG = "dashboard_activity";
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
-            locateChildLayout, teachersLayout, noticeLayout, arrivedLayout;
+            locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout, arrivedLayout;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -124,6 +125,8 @@ public class Dashboard extends AppCompatActivity {
         giveComplaintLayout = findViewById(R.id.clGiveComplaint);
         locateChildLayout = findViewById(R.id.clLocateChild);
         teachersLayout = findViewById(R.id.clTeacherList);
+        trackingLayout = findViewById(R.id.clTrackingHistory);
+        scanLayout = findViewById(R.id.clScanCode);
         noticeLayout = findViewById(R.id.clNoticeBoard);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
@@ -135,6 +138,20 @@ public class Dashboard extends AppCompatActivity {
         userName.setText(uName);
 //        String uType = getIntent().getStringExtra("type");
         switch (userType) {
+            case "4":
+                locationCard.setVisibility(View.GONE);
+                complaintCard.setVisibility(View.GONE);
+                complaintLayout.setVisibility(View.GONE);
+                driversLayout.setVisibility(View.GONE);
+                studentsLayout.setVisibility(View.GONE);
+                giveComplaintLayout.setVisibility(View.GONE);
+                locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
+                trackingLayout.setVisibility(View.GONE);
+//                noticeLayout.setVisibility(View.GONE);
+                arrivedLayout.setVisibility(View.GONE);
+
+                break;
             // For Drivers
             case "3":
                 complaintCard.setVisibility(View.GONE);
@@ -144,6 +161,7 @@ public class Dashboard extends AppCompatActivity {
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
                 teachersLayout.setVisibility(View.GONE);
+                trackingLayout.setVisibility(View.GONE);
 //                noticeLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
@@ -170,6 +188,7 @@ public class Dashboard extends AppCompatActivity {
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
+                scanLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
@@ -197,10 +216,12 @@ public class Dashboard extends AppCompatActivity {
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
                 teachersLayout.setVisibility(View.GONE);
+                trackingLayout.setVisibility(View.GONE);
+                scanLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
         }
 
-        fecthGeneralData();
+        fetchGeneralData();
 
         logOut.setOnClickListener(v -> {
             startActivity(new Intent(this, Settings.class));
@@ -234,11 +255,27 @@ public class Dashboard extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         locateChildLayout.setOnClickListener(v -> {
-            startActivity(new Intent(Dashboard.this, DriversList.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            HashMap<String, String> driverDetail = sessionManager.getDriverDetails();
+            if(!driverDetail.get(UserSessionManager.KEY_DRIVER_ID).equals("0")) {
+                Intent nextIntent = new Intent(Dashboard.this, LocateOnMap.class);
+                nextIntent.putExtra("driver_name", driverDetail.get(UserSessionManager.KEY_DRIVER_NAME));
+                nextIntent.putExtra("driver_id", Integer.parseInt(driverDetail.get(UserSessionManager.KEY_DRIVER_ID)));
+                startActivity(nextIntent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+//            startActivity(new Intent(Dashboard.this, DriversList.class));
+//            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         teachersLayout.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, TeachersList.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+        scanLayout.setOnClickListener(v -> {
+            startActivity(new Intent(Dashboard.this, ScanQRCode.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+        trackingLayout.setOnClickListener(v -> {
+            startActivity(new Intent(Dashboard.this, TrackHistory.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         noticeLayout.setOnClickListener(v -> {
@@ -384,7 +421,7 @@ public class Dashboard extends AppCompatActivity {
                 });
     }
 
-    private void fecthGeneralData() {
+    private void fetchGeneralData() {
         if (!detector.isConnectingToInternet()) {
             return;
         }
@@ -440,6 +477,55 @@ public class Dashboard extends AppCompatActivity {
                 });
     }
 
+    private void uploadStoredResult(){
+        DBHandler db = new DBHandler(this);
+
+        ScanItem scanItem = db.getScanItem();
+        if(scanItem != null)
+            uploadResults(db, scanItem);
+
+    }
+
+    public void uploadResults(DBHandler db, ScanItem scanItem){
+        if(detector.isConnectingToInternet()) {
+            AndroidNetworking
+                    .post(BASE_URL + "app-track-student")
+                    .addBodyParameter("user_id", scanItem.getUserId())
+                    .addBodyParameter("user_token", scanItem.getUserToken())
+                    .addBodyParameter("user_type", scanItem.getUserType())
+                    .addBodyParameter("user_app_code", APP_CODE)
+                    .addBodyParameter("device_id", deviceId)
+                    .addBodyParameter("device_type", "1")
+                    .addBodyParameter("student_id", scanItem.getStudentId())
+                    .addBodyParameter("track_status", scanItem.getTrackStatus())
+                    .addBodyParameter("track_time", scanItem.getTrackTime())
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                int success = response.getInt("success");
+                                String message = response.getString("message");
+                                if (success == 1) {
+                                    db.deleteScan(scanItem.getScanId());
+                                    uploadStoredResult();
+                                } else if (success == 2) {
+                                    onLogOut();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "onResponse -> " + e.getLocalizedMessage());
+                            }
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            Log.e(TAG, "onError -> " + anError.getLocalizedMessage());
+                        }
+                    });
+        }
+    }
+
     void sendCommandToService(String action) {
         Dexter.withContext(this)
                 .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -469,7 +555,7 @@ public class Dashboard extends AppCompatActivity {
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             locationSwitch.setChecked(true);
         }
-        fecthGeneralData();
+        fetchGeneralData();
 
         if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
             MyApplication.mp.stop();
@@ -519,6 +605,9 @@ public class Dashboard extends AppCompatActivity {
                 .placeholder(R.drawable.ic_avatar)
                 .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
                 .into(userImage);
+
+        if(detector.isConnectingToInternet())
+            uploadStoredResult();
     }
 
     @Override

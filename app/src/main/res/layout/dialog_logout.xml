@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="5dp"
-            android:text="Log Out"
+            android:text="@string/sign_out"
             android:textColor="?attr/pure_txt_color"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:drawableStartCompat="@drawable/ic_log_out"
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Are you sure you want to log out?"
+            android:text="@string/are_you_sure_you_want_to_sign_out"
             android:textColor="?attr/caption_color"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
 
@@ -52,7 +52,7 @@
                     style="@style/TextButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="Cancel" />
+                    android:text="@string/cancel" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -61,19 +61,20 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp">
 
-<!--                <ProgressBar-->
-<!--                    android:id="@+id/progressLogOut"-->
-<!--                    android:layout_width="30dp"-->
-<!--                    android:layout_height="30dp"-->
-<!--                    android:layout_centerInParent="true"-->
-<!--                    android:indeterminateTint="@color/colorPrimary" />-->
+                <ProgressBar
+                    android:id="@+id/progressLogOut"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminateTint="@color/colorPrimary"
+                    android:visibility="invisible"/>
 
                 <Button
                     android:id="@+id/btnLogout"
                     style="@style/TextButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="Log Out" />
+                    android:text="@string/sign_out" />
             </RelativeLayout>
         </LinearLayout>
 

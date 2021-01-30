@@ -29,6 +29,5 @@ public class ZoomImage extends AppCompatActivity {
                 .load(image)
                 .into(binding.imgZoomImageZoom);
 
-
     }
 }

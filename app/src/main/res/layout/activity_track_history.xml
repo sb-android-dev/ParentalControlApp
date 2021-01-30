@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TrackHistory">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.SchoolManager.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolBar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:contentInsetEnd="56dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/Theme.SchoolManager.PopupOverlay">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tracking_history"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/srlTracking"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?colorSurface">
+
+            <TextView
+                android:id="@+id/tvTrackingDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="20-01-2021"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/slTrackingHistory"/>
+
+            <com.transferwise.sequencelayout.SequenceLayout
+                android:id="@+id/slTrackingHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                app:progressForegroundColor="?colorSecondary"
+                app:progressBackgroundColor="?pure_bg_color"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+<!--                <com.transferwise.sequencelayout.SequenceStep-->
+<!--                    android:id="@+id/ssDriverPicked"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:title="Driver Picked"-->
+<!--                    app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Body1"-->
+<!--                    app:subtitle="Going To School"-->
+<!--                    app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+<!--                    app:anchor="7:00 AM"-->
+<!--                    app:anchorTextAppearance="@style/TextAppearance.MaterialComponents.Body2"/>-->
+
+<!--                <com.transferwise.sequencelayout.SequenceStep-->
+<!--                    android:id="@+id/ssAtSchool"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:title="At School"-->
+<!--                    app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Body1"-->
+<!--                    app:subtitle="Reached"-->
+<!--                    app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+<!--                    app:anchor="7:30 AM"-->
+<!--                    app:anchorTextAppearance="@style/TextAppearance.MaterialComponents.Body2"/>-->
+
+<!--                <com.transferwise.sequencelayout.SequenceStep-->
+<!--                    android:id="@+id/ssLeavedSchool"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:active="true"-->
+<!--                    app:title="Leaved School"-->
+<!--                    app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Body1"-->
+<!--                    app:subtitle="Coming to home"-->
+<!--                    app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+<!--                    app:anchor="12:30 PM"-->
+<!--                    app:anchorTextAppearance="@style/TextAppearance.MaterialComponents.Body2"/>-->
+
+<!--                <com.transferwise.sequencelayout.SequenceStep-->
+<!--                    android:id="@+id/ssDriverDropped"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:title="Driver Dropped"-->
+<!--                    app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Body1"-->
+<!--                    app:subtitle="Leave the bus"-->
+<!--                    app:subtitleTextAppearance="@style/TextAppearance.MaterialComponents.Caption"-->
+<!--                    app:anchor="1:00 PM"-->
+<!--                    app:anchorTextAppearance="@style/TextAppearance.MaterialComponents.Body2"/>-->
+
+<!--                <com.transferwise.sequencelayout.SequenceStep-->
+<!--                    android:id="@+id/ssArrivedHome"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:title="Arrived Home"-->
+<!--                    app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Body1"-->
+<!--                    app:anchor="1:05 PM"-->
+<!--                    app:anchorTextAppearance="@style/TextAppearance.MaterialComponents.Body2"/>-->
+
+            </com.transferwise.sequencelayout.SequenceLayout>
+
+            <LinearLayout
+                android:id="@+id/llNoData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <!--                <ImageView-->
+                <!--                    android:layout_width="120dp"-->
+                <!--                    android:layout_height="120dp"-->
+                <!--                    android:padding="5dp"-->
+                <!--                    android:src="@drawable/ic_no_data"-->
+                <!--                    app:tint="@color/caption_color"-->
+                <!--                    android:background="@drawable/bg_dashboard_button"-->
+                <!--                    android:backgroundTint="@color/white"/>-->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/sorry"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                    android:textStyle="bold"
+                    android:textColor="?attr/caption_color"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/no_tracking_history"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

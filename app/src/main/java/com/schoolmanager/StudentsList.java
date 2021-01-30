@@ -51,7 +51,7 @@ public class StudentsList extends AppCompatActivity {
     private LinearLayout noDataLayout;
     private ProgressBar loadingProgress;
 
-    private List<StudentItem> studentList = new ArrayList<>();
+    private final List<StudentItem> studentList = new ArrayList<>();
     private StudentsRecyclerAdapter adapter;
 
     private String search = "";
@@ -124,12 +124,9 @@ public class StudentsList extends AppCompatActivity {
         TypedValue typedValue = new TypedValue();
         getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
         swipeRefreshLayout.setColorSchemeResources(typedValue.resourceId);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                currentPage = Common.PAGE_START;
-                getListOfStudents(currentPage);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            currentPage = Common.PAGE_START;
+            getListOfStudents(currentPage);
         });
 
         studentsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -158,24 +155,9 @@ public class StudentsList extends AppCompatActivity {
         getListOfStudents(currentPage);
     }
 
-//    private List<StudentItem> getStudentList(String className, String sectionName){
-//        List<StudentItem> students = new ArrayList<>();
-//        students.add(new StudentItem(0, "Shyam Dave", className, sectionName));
-//        students.add(new StudentItem(1, "Kaushik Patel", className, sectionName));
-//        students.add(new StudentItem(2, "Vipul Panara", className, sectionName));
-//        students.add(new StudentItem(3, "Dhara Desai", className, sectionName));
-//        students.add(new StudentItem(4, "Rohit Jadeja", className, sectionName));
-//        students.add(new StudentItem(5, "Nasir Vora", className, sectionName));
-//        students.add(new StudentItem(6, "Drasti Pujara", className, sectionName));
-//        students.add(new StudentItem(7, "Parth Virani", className, sectionName));
-//        students.add(new StudentItem(8, "Chetana Patel", className, sectionName));
-//
-//        return students;
-//    }
-
     private void getListOfStudents(int pageNumber) {
         if (!detector.isConnectingToInternet()) {
-            Snackbar.make(studentsRecycler, "Looks like you're not connected with internet!",
+            Snackbar.make(studentsRecycler, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
             swipeRefreshLayout.setRefreshing(false);
             isNextPageCalled = false;
