@@ -110,9 +110,9 @@ public class StudentsList extends AppCompatActivity {
                     "",
                     "",
                     0,
-                    "",
-                    studentItem.getStudentName(),
-                    studentItem.getStudentId(),
+                    studentItem.getParentImage(),
+                    studentItem.getParentName(),
+                    studentItem.getParentId(),
                     1
             );
             intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
@@ -210,6 +210,9 @@ public class StudentsList extends AppCompatActivity {
                                         studentItem.setStudentName(student.getString("student_name"));
                                         studentItem.setClassName(student.getString("class_name"));
                                         studentItem.setSectionName(student.getString("section_name"));
+                                        studentItem.setParentId(student.getInt("parent_id"));
+                                        studentItem.setParentName(student.getString("parent_name"));
+                                        studentItem.setParentImage(student.getString("parent_profile"));
 
                                         studentList.add(studentItem);
                                     }

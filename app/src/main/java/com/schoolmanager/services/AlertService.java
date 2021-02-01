@@ -58,6 +58,8 @@ public class AlertService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().get("notification_type").equals("message")){
             performChatNotification(remoteMessage.getData());
+        } else if(remoteMessage.getData().get("notification_type").equals("message_read")) {
+            performChatReadNotification(remoteMessage.getData());
         } else if(remoteMessage.getData().get("notification_type").equals("track_status")) {
             if(new UserSessionManager(this).getUserType() == 1)
                 performTrackNotification(remoteMessage.getData());
@@ -192,6 +194,53 @@ public class AlertService extends FirebaseMessagingService {
         } else {
             notificationManager.notify((int) notificationId, notificationBuilder.build());
         }
+    }
+
+    private void performChatReadNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        long notificationId = System.currentTimeMillis();
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            createChatNotificationChannel(notificationManager);
+//        }
+//
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, Common.CHAT_NOTIFICATION_CHANNEL_ID);
+//
+//        notificationBuilder.setAutoCancel(true)
+//                .setDefaults(Notification.DEFAULT_ALL)
+//                .setWhen(System.currentTimeMillis())
+//                .setSmallIcon(R.drawable.logo)
+//                .setContentTitle(notifyTitle)
+//                .setContentText(notifyBody)
+//                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
+
+        if (checkForCruntActivityInStack(ChatBoardActivity.class.getName())
+                || checkForCruntActivityInStack(ComplainList.class.getName())) {
+
+            /**
+             * Fire event to update the chat
+             * list and chat message board for
+             * new message arrivles
+             */
+
+            if (notifyType.equals("message")) {
+                try {
+                    JSONObject jsonObjNotificationItem = new JSONObject(data);
+                    NotificationItem notificationItem = new Gson().fromJson(jsonObjNotificationItem.toString(), NotificationItem.class);
+                    EventBus.getDefault().post(new EventNewMessageArrives(notificationItem, true));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+//        else {
+//            notificationManager.notify((int) notificationId, notificationBuilder.build());
+//        }
     }
 
     private void performTrackNotification(Map<String, String> data) {
