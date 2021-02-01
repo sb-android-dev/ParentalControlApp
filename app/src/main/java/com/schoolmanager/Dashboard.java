@@ -60,7 +60,8 @@ public class Dashboard extends AppCompatActivity {
     private static final String TAG = "dashboard_activity";
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
-            locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout, arrivedLayout;
+            locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout,
+            managementMsgLayout, arrivedLayout;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -128,6 +129,7 @@ public class Dashboard extends AppCompatActivity {
         trackingLayout = findViewById(R.id.clTrackingHistory);
         scanLayout = findViewById(R.id.clScanCode);
         noticeLayout = findViewById(R.id.clNoticeBoard);
+        managementMsgLayout = findViewById(R.id.clManagementMsg);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -149,6 +151,7 @@ public class Dashboard extends AppCompatActivity {
                 teachersLayout.setVisibility(View.GONE);
                 trackingLayout.setVisibility(View.GONE);
 //                noticeLayout.setVisibility(View.GONE);
+                managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 break;
@@ -163,6 +166,7 @@ public class Dashboard extends AppCompatActivity {
                 teachersLayout.setVisibility(View.GONE);
                 trackingLayout.setVisibility(View.GONE);
 //                noticeLayout.setVisibility(View.GONE);
+                managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
@@ -218,6 +222,7 @@ public class Dashboard extends AppCompatActivity {
                 teachersLayout.setVisibility(View.GONE);
                 trackingLayout.setVisibility(View.GONE);
                 scanLayout.setVisibility(View.GONE);
+                managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
         }
 
@@ -281,6 +286,9 @@ public class Dashboard extends AppCompatActivity {
         noticeLayout.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, NoticeBoard.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+        managementMsgLayout.setOnClickListener(v -> {
+
         });
         arrived.setOnClickListener(v -> {
             childArrived();
