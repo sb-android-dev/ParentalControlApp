@@ -564,7 +564,7 @@
                     android:id="@+id/tvScanCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/scan_qr_code"
+                    android:text="@string/scanner"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="?attr/pure_txt_color"
                     android:textStyle="bold"

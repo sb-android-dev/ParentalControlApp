@@ -73,6 +73,7 @@
     <string name="no_any_complaint_matching_search">No any complaint found matching your search</string>
     <string name="tracking_history">Tracking History</string>
     <string name="track_your_child">Track your child</string>
-    <string name="scan_qr_code_of_children">Scan QR code of children</string>
+    <string name="scan_qr_code_of_children">Scan student card here</string>
     <string name="no_tracking_history">No Tracking History</string>
+    <string name="scanner">Scanner</string>
 </resources>
