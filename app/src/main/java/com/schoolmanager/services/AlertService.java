@@ -57,6 +57,7 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "onMessageReceived: data ->" + remoteMessage.getData().toString());
 
         if (remoteMessage.getData().get("notification_type").equals("message")){
+            // Notification to handle message
             performChatNotification(remoteMessage.getData());
         } else if(remoteMessage.getData().get("notification_type").equals("message_read")) {
             performChatReadNotification(remoteMessage.getData());
