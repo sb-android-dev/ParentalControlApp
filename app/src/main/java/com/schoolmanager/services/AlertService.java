@@ -62,7 +62,6 @@ public class AlertService extends FirebaseMessagingService {
             if(new UserSessionManager(this).getUserType() == 1)
                 performTrackNotification(remoteMessage.getData());
         } else {
-
             UserSessionManager sessionManager = new UserSessionManager(this);
 
             if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
@@ -267,21 +266,37 @@ public class AlertService extends FirebaseMessagingService {
         new UserSessionManager(this).updateNotificationStatus(true);
     }
 
-    private PendingIntent getRespectiveActivityPendingIntent(String notifyType) {
+    private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {
         Intent intent;
         if (new UserSessionManager(getApplicationContext()).getEssentials()
                 .get(UserSessionManager.KEY_USER_ID).equals("0")) {
             intent = new Intent(getApplicationContext(), LogIn.class);
         } else {
-            if(notifyType.equals("track_status")){
+            if (notifyType.equals("track_status")) {
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_TRACKING);
-            }else{
+            } else {
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_DASHBOARD);
+
+                if (notifyType.equals("message")) {
+                    ComplaintItem complaintItem = new ComplaintItem(
+                            "",
+                            data.get("notification_message_text"),
+                            "",
+                            0,
+                            data.get("notification_message_sender_image"),
+                            data.get("notification_message_sender_name"),
+                            Integer.parseInt(data.get("notification_message_sender_id")),
+                            Integer.parseInt(data.get("notification_message_sender_type"))
+                    );
+
+                    intent.putExtra("redirect_to_chat", new Gson().toJson(complaintItem));
+                }
             }
+
 
             Log.e(TAG, "showNotification: is logged in");
         }
@@ -289,6 +304,7 @@ public class AlertService extends FirebaseMessagingService {
         return PendingIntent.getActivity(this,
                 1, intent, PendingIntent.FLAG_ONE_SHOT);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createAlertNotificationChannel(NotificationManager notificationManager) {
