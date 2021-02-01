@@ -30,9 +30,9 @@ import com.schoolmanager.Dashboard;
 import com.schoolmanager.LogIn;
 import com.schoolmanager.MyApplication;
 import com.schoolmanager.R;
+import com.schoolmanager.TrackHistory;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.events.EventNewMessageArrives;
-import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.model.NotificationItem;
 import com.schoolmanager.utilities.UserSessionManager;
 
@@ -56,10 +56,10 @@ public class AlertService extends FirebaseMessagingService {
 //        Log.e(TAG, "onMessageReceived: " + remoteMessage.getMessageType());
         Log.e(TAG, "onMessageReceived: data ->" + remoteMessage.getData().toString());
 
-        if (remoteMessage.getData().get("notification_type").equals("message")) {
+        if (remoteMessage.getData().get("notification_type").equals("message")){
             performChatNotification(remoteMessage.getData());
-        } else if (remoteMessage.getData().get("notification_type").equals("track_status")) {
-            if (new UserSessionManager(this).getUserType() == 1)
+        } else if(remoteMessage.getData().get("notification_type").equals("track_status")) {
+            if(new UserSessionManager(this).getUserType() == 1)
                 performTrackNotification(remoteMessage.getData());
         } else {
 
@@ -69,7 +69,7 @@ public class AlertService extends FirebaseMessagingService {
                 sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
                 sessionManager.updateNotificationStatus(false);
             }
-            if (!sessionManager.getNotificationStatus())
+            if(!sessionManager.getNotificationStatus())
                 performAlertNotification(remoteMessage.getData());
         }
 //        showNotification(remoteMessage.getData());
@@ -147,6 +147,7 @@ public class AlertService extends FirebaseMessagingService {
 //            notificationManager.notify((int) notificationId, notificationBuilder.build());
 //        }
 //    }
+
     private void performChatNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
@@ -168,7 +169,7 @@ public class AlertService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.logo)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
-                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
 
         if (checkForCruntActivityInStack(ChatBoardActivity.class.getName())
                 || checkForCruntActivityInStack(ComplainList.class.getName())) {
@@ -216,7 +217,7 @@ public class AlertService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_tracking)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
-                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
 
         notificationManager.notify((int) notificationId, notificationBuilder.build());
 
@@ -237,7 +238,7 @@ public class AlertService extends FirebaseMessagingService {
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
-        if (mp != null && mp.isPlaying()) {
+        if(mp != null && mp.isPlaying()){
             mp.stop();
             mp.release();
         }
@@ -256,7 +257,7 @@ public class AlertService extends FirebaseMessagingService {
 //                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
-                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT;
@@ -266,37 +267,21 @@ public class AlertService extends FirebaseMessagingService {
         new UserSessionManager(this).updateNotificationStatus(true);
     }
 
-    private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {
+    private PendingIntent getRespectiveActivityPendingIntent(String notifyType) {
         Intent intent;
         if (new UserSessionManager(getApplicationContext()).getEssentials()
                 .get(UserSessionManager.KEY_USER_ID).equals("0")) {
             intent = new Intent(getApplicationContext(), LogIn.class);
         } else {
-            if (notifyType.equals("track_status")) {
+            if(notifyType.equals("track_status")){
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_TRACKING);
-            } else {
+            }else{
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_DASHBOARD);
-
-                if (notifyType.equals("message")) {
-                    ComplaintItem complaintItem = new ComplaintItem(
-                            "",
-                            data.get("notification_message_text"),
-                            "",
-                            0,
-                            data.get("notification_message_sender_image"),
-                            data.get("notification_message_sender_name"),
-                            Integer.parseInt(data.get("notification_message_sender_id")),
-                            Integer.parseInt(data.get("notification_message_sender_type"))
-                    );
-
-                    intent.putExtra("redirect_to_chat", new Gson().toJson(complaintItem));
-                }
             }
-
 
             Log.e(TAG, "showNotification: is logged in");
         }
@@ -304,7 +289,6 @@ public class AlertService extends FirebaseMessagingService {
         return PendingIntent.getActivity(this,
                 1, intent, PendingIntent.FLAG_ONE_SHOT);
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createAlertNotificationChannel(NotificationManager notificationManager) {
@@ -364,7 +348,6 @@ public class AlertService extends FirebaseMessagingService {
         notificationChannel.enableLights(true);
         notificationManager.createNotificationChannel(notificationChannel);
     }
-
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
