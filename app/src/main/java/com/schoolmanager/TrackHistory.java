@@ -154,36 +154,50 @@ public class TrackHistory extends AppCompatActivity {
                                     ArrayList<TrackingHistoryItem> historyList = new ArrayList<>();
 
                                     JSONObject status1 = data.getJSONObject("status_1");
-                                    boolean active1 = status1.getInt("active")==1;
+                                    boolean active1 = status1.getInt("active")!=0;
                                     String time1 = status1.getString("time");
                                     String t1 = "";
                                     if(!time1.isEmpty()){
                                         t1 = tf.format(sdf.parse(time1));
                                     }
-                                    historyList.add(new TrackingHistoryItem("Driver Picked", "Going to school", t1, active1));
+
                                     JSONObject status2 = data.getJSONObject("status_2");
-                                    boolean active2 = status2.getInt("active")==1;
+                                    boolean active2 = status2.getInt("active")!=0;
+                                    if(active2)
+                                        active1 = false;
                                     String time2 = status2.getString("time");
                                     String t2 = "";
                                     if(!time2.isEmpty()){
                                         t2 = tf.format(sdf.parse(time2));
                                     }
-                                    historyList.add(new TrackingHistoryItem("At School", "Reached", t2, active2));
+
                                     JSONObject status3 = data.getJSONObject("status_3");
-                                    boolean active3 = status3.getInt("active")==1;
+                                    boolean active3 = status3.getInt("active")!=0;
+                                    if(active3){
+                                        active1 = false;
+                                        active2 = false;
+                                    }
                                     String time3 = status3.getString("time");
                                     String t3 = "";
                                     if(!time3.isEmpty()){
                                         t3 = tf.format(sdf.parse(time3));
                                     }
-                                    historyList.add(new TrackingHistoryItem("Leaved School", "Coming to home", t3, active3));
+
                                     JSONObject status4 = data.getJSONObject("status_4");
-                                    boolean active4 = status4.getInt("active")==1;
+                                    boolean active4 = status4.getInt("active")!=0;
+                                    if(active4){
+                                        active1 = false;
+                                        active2 = false;
+                                        active3 = false;
+                                    }
                                     String time4 = status4.getString("time");
                                     String t4 = "";
                                     if(!time4.isEmpty()){
                                         t4 = tf.format(sdf.parse(time4));
                                     }
+                                    historyList.add(new TrackingHistoryItem("Driver Picked", "Going to school", t1, active1));
+                                    historyList.add(new TrackingHistoryItem("At School", "Reached", t2, active2));
+                                    historyList.add(new TrackingHistoryItem("Leaved School", "Coming to home", t3, active3));
                                     historyList.add(new TrackingHistoryItem("Driver Dropped", "Leave the bus", t4, active4));
 //                                    historyList.add(new TrackingHistoryItem("Arrived", "", "01:05 PM", false));
                                     sequenceLayout.setAdapter(new TrackingHistorySequenceAdapter(TrackHistory.this, historyList));

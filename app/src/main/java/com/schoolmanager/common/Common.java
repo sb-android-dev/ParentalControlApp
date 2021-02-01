@@ -17,6 +17,7 @@ public class Common {
     public static final String ACTION_PAUSE_SERVICE = "pause_service";
     public static final String ACTION_STOP_SERVICE = "stop_service";
     public static final String ACTION_OPEN_DASHBOARD = "open_dashboard";
+    public static final String ACTION_OPEN_TRACKING = "open_tracking";
 
     public static final long UPDATE_INTERVAL = 5 * 1000;  /* 5 secs */
     public static final long FASTEST_INTERVAL = 2 * 1000; /* 2 secs */
@@ -32,6 +33,10 @@ public class Common {
     public static final String CHAT_NOTIFICATION_CHANNEL_ID = "chat_channel";
     public static final String CHAT_NOTIFICATION_CHANNEL_NAME = "Messages";
     public static final int CHAT_NOTIFICATION_ID = 3;
+
+    public static final String TRACK_NOTIFICATION_CHANNEL_ID = "track_channel";
+    public static final String TRACK_NOTIFICATION_CHANNEL_NAME = "Track History";
+    public static final int TRACK_NOTIFICATION_ID = 3;
 
     public static final int REQUEST_IMAGE_PICKER = 1002;
 

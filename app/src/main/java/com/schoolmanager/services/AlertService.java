@@ -30,6 +30,7 @@ import com.schoolmanager.Dashboard;
 import com.schoolmanager.LogIn;
 import com.schoolmanager.MyApplication;
 import com.schoolmanager.R;
+import com.schoolmanager.TrackHistory;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.events.EventNewMessageArrives;
 import com.schoolmanager.model.NotificationItem;
@@ -57,6 +58,9 @@ public class AlertService extends FirebaseMessagingService {
 
         if (remoteMessage.getData().get("notification_type").equals("message")){
             performChatNotification(remoteMessage.getData());
+        } else if(remoteMessage.getData().get("notification_type").equals("track_status")) {
+            if(new UserSessionManager(this).getUserType() == 1)
+                performTrackNotification(remoteMessage.getData());
         } else {
 
             UserSessionManager sessionManager = new UserSessionManager(this);
@@ -190,6 +194,35 @@ public class AlertService extends FirebaseMessagingService {
         }
     }
 
+    private void performTrackNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long notificationId = System.currentTimeMillis();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createTrackNotificationChannel(notificationManager);
+        }
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, Common.TRACK_NOTIFICATION_CHANNEL_ID);
+
+        Log.e(TAG, "performTrackNotification: track notification");
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_tracking)
+                .setContentTitle(notifyTitle)
+                .setContentText(notifyBody)
+                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
+
+        notificationManager.notify((int) notificationId, notificationBuilder.build());
+
+    }
+
     private void performAlertNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
@@ -240,9 +273,15 @@ public class AlertService extends FirebaseMessagingService {
                 .get(UserSessionManager.KEY_USER_ID).equals("0")) {
             intent = new Intent(getApplicationContext(), LogIn.class);
         } else {
-            intent = new Intent(getApplicationContext(), Dashboard.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.setAction(Common.ACTION_OPEN_DASHBOARD);
+            if(notifyType.equals("track_status")){
+                intent = new Intent(getApplicationContext(), Dashboard.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setAction(Common.ACTION_OPEN_TRACKING);
+            }else{
+                intent = new Intent(getApplicationContext(), Dashboard.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setAction(Common.ACTION_OPEN_DASHBOARD);
+            }
 
             Log.e(TAG, "showNotification: is logged in");
         }
@@ -282,6 +321,26 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationChannel.setDescription("Chat Notification Channel");
         notificationChannel.setLightColor(Color.GREEN);
+
+        notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createTrackNotificationChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID,
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
 
         notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});

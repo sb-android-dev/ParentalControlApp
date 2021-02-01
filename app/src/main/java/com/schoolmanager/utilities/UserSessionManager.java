@@ -173,6 +173,10 @@ public class UserSessionManager {
         return id;
     }
 
+    public int getUserType(){
+        return pref.getInt(KEY_USER_TYPE, 0);
+    }
+
     public HashMap<String, String> getDriverDetails(){
         HashMap<String, String> driver = new HashMap<>();
         driver.put(KEY_DRIVER_ID, String.valueOf(pref.getInt(KEY_DRIVER_ID, 0)));

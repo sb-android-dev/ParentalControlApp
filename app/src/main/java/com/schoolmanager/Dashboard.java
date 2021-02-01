@@ -89,6 +89,14 @@ public class Dashboard extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
 
+        if(getIntent().getAction() != null){
+            Log.e(TAG, "onCreate: " + getIntent().getAction());
+            if(getIntent().getAction().equals(Common.ACTION_OPEN_TRACKING)) {
+                startActivity(new Intent(Dashboard.this, TrackHistory.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        }
+
         detector = new ConnectionDetector(this);
         sessionManager = new UserSessionManager(this);
         HashMap<String, String> hashMap = sessionManager.getUserDetails();
@@ -140,6 +148,20 @@ public class Dashboard extends AppCompatActivity {
         userName.setText(uName);
 //        String uType = getIntent().getStringExtra("type");
         switch (userType) {
+            case "5":
+                locationCard.setVisibility(View.GONE);
+                complaintCard.setVisibility(View.GONE);
+                complaintLayout.setVisibility(View.GONE);
+                driversLayout.setVisibility(View.GONE);
+                studentsLayout.setVisibility(View.GONE);
+                giveComplaintLayout.setVisibility(View.GONE);
+                locateChildLayout.setVisibility(View.GONE);
+                teachersLayout.setVisibility(View.GONE);
+                trackingLayout.setVisibility(View.GONE);
+                noticeLayout.setVisibility(View.GONE);
+                managementMsgLayout.setVisibility(View.GONE);
+                arrivedLayout.setVisibility(View.GONE);
+                break;
             case "4":
                 locationCard.setVisibility(View.GONE);
                 complaintCard.setVisibility(View.GONE);
@@ -150,10 +172,10 @@ public class Dashboard extends AppCompatActivity {
                 locateChildLayout.setVisibility(View.GONE);
                 teachersLayout.setVisibility(View.GONE);
                 trackingLayout.setVisibility(View.GONE);
-//                noticeLayout.setVisibility(View.GONE);
+                scanLayout.setVisibility(View.GONE);
+                noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-
                 break;
             // For Drivers
             case "3":
@@ -560,6 +582,13 @@ public class Dashboard extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
+        Log.e(TAG, "onCreate: " + intent.getAction());
+        if(intent.getAction().equals(Common.ACTION_OPEN_TRACKING)) {
+            startActivity(new Intent(Dashboard.this, TrackHistory.class));
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        }
+
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             locationSwitch.setChecked(true);
         }
