@@ -27,7 +27,7 @@
 <!--    <color name="secondary_color">#FF4339D4</color>-->
 <!--    <color name="secondary_dark_color">#FF000EA1</color>-->
 <!--    <color name="secondary_light_color">#FF7F65FF</color>-->
-
+    <color name="primary_color">#FF4F37B3</color>
     <color name="primary_color_day">#FF4F37B3</color>
     <color name="primary_dark_color">#FF3F2C8F</color>
     <color name="primary_light_color">#FF8463E6</color>

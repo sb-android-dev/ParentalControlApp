@@ -14,6 +14,7 @@ public class NotificationItem {
     private int notification_message_type = 0;
     private int notification_message_sender_id = 0;
     private int notification_message_receiver_id = 0;
+    private int notification_message_id = 0;
 
     public String getNotification_body() {
         return notification_body;
@@ -109,5 +110,13 @@ public class NotificationItem {
 
     public void setNotification_message_receiver_id(int notification_message_receiver_id) {
         this.notification_message_receiver_id = notification_message_receiver_id;
+    }
+
+    public int getNotification_message_id() {
+        return notification_message_id;
+    }
+
+    public void setNotification_message_id(int notification_message_id) {
+        this.notification_message_id = notification_message_id;
     }
 }

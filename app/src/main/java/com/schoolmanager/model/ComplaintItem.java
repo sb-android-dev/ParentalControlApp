@@ -29,6 +29,12 @@ public class ComplaintItem {
     @Expose
     @SerializedName("chat_receiver_type")
     private int chat_receiver_type;
+    @Expose
+    @SerializedName("chat_unread_count")
+    private int chat_unread_count;
+    @Expose
+    @SerializedName("chat_receiver_last_seen")
+    private int chat_receiver_last_seen;
 
     public ComplaintItem() {
     }
@@ -43,7 +49,6 @@ public class ComplaintItem {
         this.chat_receiver_id = chat_receiver_id;
         this.chat_receiver_type = chat_receiver_type;
     }
-
 
     public String getChat_last_message_time() {
         return chat_last_message_time;
@@ -107,5 +112,21 @@ public class ComplaintItem {
 
     public void setChat_receiver_type(int chat_receiver_type) {
         this.chat_receiver_type = chat_receiver_type;
+    }
+
+    public int getChat_unread_count() {
+        return chat_unread_count;
+    }
+
+    public void setChat_unread_count(int chat_unread_count) {
+        this.chat_unread_count = chat_unread_count;
+    }
+
+    public int getChat_receiver_last_seen() {
+        return chat_receiver_last_seen;
+    }
+
+    public void setChat_receiver_last_seen(int chat_receiver_last_seen) {
+        this.chat_receiver_last_seen = chat_receiver_last_seen;
     }
 }

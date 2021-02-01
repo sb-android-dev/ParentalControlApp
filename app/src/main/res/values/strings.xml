@@ -19,6 +19,10 @@
     <string name="nothing_found_teacher">No Teacher Found</string>
     <string name="nothing_found_notice">No Notice Found</string>
 
+    <string name="delete">Delete</string>
+    <string name="last_seen">Last seen on</string>
+    <string name="likhita_school">Likitha school</string>
+
     <string name="clear_date">Clear Date</string>
     <string name="type_a_message">Type a message</string>
     <string name="slide_to_cancel">Slide To Cancel&#8230;</string>
@@ -75,4 +79,5 @@
     <string name="scan_qr_code_of_children">Scan student card here</string>
     <string name="no_tracking_history">No Tracking History</string>
     <string name="scanner">Scanner</string>
+
 </resources>

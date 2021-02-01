@@ -1,7 +1,9 @@
 package com.schoolmanager;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +13,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -56,9 +60,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 
 public class ChatBoardActivity extends AppCompatActivity {
@@ -137,7 +143,6 @@ public class ChatBoardActivity extends AppCompatActivity {
         });
 
         binding.txtChatBoardUserName.setText(mComplaintModal.getChat_receiver_name());
-        binding.txtChatBoardStudentName.setText("Student name");
 
         Glide.with(this)
                 .load(mComplaintModal.getChat_receiver_image())
@@ -176,17 +181,44 @@ public class ChatBoardActivity extends AppCompatActivity {
         binding.resViewChatBoard.setLayoutManager(mLayoutManager);
         binding.resViewChatBoard.setAdapter(chatMessageAdapter);
 
+        if (mComplaintModal.getChat_receiver_last_seen() != 0) {
+            binding.txtChatBoardLastSeen.setText(
+                    String.format("%s %s",
+                            getString(R.string.last_seen),
+                            getLastSeenTime(mComplaintModal.getChat_receiver_last_seen())
+                    ));
+        } else {
+            binding.txtChatBoardLastSeen.setText("");
+        }
+
         setAudioRecordngButton();
 
         //Fetch message data
         apiCallFetchMessages(current_page);
     }
 
+    private String getLastSeenTime(int time) {
+
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy hh:mm a");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        long time_sec = (long) time;
+        long time_mili_sec = time_sec * 1000;
+        calendar.setTimeInMillis(time_mili_sec);
+        String str_fromated_time = formatter.format(calendar.getTime());
+        Log.e("TIME ", time + "");
+        Log.e("TIME", str_fromated_time);
+        return str_fromated_time;
+    }
+
     private void apiCallFetchMessages(int pageNumber) {
 
         if (!detector.isConnectingToInternet()) {
 
-            Snackbar.make(binding.resViewChatBoard, getString(R.string.you_are_not_connected),
+            Snackbar.make(binding.resViewChatBoard, "Looks like you're not connected with internet!",
                     Snackbar.LENGTH_LONG).show();
             isNextPageCalled = false;
 
@@ -195,6 +227,16 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         binding.pBarChatBoard.setVisibility(View.VISIBLE);
         isNextPageCalled = true;
+
+        Log.e("user_id", userId);
+        Log.e("user_token", userToken);
+        Log.e("user_type", userType);
+        Log.e("user_app_code", Common.APP_CODE);
+        Log.e("receiver_id", String.valueOf(mComplaintModal.getChat_receiver_id()));
+        Log.e("receiver_type", String.valueOf(mComplaintModal.getChat_receiver_type()));
+        Log.e("device_id", deviceId);
+        Log.e("device_type", "1");
+        Log.e("page_no", String.valueOf(pageNumber));
 
         AndroidNetworking.post(Common.BASE_URL + "app-all-messages")
                 .addBodyParameter("user_id", userId)
@@ -276,7 +318,7 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         if (!detector.isConnectingToInternet()) {
 
-            Snackbar.make(binding.resViewChatBoard, getString(R.string.you_are_not_connected),
+            Snackbar.make(binding.resViewChatBoard, "Looks like you're not connected with internet!",
                     Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -321,8 +363,13 @@ public class ChatBoardActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            Log.e("CHAT_RESPONSE", response.toString());
+                            binding.edChatboardMessage.setText("");
+                            try {
 
+                            } catch (Exception e) {
 
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -330,13 +377,13 @@ public class ChatBoardActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, anError.getMessage());
+                        Log.e(TAG, anError.getErrorBody());
                     }
                 });
     }
 
     private void pushLocalTextMessage(String message, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis()/1000;
+        long currentTime = System.currentTimeMillis() / 1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -347,14 +394,15 @@ public class ChatBoardActivity extends AppCompatActivity {
                 current_usr_id,
                 String.valueOf(mComplaintModal.getChat_receiver_id()),
                 sender_type,
-                receiver_type);
+                receiver_type,
+                0);
 
         chatMessageAdapter.addMessageToList(messageModal);
         scrollToBottomResView();
     }
 
     private void pushLocalImageMessage(String file_url, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis()/1000;
+        long currentTime = System.currentTimeMillis() / 1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -365,14 +413,15 @@ public class ChatBoardActivity extends AppCompatActivity {
                 current_usr_id,
                 String.valueOf(mComplaintModal.getChat_receiver_id()),
                 sender_type,
-                receiver_type);
+                receiver_type,
+                0);
 
         chatMessageAdapter.addMessageToList(messageModal);
         scrollToBottomResView();
     }
 
     private void pushLocalAudioMessage(String file_url, String sender_type, String receiver_type) {
-        long currentTime = System.currentTimeMillis()/1000;
+        long currentTime = System.currentTimeMillis() / 1000;
 
         ChatMessageModal messageModal = new ChatMessageModal(
                 "0",
@@ -383,7 +432,8 @@ public class ChatBoardActivity extends AppCompatActivity {
                 current_usr_id,
                 String.valueOf(mComplaintModal.getChat_receiver_id()),
                 sender_type,
-                receiver_type);
+                receiver_type,
+                0);
 
         chatMessageAdapter.addMessageToList(messageModal);
         scrollToBottomResView();
@@ -476,7 +526,7 @@ public class ChatBoardActivity extends AppCompatActivity {
                     public void run() {
                         binding.cardChatBoardMessage.setVisibility(View.VISIBLE);
                     }
-                },1000);
+                }, 1000);
 
 
                 if (mediaRecorder != null) {
@@ -511,8 +561,8 @@ public class ChatBoardActivity extends AppCompatActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("RECORDTIME==>",recordTime+"");
-                                if(recordTime >= 2000){
+                                Log.e("RECORDTIME==>", recordTime + "");
+                                if (recordTime >= 2000) {
                                     apiCallSendMessage(3, "", mAudioFile);
                                 }
                             }
@@ -627,7 +677,7 @@ public class ChatBoardActivity extends AppCompatActivity {
                     == mComplaintModal.getChat_receiver_id()) {
 
                 ChatMessageModal chatMessageModal = new ChatMessageModal(
-                        "",
+                        String.valueOf(notificationItem.getNotification_message_id()),
                         notificationItem.getNotification_message_time(),
                         notificationItem.getNotification_message_text(),
                         notificationItem.getNotification_message_type(),
@@ -635,7 +685,8 @@ public class ChatBoardActivity extends AppCompatActivity {
                         String.valueOf(notificationItem.getNotification_message_sender_id()),
                         String.valueOf(notificationItem.getNotification_message_receiver_id()),
                         String.valueOf(notificationItem.getNotification_message_sender_type()),
-                        String.valueOf(notificationItem.getNotification_message_receiver_type())
+                        String.valueOf(notificationItem.getNotification_message_receiver_type()),
+                        0
                 );
 
                 switch (chatMessageModal.getMessage_type()) {
@@ -657,9 +708,36 @@ public class ChatBoardActivity extends AppCompatActivity {
                                 chatMessageModal.getMessage_receiver_type());
                         break;
                 }
+
+                apiCallReadMessage(notificationItem.getNotification_message_id());
             }
         }
     }
 
+    private void apiCallReadMessage(int message_id) {
+        AndroidNetworking.upload(Common.BASE_URL + "app-read-message")
+                .addMultipartParameter("user_id", userId)
+                .addMultipartParameter("user_token", userToken)
+                .addMultipartParameter("user_type", userType)
+                .addMultipartParameter("message_id", String.valueOf(message_id))
+                .addMultipartParameter("sender_id", String.valueOf(mComplaintModal.getChat_receiver_id()))
+                .addMultipartParameter("sender_type", String.valueOf(mComplaintModal.getChat_receiver_type()))
+                .addMultipartParameter("user_app_code", Common.APP_CODE)
+                .addMultipartParameter("device_id", deviceId)
+                .addMultipartParameter("device_type", "1")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("MESSGAE_READ", response.toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+    }
 
 }
