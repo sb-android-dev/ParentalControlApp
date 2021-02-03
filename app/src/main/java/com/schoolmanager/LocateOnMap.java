@@ -21,6 +21,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -34,7 +36,9 @@ import androidx.fragment.app.DialogFragment;
 import com.akexorcist.googledirection.DirectionCallback;
 import com.akexorcist.googledirection.GoogleDirection;
 import com.akexorcist.googledirection.constant.TransportMode;
+import com.akexorcist.googledirection.constant.Unit;
 import com.akexorcist.googledirection.model.Direction;
+import com.akexorcist.googledirection.model.Leg;
 import com.akexorcist.googledirection.model.Route;
 import com.akexorcist.googledirection.util.DirectionConverter;
 import com.androidnetworking.AndroidNetworking;
@@ -59,6 +63,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
@@ -68,7 +73,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
-import com.schoolmanager.utilities.FetchURL;
 import com.schoolmanager.utilities.TaskLoadedCallback;
 import com.schoolmanager.utilities.UserSessionManager;
 
@@ -102,7 +106,11 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private MarkerOptions myLocationOption, driverLocationOption;
     private Marker myLocation, driverLocation;
+    private Polyline polyline;
     private UiSettings uiSettings;
+
+    private TextView driverName, distanceToParent;
+    private ImageView call;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -146,7 +154,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private LatLng currentLatLng, driverLatLng;
-    private String driverName;
+    private String dName, dPhone;
     private int driverId;
 
     // Keys for storing activity state.
@@ -184,7 +192,8 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
 
         if (getIntent() != null) {
 //            driverLatLng = getIntent().getParcelableExtra("location");
-            driverName = getIntent().getStringExtra("driver_name");
+            dName = getIntent().getStringExtra("driver_name");
+            dPhone = getIntent().getStringExtra("driver_phone");
             driverId = getIntent().getIntExtra("driver_id", 0);
         }
 
@@ -194,10 +203,21 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        driverName = findViewById(R.id.tvDriverName);
+        distanceToParent = findViewById(R.id.tvDistance);
+        call = findViewById(R.id.ivCall);
+
+        driverName.setText(dName);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //Call button
+        call.setOnClickListener(v -> {
+
+        });
     }
 
     /**
@@ -214,7 +234,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
 //        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         uiSettings = mMap.getUiSettings();
-        uiSettings.setZoomControlsEnabled(true);
+//        uiSettings.setZoomControlsEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);
         uiSettings.setCompassEnabled(true);
         if (mMap != null) {
@@ -372,7 +392,8 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
 
     private void locateLiveDriver() {
         handler = new Handler();
-        handler.postDelayed(runnable, 10000);
+        handler.post(runnable);
+//        handler.postDelayed(runnable, 10000);
     }
 
     private void locateDriver() {
@@ -396,60 +417,32 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                             String message = response.getString("message");
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
-                                if(data.getString("lat")!=null
+                                if (data.getString("lat") != null
                                         && !data.getString("lat").isEmpty()
-                                        && data.getString("long")!=null
+                                        && data.getString("long") != null
                                         && !data.getString("long").isEmpty()) {
                                     driverLatLng = new LatLng(Double.parseDouble(data.getString("lat")),
                                             Double.parseDouble(data.getString("long")));
-                                    if(driverLocation == null){
+                                    if (driverLocation == null) {
                                         driverLocationOption = new MarkerOptions()
-                                                .position(driverLatLng).title(driverName)
+                                                .position(driverLatLng).title(dName)
                                                 .icon(bitmapDescriptorFromVector(LocateOnMap.this, R.drawable.ic_driver_pin));
                                         driverLocation = mMap.addMarker(driverLocationOption);
-                                    }else {
+                                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
+                                        mMap.animateCamera(cameraUpdate);
+                                    } else {
                                         driverLocation.setPosition(driverLatLng);
                                     }
-                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(driverLatLng, 17);
-                                    mMap.animateCamera(cameraUpdate);
 
-//                                    if(TrackingService.isTracking){
+
+//                                    if(TrackingService.isTracking && currentLatLng != null && driverLatLng != null){
 //                                        new FetchURL(LocateOnMap.this)
 //                                                .execute(getUrl(driverLatLng, currentLatLng, "driving"), "driving");
 //                                    }
 
-                                    GoogleDirection.withServerKey(getString(R.string.google_maps_key))
-                                            .from(driverLatLng)
-                                            .to(currentLatLng)
-                                            .transportMode(TransportMode.DRIVING)
-                                            .execute(new DirectionCallback() {
-                                                @Override
-                                                public void onDirectionSuccess(@Nullable Direction direction) {
-                                                    if(direction.isOK()){
-                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
-                                                        Route route = direction.getRouteList().get(0);
-                                                        ArrayList<LatLng> directionPositionList = route.getLegList().get(0).getDirectionPoint();
-                                                        mMap.addPolyline(
-                                                                DirectionConverter.createPolyline(
-                                                                        LocateOnMap.this,
-                                                                        directionPositionList,
-                                                                        5,
-                                                                        Color.RED
-                                                                )
-                                                        );
-                                                        setCameraWithCoordinationBounds(route);
-                                                    } else {
-                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
-                                                        Log.e(TAG, "onDirectionSuccess: " + direction.getErrorMessage());
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onDirectionFailure(@NonNull Throwable t) {
-                                                    Log.e(TAG, "onDirectionFailure: " + t.getLocalizedMessage());
-                                                    Log.e(TAG, "onDirectionFailure: " + t.getCause());
-                                                }
-                                            });
+                                    if (TrackingService.isTracking && currentLatLng != null && driverLatLng != null) {
+                                        drawRoutes();
+                                    }
                                 }
                             } else if (success == 2) {
                                 onLogOut();
@@ -465,6 +458,51 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                     public void onError(ANError anError) {
                         Log.e(TAG, "onError: " + anError.getErrorDetail());
                         Log.e(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
+    }
+
+    private void drawRoutes() {
+        GoogleDirection.withServerKey(getString(R.string.google_maps_key))
+                .from(driverLatLng)
+                .to(currentLatLng)
+                .transportMode(TransportMode.DRIVING)
+                .unit(Unit.METRIC)
+                .execute(new DirectionCallback() {
+                    @Override
+                    public void onDirectionSuccess(@Nullable Direction direction) {
+                        if (direction.isOK()) {
+                            Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
+                            Log.e(TAG, "onDirectionSuccess: " + direction.getRouteList().size());
+                            Route route = direction.getRouteList().get(0);
+                            Log.e(TAG, "onDirectionSuccess: summary -> " + route.getSummary());
+                            Leg leg = route.getLegList().get(0);
+                            Log.e(TAG, "onDirectionSuccess: distance -> " + leg.getDistance().getText());
+                            ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
+
+                            if(polyline != null)
+                                polyline.remove();
+
+                            polyline = mMap.addPolyline(
+                                            DirectionConverter.createPolyline(
+                                                    LocateOnMap.this,
+                                                    directionPositionList,
+                                                    3,
+                                                    Color.BLUE
+                                            )
+                                        );
+                            distanceToParent.setText(leg.getDistance().getText());
+                            setCameraWithCoordinationBounds(route);
+                        } else {
+                            Log.e(TAG, "onDirectionSuccess: " + direction.getStatus());
+                            Log.e(TAG, "onDirectionSuccess: " + direction.getErrorMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onDirectionFailure(@NonNull Throwable t) {
+                        Log.e(TAG, "onDirectionFailure: " + t.getLocalizedMessage());
+                        Log.e(TAG, "onDirectionFailure: " + t.getCause());
                     }
                 });
     }
@@ -539,11 +577,11 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
-        } else if(item.getItemId() == R.id.menu_default) {
+        } else if (item.getItemId() == R.id.menu_default) {
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             item.setChecked(true);
             return true;
-        } else if(item.getItemId() == R.id.menu_satellite) {
+        } else if (item.getItemId() == R.id.menu_satellite) {
             mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
             item.setChecked(true);
             return true;
