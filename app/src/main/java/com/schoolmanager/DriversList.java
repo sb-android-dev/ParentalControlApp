@@ -98,6 +98,7 @@ public class DriversList extends AppCompatActivity {
                 Intent nextIntent = new Intent(DriversList.this, LocateOnMap.class);
                 nextIntent.putExtra("location", driverItem.getDriverLocation());
                 nextIntent.putExtra("driver_name", driverItem.getDriverName());
+                nextIntent.putExtra("driver_phone", driverItem.getPhoneNo());
                 nextIntent.putExtra("driver_id", driverItem.getDriverId());
                 startActivity(nextIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
