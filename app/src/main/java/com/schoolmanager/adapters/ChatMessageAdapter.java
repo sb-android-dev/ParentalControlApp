@@ -28,6 +28,7 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.utils.Utils;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.schoolmanager.R;
 import com.schoolmanager.ZoomImage;
 import com.schoolmanager.common.Common;
@@ -42,6 +43,7 @@ import com.schoolmanager.model.ChatMessageModal;
 import com.schoolmanager.utilities.UserSessionManager;
 import com.schoolmanager.view.MessageFileDownloadProgressbar;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.JSONObject;
 
@@ -67,9 +69,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<ChatMessageModal> mList;
 
     private String user_id = "", userType = ""; //get it from preferance
+    private int chat_read_permission = 0;
 
 
-    public ChatMessageAdapter(Activity activity, ArrayList<ChatMessageModal> mList) {
+    public ChatMessageAdapter(Activity activity, ArrayList<ChatMessageModal> mList, int chat_read_permission) {
         this.activity = activity;
         this.mList = mList;
 
@@ -77,6 +80,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         HashMap<String, String> hashMap = sessionManager.getEssentials();
         user_id = hashMap.get(UserSessionManager.KEY_USER_ID);
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        this.chat_read_permission = chat_read_permission;
     }
 
     @NonNull
@@ -315,10 +319,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return str_fromated_time;
     }
 
-    public static Date dateToUTC(Date date) {
-        return new Date(date.getTime() - Calendar.getInstance().getTimeZone().getOffset(date.getTime()));
-    }
-
     public void addData(boolean clear, ArrayList<ChatMessageModal> mList) {
         if (clear) {
             this.mList.clear();
@@ -336,10 +336,54 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     }
 
+    public void replaceMyLastMessage(ChatMessageModal modal) {
+        try {
+            ChatMessageModal lastMessageModal = mList.get(mList.size() - 1);
+            if (lastMessageModal != null) {
+                if (StringUtils.isNotEmpty(lastMessageModal.getMessage_id())) {
+                    mList.set(mList.size() - 1, modal);
+                }
+            }
+            notifyItemChanged(mList.size() - 1);
+            Log.e("MESSAGE_REPLACED", new Gson().toJson(mList.get(mList.size() - 1)));
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+    }
+
     public void addMessageToList(ChatMessageModal mModal) {
         this.mList.add(mModal);
         int itemsInList = this.mList.size();
         notifyItemRangeChanged(itemsInList, 1);
+    }
+
+    public void readMessage(String messageId) {
+        int index = 0;
+        for (ChatMessageModal chatMessageModal : mList) {
+            if (chatMessageModal.getMessage_id().equals(messageId)) {
+                chatMessageModal.setMessage_is_read(1);
+                notifyItemChanged(index);
+                break;
+            }
+            index += 1;
+        }
+    }
+
+    public void deleteThisMessage(String message_id) {
+        int index = 0;
+        int index_of_delete_mesage = 0;
+
+        for (ChatMessageModal modal : mList) {
+            if (modal.getMessage_id().equals(message_id)) {
+                index_of_delete_mesage = index;
+                break;
+            }
+            index = index + 1;
+        }
+
+        mList.remove(index_of_delete_mesage);
+        notifyItemRemoved(index_of_delete_mesage);
     }
 
     public void clear() {
@@ -414,6 +458,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void showSingleAndDoubleTik(ChatMessageModal modal, ImageView tikImageView) {
+        if (chat_read_permission == 1) {
+            tikImageView.setVisibility(View.VISIBLE);
+        } else {
+            tikImageView.setVisibility(View.INVISIBLE);
+        }
         if (modal.getMessage_is_read() == 0) {
             tikImageView.setImageResource(R.drawable.single_tick);
         } else {
@@ -492,7 +541,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (ts2 == 0) {
             cardView.setVisibility(View.VISIBLE);
-            timeText.setText(formateDate(ts1*1000));
+            timeText.setText(formateDate(ts1 * 1000));
         } else {
             Calendar cal1 = Calendar.getInstance();
             Calendar cal2 = Calendar.getInstance();
@@ -507,7 +556,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 timeText.setText("");
             } else {
                 timeText.setVisibility(View.VISIBLE);
-                timeText.setText(formateDate(ts2*1000));
+                timeText.setText(formateDate(ts2 * 1000));
             }
 
         }

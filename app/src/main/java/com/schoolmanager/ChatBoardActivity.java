@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.util.Calendar;
+import android.icu.util.TimeUnit;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,7 +45,9 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.adapters.ChatMessageAdapter;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.databinding.ActivityChatBoardBinding;
+import com.schoolmanager.events.EventDeleteMessage;
 import com.schoolmanager.events.EventNewMessageArrives;
+import com.schoolmanager.events.EventReadMessage;
 import com.schoolmanager.model.ChatMessageModal;
 import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.model.NotificationItem;
@@ -62,6 +65,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
@@ -149,7 +153,7 @@ public class ChatBoardActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_person)
                 .into(binding.imgChatBoardUser);
 
-        chatMessageAdapter = new ChatMessageAdapter(this, new ArrayList<>());
+        chatMessageAdapter = new ChatMessageAdapter(this, new ArrayList<>(),mComplaintModal.getChat_read_permission());
         mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setStackFromEnd(true);
 
@@ -195,6 +199,12 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         //Fetch message data
         apiCallFetchMessages(current_page);
+
+        if (mComplaintModal.getChat_last_seen_permission() == 1) {
+            binding.txtChatBoardLastSeen.setVisibility(View.VISIBLE);
+        } else {
+            binding.txtChatBoardLastSeen.setVisibility(View.GONE);
+        }
     }
 
     private String getLastSeenTime(int time) {
@@ -325,13 +335,13 @@ public class ChatBoardActivity extends AppCompatActivity {
 
         switch (m_message_type) {
             case 1:
-                pushLocalTextMessage(message, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
+                pushLocalTextMessage("0", message, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 2:
-                pushLocalImageMessage(file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
+                pushLocalImageMessage("0", file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 3:
-                pushLocalAudioMessage(file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
+                pushLocalAudioMessage("0", file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
         }
 
@@ -366,7 +376,15 @@ public class ChatBoardActivity extends AppCompatActivity {
                             Log.e("CHAT_RESPONSE", response.toString());
                             binding.edChatboardMessage.setText("");
                             try {
+                                int success = response.getInt("success");
+                                String message = response.getString("message");
 
+                                if (success == 1) {
+                                    JSONObject data = response.getJSONObject("data");
+
+                                    ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
+                                    chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
+                                }
                             } catch (Exception e) {
 
                             }
@@ -382,11 +400,13 @@ public class ChatBoardActivity extends AppCompatActivity {
                 });
     }
 
-    private void pushLocalTextMessage(String message, String sender_type, String receiver_type) {
+    private void pushLocalTextMessage(String message_id, String message, String sender_type, String receiver_type) {
+
         long currentTime = System.currentTimeMillis() / 1000;
+        currentTime = currentTime + 19800;
 
         ChatMessageModal messageModal = new ChatMessageModal(
-                "0",
+                message_id,
                 String.valueOf(currentTime),
                 message,
                 1,
@@ -401,11 +421,11 @@ public class ChatBoardActivity extends AppCompatActivity {
         scrollToBottomResView();
     }
 
-    private void pushLocalImageMessage(String file_url, String sender_type, String receiver_type) {
+    private void pushLocalImageMessage(String message_id, String file_url, String sender_type, String receiver_type) {
         long currentTime = System.currentTimeMillis() / 1000;
-
+        currentTime = currentTime + 19800;
         ChatMessageModal messageModal = new ChatMessageModal(
-                "0",
+                message_id,
                 String.valueOf(currentTime),
                 "",
                 2,
@@ -420,11 +440,12 @@ public class ChatBoardActivity extends AppCompatActivity {
         scrollToBottomResView();
     }
 
-    private void pushLocalAudioMessage(String file_url, String sender_type, String receiver_type) {
+    private void pushLocalAudioMessage(String message_id, String file_url, String sender_type, String receiver_type) {
         long currentTime = System.currentTimeMillis() / 1000;
+        currentTime = currentTime + 19800;
 
         ChatMessageModal messageModal = new ChatMessageModal(
-                "0",
+                message_id,
                 String.valueOf(currentTime),
                 "",
                 3,
@@ -692,17 +713,20 @@ public class ChatBoardActivity extends AppCompatActivity {
                 switch (chatMessageModal.getMessage_type()) {
                     case 1:
                         pushLocalTextMessage(
+                                chatMessageModal.getMessage_id(),
                                 chatMessageModal.getMessage_text(),
                                 chatMessageModal.getMessage_sender_type(),
                                 chatMessageModal.getMessage_receiver_type());
                         break;
                     case 2:
                         pushLocalImageMessage(
+                                chatMessageModal.getMessage_id(),
                                 chatMessageModal.getMessage_file_url(),
                                 chatMessageModal.getMessage_sender_type(),
                                 chatMessageModal.getMessage_receiver_type());
                     case 3:
                         pushLocalAudioMessage(
+                                chatMessageModal.getMessage_id(),
                                 chatMessageModal.getMessage_file_url(),
                                 chatMessageModal.getMessage_sender_type(),
                                 chatMessageModal.getMessage_receiver_type());
@@ -712,6 +736,16 @@ public class ChatBoardActivity extends AppCompatActivity {
                 apiCallReadMessage(notificationItem.getNotification_message_id());
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageRead(EventReadMessage readMessage) {
+        chatMessageAdapter.readMessage(readMessage.getMessage_id());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageDelete(EventDeleteMessage deleteMesage) {
+        chatMessageAdapter.deleteThisMessage(deleteMesage.getMessgae_id());
     }
 
     private void apiCallReadMessage(int message_id) {

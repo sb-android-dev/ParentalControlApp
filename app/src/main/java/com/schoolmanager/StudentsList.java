@@ -88,7 +88,7 @@ public class StudentsList extends AppCompatActivity {
         noDataLayout = findViewById(R.id.llNoData);
         loadingProgress = findViewById(R.id.progressLoading);
 
-        if(getIntent() != null) {
+        if (getIntent() != null) {
             classId = getIntent().getIntExtra("class_id", 0);
             sectionId = getIntent().getIntExtra("section_id", 0);
         }
@@ -113,6 +113,8 @@ public class StudentsList extends AppCompatActivity {
                     studentItem.getParentImage(),
                     studentItem.getParentName(),
                     studentItem.getParentId(),
+                    1,
+                    1,
                     1
             );
             intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
@@ -181,8 +183,8 @@ public class StudentsList extends AppCompatActivity {
                     .addBodyParameter("device_type", "1")
                     .addBodyParameter("search_text", search)
                     .addBodyParameter("page_no", String.valueOf(pageNumber))
-                    .addBodyParameter("section_id", String.valueOf(sectionId))
-                    .addBodyParameter("class_id", String.valueOf(classId))
+                    .addBodyParameter("section_id", String.valueOf(sectionId).equals("0") ? "" : String.valueOf(sectionId))
+                    .addBodyParameter("class_id", String.valueOf(classId).equals("0") ? "" : String.valueOf(classId))
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override

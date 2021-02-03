@@ -35,11 +35,19 @@ public class ComplaintItem {
     @Expose
     @SerializedName("chat_receiver_last_seen")
     private int chat_receiver_last_seen;
+    @Expose
+    @SerializedName("chat_read_permission")
+    private int chat_read_permission;
+    @Expose
+    @SerializedName("chat_last_seen_permission")
+    private int chat_last_seen_permission;
 
     public ComplaintItem() {
     }
 
-    public ComplaintItem(String chat_last_message_time, String chat_last_message, String chat_code, int chat_id, String chat_receiver_image, String chat_receiver_name, int chat_receiver_id, int chat_receiver_type) {
+    public ComplaintItem(String chat_last_message_time, String chat_last_message, String chat_code, int chat_id, String chat_receiver_image, String chat_receiver_name, int chat_receiver_id, int chat_receiver_type,
+                         int chat_read_permission,
+                         int chat_last_seen_permission) {
         this.chat_last_message_time = chat_last_message_time;
         this.chat_last_message = chat_last_message;
         this.chat_code = chat_code;
@@ -48,6 +56,8 @@ public class ComplaintItem {
         this.chat_receiver_name = chat_receiver_name;
         this.chat_receiver_id = chat_receiver_id;
         this.chat_receiver_type = chat_receiver_type;
+        this.chat_read_permission = chat_read_permission;
+        this.chat_last_seen_permission = chat_last_seen_permission;
     }
 
     public String getChat_last_message_time() {
@@ -128,5 +138,21 @@ public class ComplaintItem {
 
     public void setChat_receiver_last_seen(int chat_receiver_last_seen) {
         this.chat_receiver_last_seen = chat_receiver_last_seen;
+    }
+
+    public int getChat_read_permission() {
+        return chat_read_permission;
+    }
+
+    public void setChat_read_permission(int chat_read_permission) {
+        this.chat_read_permission = chat_read_permission;
+    }
+
+    public int getChat_last_seen_permission() {
+        return chat_last_seen_permission;
+    }
+
+    public void setChat_last_seen_permission(int chat_last_seen_permission) {
+        this.chat_last_seen_permission = chat_last_seen_permission;
     }
 }

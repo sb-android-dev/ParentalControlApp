@@ -106,7 +106,9 @@ public class TeachersList extends AppCompatActivity {
                     "",
                     teacherItem.getTeacherName(),
                     teacherItem.getTeacherId(),
-                    2
+                    2,
+                    1,
+                    1
             );
             intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
             startActivity(intent);

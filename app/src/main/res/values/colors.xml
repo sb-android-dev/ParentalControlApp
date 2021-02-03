@@ -60,4 +60,8 @@
     <attr name="dashboard_icon_color" format="color" />
     <attr name="noticeboard_bg_color" format="color" />
 
+    <!-- Call Activity Agora -->
+    <color name="localBackground">#827b92</color>
+    <color name="remoteBackground">#484258</color>
+
 </resources>

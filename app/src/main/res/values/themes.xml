@@ -16,7 +16,7 @@
         <item name="android:navigationBarColor">?colorSurface</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
 
-<!--        <item name="fontFamily">@font/montserrat</item>-->
+        <!--        <item name="fontFamily">@font/montserrat</item>-->
         <item name="titleTextColor">@color/white</item>
 
         <item name="searchViewStyle">@style/SearchViewStyle</item>
@@ -43,8 +43,8 @@
     </style>
 
     <style name="Theme.SchoolManager.LogIn" parent="Theme.SchoolManager.NoActionBar">
-<!--        <item name="android:windowBackground">@drawable/ic_log_in_bg</item>-->
-<!--        <item name="android:navigationBarColor">#</item>-->
+        <!--        <item name="android:windowBackground">@drawable/ic_log_in_bg</item>-->
+        <!--        <item name="android:navigationBarColor">#</item>-->
         <item name="android:statusBarColor" tools:targetApi="l">#EE4F37B3</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
     </style>
@@ -106,6 +106,14 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textColorPrimary">?attr/pure_txt_color</item>
         <item name="android:colorControlNormal">?attr/colorPrimary</item>
+    </style>
+
+    <!-- Agora -->
+    <style name="FullScreenVideoTheme" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
 </resources>
