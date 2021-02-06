@@ -45,9 +45,18 @@ public class ComplaintItem {
     public ComplaintItem() {
     }
 
-    public ComplaintItem(String chat_last_message_time, String chat_last_message, String chat_code, int chat_id, String chat_receiver_image, String chat_receiver_name, int chat_receiver_id, int chat_receiver_type,
-                         int chat_read_permission,
-                         int chat_last_seen_permission) {
+    public ComplaintItem(
+            String chat_last_message_time,
+            String chat_last_message,
+            String chat_code,
+            int chat_id,
+            String chat_receiver_image,
+            String chat_receiver_name,
+            int chat_receiver_id,
+            int chat_receiver_type,
+            int chat_read_permission,
+            int chat_last_seen_permission,
+            int chat_receiver_last_seen) {
         this.chat_last_message_time = chat_last_message_time;
         this.chat_last_message = chat_last_message;
         this.chat_code = chat_code;
@@ -58,6 +67,7 @@ public class ComplaintItem {
         this.chat_receiver_type = chat_receiver_type;
         this.chat_read_permission = chat_read_permission;
         this.chat_last_seen_permission = chat_last_seen_permission;
+        this.chat_receiver_last_seen = chat_receiver_last_seen;
     }
 
     public String getChat_last_message_time() {

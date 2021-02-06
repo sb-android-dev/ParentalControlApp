@@ -11,33 +11,6 @@
     android:focusable="true"
     android:padding="15dp">
 
-    <TextView
-        android:id="@+id/tvTeacher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Bharat Sir"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:textColor="?attr/pure_txt_color"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/tvSubjectName"
-        app:layout_constraintEnd_toStartOf="@id/ivTeacherImage"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvSubjectName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-        android:textColor="?attr/caption_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivTeacherImage"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTeacher" />
-
     <ImageView
         android:id="@+id/ivTeacherImage"
         android:layout_width="50dp"
@@ -45,6 +18,49 @@
         android:src="@drawable/ic_person"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvTeacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+        android:textColor="?attr/pure_txt_color"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ivTeacherImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/ivTeacherImage"
+        app:layout_constraintTop_toTopOf="@+id/ivTeacherImage"
+        app:layout_constraintVertical_bias="0.26"
+        tools:text="Saurabh Patel" />
+
+    <TextView
+        android:id="@+id/tvSubjectName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        android:textColor="?attr/caption_color"
+        app:layout_constraintBottom_toBottomOf="@+id/ivTeacherImage"
+        app:layout_constraintEnd_toEndOf="@+id/tvTeacher"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tvTeacher"
+        app:layout_constraintTop_toBottomOf="@+id/tvTeacher"
+        tools:text="1st / B" />
+
+    <ImageView
+        android:id="@+id/callTeacher"
+        android:scaleType="centerInside"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
+        android:src="@drawable/ic_call"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/ivTeacherImage"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

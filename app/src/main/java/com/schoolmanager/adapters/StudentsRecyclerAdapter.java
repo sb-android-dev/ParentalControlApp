@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
     public interface OnItemClickListener{
         void onClick(StudentItem studentItem, int position);
+        void onCall(StudentItem studentItem, int position);
     }
 
     public StudentsRecyclerAdapter(Context context, List<StudentItem> studentList, OnItemClickListener listener) {
@@ -50,11 +52,13 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
     class StudentViewHolder extends RecyclerView.ViewHolder{
         TextView studentName, classSectionName;
+        ImageView ivStudentLisCall;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
             studentName = itemView.findViewById(R.id.tvStudent);
             classSectionName = itemView.findViewById(R.id.tvClassSection);
+            ivStudentLisCall = itemView.findViewById(R.id.ivStudentLisCall);
         }
 
         public void bindView(StudentItem studentItem) {
@@ -64,6 +68,7 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
             classSectionName.setText(cS);
 
             itemView.setOnClickListener(v -> listener.onClick(studentItem, getAbsoluteAdapterPosition()));
+            ivStudentLisCall.setOnClickListener(v -> listener.onCall(studentItem, getAbsoluteAdapterPosition()));
         }
     }
 }

@@ -77,4 +77,11 @@
     <string name="no_tracking_history">No Tracking History</string>
     <string name="scanner">Scanner</string>
     <string name="likhita_school">Likhita School</string>
+    <string name="call">Call</string>
+    <string name="call_to_parent">Call to parent</string>
+    <string name="receive_call">Receive Call</string>
+    <string name="ringing">Ringing</string>
+    <string name="call_error">Something went wrong...</string>
+    <string name="call_decliend">Decliend</string>
+    <string name="call_started">Call Started</string>
 </resources>

@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
@@ -21,7 +20,6 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.schoolmanager.QRScanner;
 import com.schoolmanager.R;
-import com.schoolmanager.Settings;
 import com.schoolmanager.model.ScanItem;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.DBHandler;

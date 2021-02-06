@@ -4,11 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.schoolmanager.R;
 import com.schoolmanager.model.TeacherItem;
 
@@ -21,8 +23,10 @@ public class TeachersRecyclerAdapter extends RecyclerView.Adapter<TeachersRecycl
     private List<TeacherItem> teacherList = new ArrayList<>();
     private final OnItemClickListener listener;
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onClick(TeacherItem teacherItem, int position);
+
+        void onCall(TeacherItem teacherItem, int position);
     }
 
     public TeachersRecyclerAdapter(Context context, List<TeacherItem> teacherList, OnItemClickListener listener) {
@@ -48,13 +52,16 @@ public class TeachersRecyclerAdapter extends RecyclerView.Adapter<TeachersRecycl
         return teacherList.size();
     }
 
-    class StudentViewHolder extends RecyclerView.ViewHolder{
+    class StudentViewHolder extends RecyclerView.ViewHolder {
         TextView teacherName, subjectName;
+        ImageView callTeacher, ivTeacherImage;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
             teacherName = itemView.findViewById(R.id.tvTeacher);
             subjectName = itemView.findViewById(R.id.tvSubjectName);
+            callTeacher = itemView.findViewById(R.id.callTeacher);
+            ivTeacherImage = itemView.findViewById(R.id.ivTeacherImage);
         }
 
         public void bindView(TeacherItem teacherItem) {
@@ -62,6 +69,19 @@ public class TeachersRecyclerAdapter extends RecyclerView.Adapter<TeachersRecycl
             subjectName.setText(teacherItem.getTeacherPhoneNo());
 
             itemView.setOnClickListener(v -> listener.onClick(teacherItem, getAbsoluteAdapterPosition()));
+            callTeacher.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onCall(teacherItem, getAbsoluteAdapterPosition());
+                }
+            });
+
+            Glide.with(context)
+                    .load(teacherItem.getTeacher_profile())
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_person)
+                    .into(ivTeacherImage);
+
         }
     }
 }

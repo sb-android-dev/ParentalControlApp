@@ -3,7 +3,6 @@ package com.schoolmanager;
 import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -30,18 +29,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
-import com.schoolmanager.model.DriverItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.IImageCompressTaskListener;
@@ -49,7 +44,6 @@ import com.schoolmanager.utilities.ImageCompressTask;
 import com.schoolmanager.utilities.PathFinder;
 import com.schoolmanager.utilities.UserSessionManager;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,7 +61,7 @@ public class MyProfile extends AppCompatActivity {
     private RelativeLayout profileImageLayout;
     private ImageView profileImage;
     private TextInputEditText name, phone, userName, password;
-    private SwitchMaterial lastSeen, readUnread;
+    private SwitchMaterial lastSeen, readUnread, switchReceiveCall;
     private Button update;
     private ProgressBar progressUpdate;
 
@@ -82,7 +76,7 @@ public class MyProfile extends AppCompatActivity {
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
     private String userId, userToken, userType, deviceId, fcmToken;
-    private boolean isLastSeenEnabled, isReadUnreadMessagesEnabled;
+    private boolean isLastSeenEnabled, isReadUnreadMessagesEnabled, isReceiveCall = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +106,28 @@ public class MyProfile extends AppCompatActivity {
         password = findViewById(R.id.etPassword);
         lastSeen = findViewById(R.id.switchLastSeen);
         readUnread = findViewById(R.id.switchReadUnreadMsg);
+        switchReceiveCall = findViewById(R.id.switchReceiveCall);
         update = findViewById(R.id.btnUpdate);
         progressUpdate = findViewById(R.id.progressUpdate);
+
+
+        if (userType.equals("2")) {
+            readUnread.setVisibility(View.VISIBLE);
+            lastSeen.setVisibility(View.VISIBLE);
+        }
+
+        //driver and teacher can set the dnd mode for
+        //call receive
+        //userType : value 3 for driver and 2 for teacher
+        //Other user can't see this option
+        if (userType.equals("3") || userType.equals("2")) {
+            switchReceiveCall.setVisibility(View.VISIBLE);
+            //set default value
+            isReceiveCall = sessionManager.canReceiveCall();
+            switchReceiveCall.setChecked(isReceiveCall);
+        } else {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
 
         getUserProfile();
 
@@ -154,6 +168,13 @@ public class MyProfile extends AppCompatActivity {
         lastSeen.setOnCheckedChangeListener((buttonView, isChecked) -> isLastSeenEnabled = isChecked);
 
         readUnread.setOnCheckedChangeListener((buttonView, isChecked) -> isReadUnreadMessagesEnabled = isChecked);
+
+        switchReceiveCall.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isReceiveCall = b;
+            }
+        });
 
     }
 
@@ -217,6 +238,7 @@ public class MyProfile extends AppCompatActivity {
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                sessionManager.updateReceiveCall(isReceiveCall);
                                 Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
                             }
                             if (swipeRefreshLayout.isRefreshing())
@@ -231,56 +253,60 @@ public class MyProfile extends AppCompatActivity {
                         }
                     });
         }
+
     }
 
-    private void validateInputs(){
+    private void validateInputs() {
         String uName = userName.getText().toString();
         String pWord = password.getText().toString();
-        if(uName.isEmpty()){
+        if (uName.isEmpty()) {
             userName.setError("Enter username!");
             userName.requestFocus();
         } else {
             progressUpdate.setVisibility(View.VISIBLE);
             update.setVisibility(View.INVISIBLE);
-            if(selectedImageUri == null){
-                if(!pWord.isEmpty()){
+            if (selectedImageUri == null) {
+                if (!pWord.isEmpty()) {
                     updateProfile(uName, pWord);
-                }else{
+                } else {
                     updateProfile(uName);
                 }
             } else {
                 imageCompressTask = new ImageCompressTask(this,
                         new PathFinder(MyProfile.this).getPath(selectedImageUri), 250, 250,
                         new IImageCompressTaskListener() {
-                    @Override
-                    public void onComplete(List<File> compressed) {
-                        if(compressed.get(0) != null) {
-                            profileFile = compressed.get(0);
-                            Log.d("ImageCompressor", "New photo size ==> " + profileFile.length());
+                            @Override
+                            public void onComplete(List<File> compressed) {
+                                if (compressed.get(0) != null) {
+                                    profileFile = compressed.get(0);
+                                    Log.d("ImageCompressor", "New photo size ==> " + profileFile.length());
 
-                            if(!pWord.isEmpty()){
-                                updateProfile(profileFile, uName, pWord);
-                            } else {
-                                updateProfile(profileFile, uName);
+                                    if (!pWord.isEmpty()) {
+                                        updateProfile(profileFile, uName, pWord);
+                                    } else {
+                                        updateProfile(profileFile, uName);
+                                    }
+
+                                } else {
+                                    Log.e("ImageCompressor", "onComplete: received result is null");
+                                    progressUpdate.setVisibility(View.INVISIBLE);
+                                    update.setVisibility(View.VISIBLE);
+                                }
                             }
 
-                        }else{
-                            Log.e("ImageCompressor", "onComplete: received result is null");
-                            progressUpdate.setVisibility(View.INVISIBLE);
-                            update.setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable error) {
-                        Log.e(TAG, "onError: " + error.getLocalizedMessage());
-                        progressUpdate.setVisibility(View.INVISIBLE);
-                        update.setVisibility(View.VISIBLE);
-                    }
-                });
+                            @Override
+                            public void onError(Throwable error) {
+                                Log.e(TAG, "onError: " + error.getLocalizedMessage());
+                                progressUpdate.setVisibility(View.INVISIBLE);
+                                update.setVisibility(View.VISIBLE);
+                            }
+                        });
                 mExecutorService.execute(imageCompressTask);
             }
         }
+
+        //Update can receive call locally
+        sessionManager.updateReceiveCall(isReceiveCall);
     }
 
     private void updateProfile(String userAccessCode) {
@@ -507,7 +533,7 @@ public class MyProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == Common.REQUEST_IMAGE_PICKER && resultCode == RESULT_OK && data != null){
+        if (requestCode == Common.REQUEST_IMAGE_PICKER && resultCode == RESULT_OK && data != null) {
             selectedImageUri = data.getData();
             Log.e(TAG, "onActivityResult: selectedImageUri -> " + selectedImageUri);
             Glide.with(this).load(selectedImageUri).into(profileImage);

@@ -111,12 +111,18 @@
                 android:alpha="0.8"
                 android:layout_height="match_parent"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:overScrollMode="never"
-                android:layout_above="@+id/ll_ChatBoard"
-                android:id="@+id/resView_ChatBoard"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:id="@+id/swipy_Chatboard"
+                android:layout_above="@+id/ll_ChatBoard"
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:overScrollMode="never"
+                    android:id="@+id/resView_ChatBoard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 
             <LinearLayout

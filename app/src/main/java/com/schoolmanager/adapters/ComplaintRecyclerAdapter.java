@@ -20,6 +20,8 @@ import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.utilities.TimeAgo;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class ComplaintRecyclerAdapter extends RecyclerView.Adapter<ComplaintRecyclerAdapter.MyViewHolder> {
 
@@ -50,12 +52,12 @@ public class ComplaintRecyclerAdapter extends RecyclerView.Adapter<ComplaintRecy
         ComplaintItem modal = mList.get(position);
         RecyclerComplaintsBinding binding = holder.binding;
 
-        String ago = TimeAgo.getTimeAgo((Long.parseLong(modal.getChat_last_message_time())*1000L));
+        int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+        Date localDate = new Date((Long.parseLong(modal.getChat_last_message_time()) * 1000L) - (offset));
 
         holder.binding.txtRawChatListLastMessage.setText(modal.getChat_last_message());
-        holder.binding.txtRawChatListTime.setText(ago);
+        holder.binding.txtRawChatListTime.setText(TimeAgo.getTimeAgo(localDate.getTime()));
         holder.binding.txtRawChatListName.setText(modal.getChat_receiver_name());
-
 
         Glide.with(activity)
                 .load(modal.getChat_receiver_image())
@@ -70,15 +72,16 @@ public class ComplaintRecyclerAdapter extends RecyclerView.Adapter<ComplaintRecy
             }
         });
 
-        if(modal.getChat_unread_count() > 0){
+        if (modal.getChat_unread_count() > 0) {
             holder.binding.txtRawChatListCount.setText(String.valueOf(modal.getChat_unread_count()));
             holder.binding.txtRawChatListCount.setVisibility(View.VISIBLE);
-            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity,R.color.colorPrimary));
-        }else {
+            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+        } else {
             holder.binding.txtRawChatListCount.setVisibility(View.INVISIBLE);
-            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity,R.color.light_gray));
+            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity, R.color.light_gray));
         }
     }
+
 
     @Override
     public int getItemCount() {

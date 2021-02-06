@@ -1,10 +1,8 @@
 package com.schoolmanager;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.util.Calendar;
-import android.icu.util.TimeUnit;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,16 +11,16 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -65,7 +63,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
@@ -153,9 +150,26 @@ public class ChatBoardActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_person)
                 .into(binding.imgChatBoardUser);
 
-        chatMessageAdapter = new ChatMessageAdapter(this, new ArrayList<>(),mComplaintModal.getChat_read_permission());
+        chatMessageAdapter = new ChatMessageAdapter(this, new ArrayList<>(), mComplaintModal.getChat_read_permission());
         mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setStackFromEnd(true);
+
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        binding.swipyChatboard.setColorSchemeResources(typedValue.resourceId);
+        binding.swipyChatboard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!isLastPage && !isNextPageCalled) {
+                    if (detector.isConnectingToInternet())
+                        currentPage++;
+                    apiCallFetchMessages(currentPage);
+                } else {
+                    binding.swipyChatboard.setRefreshing(false);
+                }
+            }
+        });
+
 
         binding.resViewChatBoard.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -166,22 +180,10 @@ public class ChatBoardActivity extends AppCompatActivity {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-             /*   if (!isLastPage && !isNextPageCalled) {
-                    if (detector.isConnectingToInternet())
-                        currentPage++;
-                    apiCallFetchMessages(currentPage);
-                }*/
+
             }
         });
 
-        binding.resViewChatBoard.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                if (i6 < i7) {
-                    scrollToBottomResView();
-                }
-            }
-        });
         binding.resViewChatBoard.setLayoutManager(mLayoutManager);
         binding.resViewChatBoard.setAdapter(chatMessageAdapter);
 
@@ -200,7 +202,7 @@ public class ChatBoardActivity extends AppCompatActivity {
         //Fetch message data
         apiCallFetchMessages(current_page);
 
-        if (mComplaintModal.getChat_last_seen_permission() == 1) {
+        if (mComplaintModal.getChat_last_seen_permission() == 1 && !userType.equals("1")) {
             binding.txtChatBoardLastSeen.setVisibility(View.VISIBLE);
         } else {
             binding.txtChatBoardLastSeen.setVisibility(View.GONE);
@@ -231,11 +233,14 @@ public class ChatBoardActivity extends AppCompatActivity {
             Snackbar.make(binding.resViewChatBoard, "Looks like you're not connected with internet!",
                     Snackbar.LENGTH_LONG).show();
             isNextPageCalled = false;
-
+            binding.swipyChatboard.setRefreshing(false);
             return;
         }
 
-        binding.pBarChatBoard.setVisibility(View.VISIBLE);
+        if (!binding.swipyChatboard.isRefreshing()) {
+            binding.pBarChatBoard.setVisibility(View.VISIBLE);
+        }
+
         isNextPageCalled = true;
 
         Log.e("user_id", userId);
@@ -262,7 +267,9 @@ public class ChatBoardActivity extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        if (binding.swipyChatboard.isRefreshing()) {
+                            binding.swipyChatboard.setRefreshing(false);
+                        }
 
                         try {
                             int success = response.getInt("success");
@@ -284,8 +291,9 @@ public class ChatBoardActivity extends AppCompatActivity {
                                         }.getType());
 
 
-                                scrollToBottomResView();
-
+                                if (pageNumber == Common.PAGE_START) {
+                                    scrollToBottomResView();
+                                }
 
                                 if (mMessageList.size() > 0) {
                                     if (currentPage == Common.PAGE_START) {
@@ -318,6 +326,9 @@ public class ChatBoardActivity extends AppCompatActivity {
                         Log.e(TAG, "onError: " + anError.getLocalizedMessage());
                         isNextPageCalled = false;
                         binding.pBarChatBoard.setVisibility(View.GONE);
+                        if (binding.swipyChatboard.isRefreshing()) {
+                            binding.swipyChatboard.setRefreshing(false);
+                        }
                     }
                 });
 

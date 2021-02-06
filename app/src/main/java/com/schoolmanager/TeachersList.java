@@ -92,27 +92,44 @@ public class TeachersList extends AppCompatActivity {
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset,
                 false));
         teachersRecycler.setEmptyView(noDataLayout);
-        adapter = new TeachersRecyclerAdapter(this, teacherList, (teacherItem, position) -> {
-            /**
-             * Redirect to ChatBoard to chat with Parent
-             *
-             */
-            Intent intent = new Intent(TeachersList.this, ChatBoardActivity.class);
-            ComplaintItem complaintItem = new ComplaintItem(
-                    "0",
-                    "",
-                    "",
-                    0,
-                    "",
-                    teacherItem.getTeacherName(),
-                    teacherItem.getTeacherId(),
-                    2,
-                    1,
-                    1
-            );
-            intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
-            startActivity(intent);
+        adapter = new TeachersRecyclerAdapter(this, teacherList, new TeachersRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(TeacherItem teacherItem, int position) {
 
+                /**
+                 * Redirect to ChatBoard to chat with Parent
+                 *
+                 */
+                Intent intent = new Intent(TeachersList.this, ChatBoardActivity.class);
+                ComplaintItem complaintItem = new ComplaintItem(
+                        "0",
+                        "",
+                        "",
+                        0,
+                        teacherItem.getTeacher_profile(),
+                        teacherItem.getTeacherName(),
+                        teacherItem.getTeacherId(),
+                        2,
+                        Integer.parseInt(teacherItem.getTeacher_message_read_permission()),
+                        Integer.parseInt(teacherItem.getTeacher_last_seen_permission()),
+                        Integer.parseInt(teacherItem.getTeacher_last_seen()));
+                intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCall(TeacherItem teacherItem, int position) {
+                /**
+                 * Redirect to Voice call with this parent
+                 */
+                startActivity(new Intent(TeachersList.this, VoiceCall.class)
+                        .putExtra("channel_name", userId + teacherItem.getTeacherId())
+                        .putExtra("from_user_id", userId)
+                        .putExtra("to_user_type", "2")
+                        .putExtra("to_user_id", teacherItem.getTeacherId() + "")
+                        .putExtra("type", "init")
+                );
+            }
         });
         teachersRecycler.setAdapter(adapter);
 
@@ -201,6 +218,28 @@ public class TeachersList extends AppCompatActivity {
                                         TeacherItem teacherItem = new TeacherItem();
                                         teacherItem.setTeacherId(teacher.getInt("teacher_id"));
                                         teacherItem.setTeacherName(teacher.getString("teacher_name"));
+
+                                        if (!teacher.isNull("teacher_profile")) {
+                                            teacherItem.setTeacher_profile(teacher.getString("teacher_profile"));
+
+                                        }
+                                        if (!teacher.isNull("teacher_last_seen")) {
+                                            teacherItem.setTeacher_last_seen(teacher.getString("teacher_last_seen"));
+                                        } else {
+                                            teacherItem.setTeacher_last_seen("0");
+                                        }
+                                        if (!teacher.isNull("teacher_last_seen_permission")) {
+                                            teacherItem.setTeacher_last_seen_permission(teacher.getString("teacher_last_seen_permission"));
+
+                                        } else {
+                                            teacherItem.setTeacher_last_seen_permission("0");
+                                        }
+                                        if (!teacher.isNull("teacher_message_read_permission")) {
+                                            teacherItem.setTeacher_message_read_permission(teacher.getString("teacher_message_read_permission"));
+                                        } else {
+                                            teacherItem.setTeacher_message_read_permission("0");
+                                        }
+
                                         if (!teacher.isNull("teacher_phone_no"))
                                             teacherItem.setTeacherPhoneNo(teacher.getString("teacher_phone_no"));
 

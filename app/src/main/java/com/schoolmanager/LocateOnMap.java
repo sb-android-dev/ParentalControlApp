@@ -21,6 +21,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
@@ -111,6 +113,7 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
 
     private TextView driverName, distanceToParent;
     private ImageView call;
+    private ConstraintLayout constrain_Call;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -213,10 +216,25 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        constrain_Call = findViewById(R.id.constrain_Call);
         //Call button
         call.setOnClickListener(v -> {
 
+        });
+        constrain_Call.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /**
+                 * Redirect to Voice call with this driver
+                 */
+                startActivity(new Intent(LocateOnMap.this, VoiceCall.class)
+                        .putExtra("channel_name", userId + driverId)
+                        .putExtra("from_user_id", userId)
+                        .putExtra("to_user_type", "3")
+                        .putExtra("to_user_id", String.valueOf(driverId))
+                        .putExtra("type", "init")
+                );
+            }
         });
     }
 
@@ -480,17 +498,17 @@ public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback
                             Log.e(TAG, "onDirectionSuccess: distance -> " + leg.getDistance().getText());
                             ArrayList<LatLng> directionPositionList = leg.getDirectionPoint();
 
-                            if(polyline != null)
+                            if (polyline != null)
                                 polyline.remove();
 
                             polyline = mMap.addPolyline(
-                                            DirectionConverter.createPolyline(
-                                                    LocateOnMap.this,
-                                                    directionPositionList,
-                                                    3,
-                                                    Color.BLUE
-                                            )
-                                        );
+                                    DirectionConverter.createPolyline(
+                                            LocateOnMap.this,
+                                            directionPositionList,
+                                            3,
+                                            Color.BLUE
+                                    )
+                            );
                             distanceToParent.setText(leg.getDistance().getText());
                             setCameraWithCoordinationBounds(route);
                         } else {

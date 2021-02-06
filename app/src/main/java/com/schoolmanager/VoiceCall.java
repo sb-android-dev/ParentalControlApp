@@ -3,7 +3,7 @@ package com.schoolmanager;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -13,6 +13,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,7 +21,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.schoolmanager.R;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.schoolmanager.common.Common;
+import com.schoolmanager.utilities.UserSessionManager;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
@@ -54,6 +63,7 @@ public class VoiceCall extends AppCompatActivity {
     private ImageView mCallBtn;
     private ImageView mMuteBtn;
     private ImageView mSwitchCameraBtn;
+    private TextView voiceCallStatus;
 
     /**
      * Event handler registered into RTC engine for RTC callbacks.
@@ -75,7 +85,9 @@ public class VoiceCall extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG,"Join channel success, uid: " + (uid & 0xFFFFFFFFL));
+                    Log.e(TAG, "Join channel success, uid: " + (uid & 0xFFFFFFFFL));
+                    voiceCallStatus.setText(getString(R.string.call_started));
+                    joinChannel();
                 }
             });
         }
@@ -101,7 +113,7 @@ public class VoiceCall extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG,"First remote video decoded, uid: " + (uid & 0xFFFFFFFFL));
+                    Log.e(TAG, "First remote video decoded, uid: " + (uid & 0xFFFFFFFFL));
                     setupRemoteVideo(uid);
                 }
             });
@@ -134,8 +146,20 @@ public class VoiceCall extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e(TAG,"User offline, uid: " + (uid & 0xFFFFFFFFL));
-                    onRemoteUserLeft(uid);
+                    Log.e(TAG, "User offline, uid: " + (uid & 0xFFFFFFFFL));
+
+                    voiceCallStatus.setText(getString(R.string.call_decliend));
+                    apiCallEnd();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            leaveChannel();
+                            finish();
+                            onRemoteUserLeft(uid);
+                        }
+                    }, 1000);
+
+
                 }
             });
         }
@@ -177,20 +201,173 @@ public class VoiceCall extends AppCompatActivity {
         }
     }
 
+    private String channel_name = ""; //cahnnel name combination of from_user_id+to_user_id
+    private String from_user_id = ""; //Loged in user id
+    private String to_user_type = "";  // Typpe of user whome you want to call
+    private String to_user_id = ""; // Id of user whome you want to call
+    private String type = ""; // init : to init call , receive : to receive call
+
+    private String call_id = ""; // string : api response id of initiated call
+
+    private long startCallTime = System.currentTimeMillis();
+    private long endCallTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_call);
-        initUI();
 
-        // Ask for permissions at runtime.
-        // This is just an example set of permissions. Other permissions
-        // may be needed, and please refer to our online documents.
-        if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
-                checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
-                checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
-            initEngineAndJoinChannel();
+        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
         }
+
+        type = getIntent().getStringExtra("type");
+        channel_name = getIntent().getStringExtra("channel_name");
+        from_user_id = getIntent().getStringExtra("from_user_id");
+        to_user_type = getIntent().getStringExtra("to_user_type");
+        to_user_id = getIntent().getStringExtra("to_user_id");
+
+        initUI();
+        if (type.equals("init")) {
+            apiCallInit();
+        }
+        if (type.equals("receive")) {
+            // Ask for permissions at runtime.
+            // This is just an example set of permissions. Other permissions
+            // may be needed, and please refer to our online documents.
+            if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
+                    checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
+                    checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
+                initEngineAndJoinChannel();
+            }
+
+        }
+    }
+
+    private void apiCallInit() {
+
+        UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
+        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        String userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        String userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        String userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        String deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        String fcmToken = sessionManager.getFcmToken();
+
+        AndroidNetworking.post(Common.BASE_URL + "app-call-init")
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("receiver_id", to_user_id)
+                .addBodyParameter("receiver_type", to_user_type)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("call_token", channel_name)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            String message = response.getString("message");
+                            Log.e("INIT_CALL==>", message);
+                            Log.e("INIT_CALL==>", response.toString());
+
+                            if (success == 1) {
+                                JSONObject data = response.getJSONObject("data");
+                                call_id = data.getString("call_id");
+                                // Ask for permissions at runtime.
+                                // This is just an example set of permissions. Other permissions
+                                // may be needed, and please refer to our online documents.
+                                if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
+                                        checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
+                                        checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
+                                    initEngineAndJoinChannel();
+                                }
+                            } else {
+                                voiceCallStatus.setText(message);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        finish();
+                                    }
+                                }, 1000);
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            voiceCallStatus.setText(getString(R.string.call_error));
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            }, 1000);
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        voiceCallStatus.setText(getString(R.string.call_error));
+                        apiCallEnd();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        }, 1000);
+                    }
+                });
+
+    }
+
+    private void apiCallEnd() {
+
+        UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
+        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        String userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        String userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        String userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        String deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        String fcmToken = sessionManager.getFcmToken();
+
+        AndroidNetworking.post(Common.BASE_URL + "app-call-end")
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("receiver_id", to_user_id)
+                .addBodyParameter("receiver_type", to_user_type)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("call_token", channel_name)
+                .addBodyParameter("call_id", call_id)
+                .addBodyParameter("call_status", "1")
+                .addBodyParameter("call_start_time", startCallTime + "")
+                .addBodyParameter("call_end_time", System.currentTimeMillis() + "")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            String message = response.getString("message");
+                            Log.e("END_CALL==>", message);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+
     }
 
     private void initUI() {
@@ -200,16 +377,18 @@ public class VoiceCall extends AppCompatActivity {
         mCallBtn = findViewById(R.id.btn_call);
         mMuteBtn = findViewById(R.id.btn_mute);
         mSwitchCameraBtn = findViewById(R.id.btn_switch_camera);
+        voiceCallStatus = findViewById(R.id.voiceCallStatus);
 
 
         // Sample logs are optional.
         showSampleLogs();
     }
 
+
     private void showSampleLogs() {
-        Log.e(TAG,"Welcome to Agora 1v1 video call");
-        Log.e(TAG,"You will see custom logs here");
-        Log.e(TAG,"You can also use this to show errors");
+        Log.e(TAG, "Welcome to Agora 1v1 video call");
+        Log.e(TAG, "You will see custom logs here");
+        Log.e(TAG, "You can also use this to show errors");
     }
 
     private boolean checkSelfPermission(String permission, int requestCode) {
@@ -309,7 +488,7 @@ public class VoiceCall extends AppCompatActivity {
         if (TextUtils.isEmpty(token) || TextUtils.equals(token, "#YOUR ACCESS TOKEN#")) {
             token = null; // default, no token
         }
-        mRtcEngine.joinChannel(token, "demoChannel1", "Extra Optional Data", 0);
+        mRtcEngine.joinChannel(null, channel_name, "Extra Optional Data", 0);
     }
 
     @Override
@@ -328,7 +507,9 @@ public class VoiceCall extends AppCompatActivity {
     }
 
     private void leaveChannel() {
-        mRtcEngine.leaveChannel();
+        if (mRtcEngine != null) {
+            mRtcEngine.leaveChannel();
+        }
     }
 
     public void onLocalAudioMuteClicked(View view) {
@@ -369,6 +550,14 @@ public class VoiceCall extends AppCompatActivity {
         removeFromParent(mRemoteVideo);
         mRemoteVideo = null;
         leaveChannel();
+        apiCallEnd();
+        voiceCallStatus.setText(getString(R.string.call_decliend));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        },1000);
     }
 
     private void showButtons(boolean show) {
@@ -407,5 +596,10 @@ public class VoiceCall extends AppCompatActivity {
     public void onLocalContainerClick(View view) {
         switchView(mLocalVideo);
         switchView(mRemoteVideo);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 }

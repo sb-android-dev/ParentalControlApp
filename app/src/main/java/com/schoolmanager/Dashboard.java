@@ -61,7 +61,7 @@ public class Dashboard extends AppCompatActivity {
 
     private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
             locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout,
-            managementMsgLayout, arrivedLayout;
+            managementMsgLayout, arrivedLayout, clParent;
     private MaterialCardView complaintCard, locationCard;
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
@@ -89,9 +89,9 @@ public class Dashboard extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
 
-        if(getIntent().getAction() != null){
+        if (getIntent().getAction() != null) {
             Log.e(TAG, "onCreate: " + getIntent().getAction());
-            if(getIntent().getAction().equals(Common.ACTION_OPEN_TRACKING)) {
+            if (getIntent().getAction().equals(Common.ACTION_OPEN_TRACKING)) {
                 startActivity(new Intent(Dashboard.this, TrackHistory.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
@@ -113,7 +113,7 @@ public class Dashboard extends AppCompatActivity {
         studentId = hashMap.get(UserSessionManager.KEY_STUDENT_ID);
         fcmToken = sessionManager.getFcmToken();
 
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
             MyApplication.mp.stop();
             MyApplication.mp.release();
         }
@@ -144,6 +144,7 @@ public class Dashboard extends AppCompatActivity {
         notArrivedLayout = findViewById(R.id.rlNotArrived);
         notArrived = findViewById(R.id.btnNotArrived);
         progressComplaint = findViewById(R.id.progressNotArrived);
+        clParent = findViewById(R.id.clParent);
 
         userName.setText(uName);
 //        String uType = getIntent().getStringExtra("type");
@@ -161,6 +162,7 @@ public class Dashboard extends AppCompatActivity {
                 noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
+                clParent.setVisibility(View.GONE);
                 break;
             case "4":
                 locationCard.setVisibility(View.GONE);
@@ -176,6 +178,7 @@ public class Dashboard extends AppCompatActivity {
                 noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
+                clParent.setVisibility(View.GONE);
                 break;
             // For Drivers
             case "3":
@@ -190,6 +193,7 @@ public class Dashboard extends AppCompatActivity {
 //                noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
+                clParent.setVisibility(View.VISIBLE);
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -216,6 +220,7 @@ public class Dashboard extends AppCompatActivity {
                 studentsLayout.setVisibility(View.GONE);
                 scanLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
+                clParent.setVisibility(View.GONE);
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -246,6 +251,7 @@ public class Dashboard extends AppCompatActivity {
                 scanLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
+                clParent.setVisibility(View.GONE);
         }
 
         fetchGeneralData();
@@ -283,7 +289,7 @@ public class Dashboard extends AppCompatActivity {
         });
         locateChildLayout.setOnClickListener(v -> {
             HashMap<String, String> driverDetail = sessionManager.getDriverDetails();
-            if(!driverDetail.get(UserSessionManager.KEY_DRIVER_ID).equals("0")) {
+            if (!driverDetail.get(UserSessionManager.KEY_DRIVER_ID).equals("0")) {
                 Intent nextIntent = new Intent(Dashboard.this, LocateOnMap.class);
                 nextIntent.putExtra("driver_name", driverDetail.get(UserSessionManager.KEY_DRIVER_NAME));
                 nextIntent.putExtra("driver_phone", driverDetail.get(UserSessionManager.KEY_DRIVER_PHONE));
@@ -311,7 +317,7 @@ public class Dashboard extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         managementMsgLayout.setOnClickListener(v -> {
-            startActivity(new Intent(Dashboard.this,BroadCastMessage.class));
+            startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
         });
         arrived.setOnClickListener(v -> {
             childArrived();
@@ -333,6 +339,14 @@ public class Dashboard extends AppCompatActivity {
                 sendCommandToService(Common.ACTION_START_SERVICE);
             } else {
                 sendCommandToService(Common.ACTION_STOP_SERVICE);
+            }
+        });
+
+        clParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Dashboard.this,StudentsList.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
@@ -360,7 +374,7 @@ public class Dashboard extends AppCompatActivity {
                             String message = response.getString("message");
 
                             if (success == 1) {
-                                if(mp.isPlaying()){
+                                if (mp.isPlaying()) {
                                     mp.stop();
                                     mp.release();
                                     mp = MediaPlayer.create(getApplicationContext(), alarmSound);
@@ -372,7 +386,7 @@ public class Dashboard extends AppCompatActivity {
                                 sessionManager.registerComplaint(false);
                             } else if (success == 2) {
                                 onLogOut();
-                            } else  {
+                            } else {
                                 Toast.makeText(Dashboard.this, message, Toast.LENGTH_SHORT).show();
                                 progressArrived.setVisibility(View.INVISIBLE);
                                 arrived.setVisibility(View.VISIBLE);
@@ -417,7 +431,7 @@ public class Dashboard extends AppCompatActivity {
                             int success = response.getInt("status");
                             String message = response.getString("message");
                             if (success == 1) {
-                                if(mp.isPlaying()){
+                                if (mp.isPlaying()) {
                                     mp.stop();
                                     mp.release();
                                     mp = MediaPlayer.create(getApplicationContext(), alarmSound);
@@ -477,7 +491,7 @@ public class Dashboard extends AppCompatActivity {
                                 int todays_complaints = data.getInt("todays_complaints");
                                 complaintNo.setText(String.valueOf(todays_complaints));
 
-                                if(data.has("is_arrived")) {
+                                if (data.has("is_arrived")) {
                                     boolean isArrived = data.getInt("is_arrived") == 1;
                                     if (userType.equals("1")) {
                                         if (!isArrived) {
@@ -486,7 +500,7 @@ public class Dashboard extends AppCompatActivity {
                                             arrivedLayout.setVisibility(View.GONE);
                                         }
 
-                                        if(sessionManager.getIsComplaintRegistered()){
+                                        if (sessionManager.getIsComplaintRegistered()) {
                                             notArrivedLayout.setVisibility(View.GONE);
                                         }
                                     }
@@ -510,17 +524,17 @@ public class Dashboard extends AppCompatActivity {
                 });
     }
 
-    private void uploadStoredResult(){
+    private void uploadStoredResult() {
         DBHandler db = new DBHandler(this);
 
         ScanItem scanItem = db.getScanItem();
-        if(scanItem != null)
+        if (scanItem != null)
             uploadResults(db, scanItem);
 
     }
 
-    public void uploadResults(DBHandler db, ScanItem scanItem){
-        if(detector.isConnectingToInternet()) {
+    public void uploadResults(DBHandler db, ScanItem scanItem) {
+        if (detector.isConnectingToInternet()) {
             AndroidNetworking
                     .post(BASE_URL + "app-track-student")
                     .addBodyParameter("user_id", scanItem.getUserId())
@@ -587,7 +601,7 @@ public class Dashboard extends AppCompatActivity {
         super.onNewIntent(intent);
 
         Log.e(TAG, "onCreate: " + intent.getAction());
-        if(intent.getAction().equals(Common.ACTION_OPEN_TRACKING)) {
+        if (intent.getAction().equals(Common.ACTION_OPEN_TRACKING)) {
             startActivity(new Intent(Dashboard.this, TrackHistory.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
@@ -597,7 +611,7 @@ public class Dashboard extends AppCompatActivity {
         }
         fetchGeneralData();
 
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
             MyApplication.mp.stop();
             MyApplication.mp.release();
         }
@@ -648,7 +662,7 @@ public class Dashboard extends AppCompatActivity {
                 .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
                 .into(userImage);
 
-        if(detector.isConnectingToInternet())
+        if (detector.isConnectingToInternet())
             uploadStoredResult();
     }
 
@@ -658,11 +672,11 @@ public class Dashboard extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
-    private void navigateToChatBoardFromNotification(Intent intent){
-        if(intent.getExtras()!= null){
-            if(intent.hasExtra("redirect_to_chat")){
+    private void navigateToChatBoardFromNotification(Intent intent) {
+        if (intent.getExtras() != null) {
+            if (intent.hasExtra("redirect_to_chat")) {
                 startActivity(new Intent(Dashboard.this, ChatBoardActivity.class)
-                        .putExtra("complaint_data",intent.getStringExtra("redirect_to_chat")));
+                        .putExtra("complaint_data", intent.getStringExtra("redirect_to_chat")));
             }
         }
     }

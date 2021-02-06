@@ -1,15 +1,17 @@
 package com.schoolmanager;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
@@ -18,11 +20,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.schoolmanager.adapters.BroadcastMessageAdapter;
-import com.schoolmanager.adapters.ChatMessageAdapter;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.databinding.ActivityBroadCastMessageBinding;
 import com.schoolmanager.model.BroadCastMessageItem;
-import com.schoolmanager.model.ChatMessageModal;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.UserSessionManager;
@@ -74,51 +74,43 @@ public class BroadCastMessage extends AppCompatActivity {
         broadCastMessageBinding.resViewBroadCastMessage.setLayoutManager(mLayoutManager);
         broadCastMessageBinding.resViewBroadCastMessage.setAdapter(broadcastMessageAdapter);
 
-        broadCastMessageBinding.resViewBroadCastMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        TypedValue typedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        broadCastMessageBinding.swipyBroadCastMessage.setColorSchemeResources(typedValue.resourceId);
+        broadCastMessageBinding.swipyBroadCastMessage.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-             /*   if (!isLastPage && !isNextPageCalled) {
+            public void onRefresh() {
+                if (!isLastPage && !isNextPageCalled) {
                     if (detector.isConnectingToInternet())
                         currentPage++;
-                    apiCallFetchMessages(currentPage);
-                }*/
-            }
-        });
-
-        broadCastMessageBinding.resViewBroadCastMessage.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-                if (i6 < i7) {
-                    scrollToBottomResView();
+                    apiCallFetchBroadCastMessage(currentPage);
+                } else {
+                    broadCastMessageBinding.swipyBroadCastMessage.setRefreshing(false);
                 }
             }
         });
 
 
-
         apiCallFetchBroadCastMessage(currentPage);
     }
 
-    private void apiCallFetchBroadCastMessage(int pageNumber){
+    private void apiCallFetchBroadCastMessage(int pageNumber) {
 
         if (!detector.isConnectingToInternet()) {
 
             Snackbar.make(broadCastMessageBinding.resViewBroadCastMessage, "Looks like you're not connected with internet!",
                     Snackbar.LENGTH_LONG).show();
             isNextPageCalled = false;
-
+            broadCastMessageBinding.swipyBroadCastMessage.setRefreshing(false);
             return;
         }
 
-        broadCastMessageBinding.pBarBroadCastMessage.setVisibility(View.VISIBLE);
-        isNextPageCalled = true;
 
+        if (!broadCastMessageBinding.swipyBroadCastMessage.isRefreshing()) {
+            broadCastMessageBinding.pBarBroadCastMessage.setVisibility(View.VISIBLE);
+        }
+
+        isNextPageCalled = true;
 
         AndroidNetworking.post(Common.BASE_URL + "app-user-broadcasts")
                 .addBodyParameter("user_id", userId)
@@ -133,7 +125,9 @@ public class BroadCastMessage extends AppCompatActivity {
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
-
+                        if (broadCastMessageBinding.swipyBroadCastMessage.isRefreshing()) {
+                            broadCastMessageBinding.swipyBroadCastMessage.setRefreshing(false);
+                        }
 
                         try {
                             int success = response.getInt("success");
@@ -154,8 +148,9 @@ public class BroadCastMessage extends AppCompatActivity {
                                         new TypeToken<ArrayList<BroadCastMessageItem>>() {
                                         }.getType());
 
-
-                                scrollToBottomResView();
+                                if (pageNumber == Common.PAGE_START) {
+                                    scrollToBottomResView();
+                                }
 
 
                                 if (mMessageList.size() > 0) {
@@ -189,6 +184,9 @@ public class BroadCastMessage extends AppCompatActivity {
                         Log.e(TAG, "onError: " + anError.getLocalizedMessage());
                         isNextPageCalled = false;
                         broadCastMessageBinding.pBarBroadCastMessage.setVisibility(View.GONE);
+                        if (broadCastMessageBinding.swipyBroadCastMessage.isRefreshing()) {
+                            broadCastMessageBinding.swipyBroadCastMessage.setRefreshing(false);
+                        }
                     }
                 });
 

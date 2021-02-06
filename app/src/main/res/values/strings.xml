@@ -80,7 +80,14 @@
     <string name="no_tracking_history">No Tracking History</string>
     <string name="scanner">Scanner</string>
 
-    <string name="agora_app_id" translatable="false">6bb7966f95b44d09ba3a2e55cf1d57f7</string>
-    <string name="agora_access_token" translatable="false">0066bb7966f95b44d09ba3a2e55cf1d57f7IADOFvJB86aff1VFf4JOtlncde7HzQzZAxcs69/o7d82Z+IVUyEAAAAAEAAH/Ych4ywaYAEAAQDiLBpg</string>
+    <string name="agora_app_id" translatable="false">25b67e207f614ef2ae6aae914b040ffc</string>
+    <string name="agora_access_token" translatable="false">0066bb7966f95b44d09ba3a2e55cf1d57f7IACWui5ZepI9qt6/JrrYwwwuFbsnZ0NbQpFKhzBUx2IdzrryKFcAAAAAEABwjq6PEy4eYAEAAQAQLh5g</string>
+    <string name="call">Call</string>
+    <string name="call_to_parent">Call to parent</string>
+    <string name="receive_call">Receive Call</string>
+    <string name="ringing">Ringing</string>
+    <string name="call_error">Something went wrong...</string>
+    <string name="call_decliend">Decliend</string>
+    <string name="call_started">Call Started</string>
 
 </resources>

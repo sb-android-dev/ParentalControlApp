@@ -102,6 +102,8 @@ public class ComplainList extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        currentPage = Common.PAGE_START;
+        apiCallFetchComplainList(currentPage, false);
     }
 
     private void apiCallFetchComplainList(int pageNumber, boolean showLoader) {

@@ -111,11 +111,17 @@
                 android:alpha="0.8"
                 android:layout_height="match_parent"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:overScrollMode="never"
-                android:id="@+id/resView_BroadCastMessage"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:id="@+id/swipy_BroadCastMessage"
+                android:layout_height="match_parent">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:overScrollMode="never"
+                    android:id="@+id/resView_BroadCastMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
 
             <ProgressBar

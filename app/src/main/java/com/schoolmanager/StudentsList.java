@@ -99,27 +99,44 @@ public class StudentsList extends AppCompatActivity {
                 1, R.dimen.recycler_vertical_offset, R.dimen.recycler_horizontal_offset,
                 false));
         studentsRecycler.setEmptyView(noDataLayout);
-        adapter = new StudentsRecyclerAdapter(this, studentList, (studentItem, position) -> {
-            /**
-             * Redirect to ChatBoard to chat with Teacher
-             *
-             */
-            Intent intent = new Intent(StudentsList.this, ChatBoardActivity.class);
-            ComplaintItem complaintItem = new ComplaintItem(
-                    "0",
-                    "",
-                    "",
-                    0,
-                    studentItem.getParentImage(),
-                    studentItem.getParentName(),
-                    studentItem.getParentId(),
-                    1,
-                    1,
-                    1
-            );
-            intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
-            startActivity(intent);
+        adapter = new StudentsRecyclerAdapter(this, studentList, new StudentsRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(StudentItem studentItem, int position) {
+                /**
+                 * Redirect to ChatBoard to chat with Teacher
+                 *
+                 */
+                Intent intent = new Intent(StudentsList.this, ChatBoardActivity.class);
+                ComplaintItem complaintItem = new ComplaintItem(
+                        "0",
+                        "",
+                        "",
+                        0,
+                        studentItem.getParentImage(),
+                        studentItem.getParentName(),
+                        studentItem.getParentId(),
+                        1,
+                        1,
+                        1,
+                        0
+                );
+                intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
+                startActivity(intent);
+            }
 
+            @Override
+            public void onCall(StudentItem studentItem, int position) {
+                /**
+                 * Redirect to Voice call with this parent
+                 */
+                startActivity(new Intent(StudentsList.this, VoiceCall.class)
+                        .putExtra("channel_name", userId + studentItem.getParentId())
+                        .putExtra("from_user_id", userId)
+                        .putExtra("to_user_type", "1")
+                        .putExtra("to_user_id", studentItem.getParentId() + "")
+                        .putExtra("type", "init")
+                );
+            }
         });
         studentsRecycler.setAdapter(adapter);
 

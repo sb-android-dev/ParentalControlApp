@@ -17,7 +17,7 @@ public class UserSessionManager {
     // Shared pref mode
     int PRIVATE_MODE = 0;
 
-    private static final String PREFER_NAME ="UserSession";
+    private static final String PREFER_NAME = "UserSession";
     public static final String KEY_USER_ID = "user_id";
     public static final String KEY_USER_TOKEN = "user_token";
     public static final String KEY_USER_NAME = "user_name";
@@ -38,6 +38,7 @@ public class UserSessionManager {
 
     public static final String KEY_IS_LAST_SEEN_ENABLED = "is_last_seen_enabled";
     public static final String KEY_IS_READ_UNREAD_MESSAGES_ENABLED = "is_read_unread_message_enabled";
+    public static final String KEY_RECEIVE_CALL = "receive_call";
 
 
     public UserSessionManager(Context context) {
@@ -47,19 +48,20 @@ public class UserSessionManager {
         //editor1=pref.edit();
     }
 
-    public void upsertDeviceId(String deviceId){
+    public void upsertDeviceId(String deviceId) {
         editor.putString(KEY_DEVICE_ID, deviceId);
         editor.commit();
     }
 
-    public void upsertFcmToken(String fcmToken){
+    public void upsertFcmToken(String fcmToken) {
         editor.putString(KEY_FCM_TOKEN, fcmToken);
         editor.commit();
     }
 
+
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
                                        String userPhone, String userImage) {
-        Log.e("createUserLoginSession","createUserLoginSession");
+        Log.e("createUserLoginSession", "createUserLoginSession");
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USER_TOKEN, userToken);
         editor.putString(KEY_USER_NAME, userName);
@@ -71,7 +73,7 @@ public class UserSessionManager {
 
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
                                        String userPhone, String userImage, int studentId) {
-        Log.e("createUserLoginSession","createUserLoginSession");
+        Log.e("createUserLoginSession", "createUserLoginSession");
         editor.putInt(KEY_USER_ID, userId);
         editor.putString(KEY_USER_TOKEN, userToken);
         editor.putString(KEY_USER_NAME, userName);
@@ -82,19 +84,19 @@ public class UserSessionManager {
         editor.commit();
     }
 
-    public void upsertDriver(int driverId, String driverName, String driverPhone){
+    public void upsertDriver(int driverId, String driverName, String driverPhone) {
         editor.putInt(KEY_DRIVER_ID, driverId);
         editor.putString(KEY_DRIVER_NAME, driverName);
         editor.putString(KEY_DRIVER_PHONE, driverPhone);
         editor.commit();
     }
 
-    public void updateLastSeenFlag(boolean isLastSeenEnabled){
+    public void updateLastSeenFlag(boolean isLastSeenEnabled) {
         editor.putBoolean(KEY_IS_LAST_SEEN_ENABLED, isLastSeenEnabled);
         editor.commit();
     }
 
-    public void updateReadUnreadMessagesFlag(boolean isReadUnreadMessagesEnabled){
+    public void updateReadUnreadMessagesFlag(boolean isReadUnreadMessagesEnabled) {
         editor.putBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, isReadUnreadMessagesEnabled);
         editor.commit();
     }
@@ -121,28 +123,28 @@ public class UserSessionManager {
 //        editor.commit();
 //    }
 
-    public void updateImageUrl(String imageUrl){
+    public void updateImageUrl(String imageUrl) {
         editor.putString(KEY_USER_IMAGE, imageUrl);
         editor.commit();
     }
 
-    public void updateNotificationStatus(boolean isReceived){
+    public void updateNotificationStatus(boolean isReceived) {
         editor.putBoolean(KEY_IS_BUS_NOTIFICATION_RECEIVED, isReceived);
         editor.commit();
     }
 
-    public void updateTodaySDay(int day){
+    public void updateTodaySDay(int day) {
         editor.putInt(KEY_TODAY_S_DAY, day);
         editor.commit();
     }
 
-    public void registerComplaint(boolean registerComplaint){
+    public void registerComplaint(boolean registerComplaint) {
         editor.putBoolean(KEY_IS_COMPLAINT_REGISTERED, registerComplaint);
         editor.commit();
     }
 
-    public void UserLoginSession(String accId){
-        Log.e("UserLoginSession","UserLoginSession");
+    public void UserLoginSession(String accId) {
+        Log.e("UserLoginSession", "UserLoginSession");
         editor.putString(KEY_USER_ID, accId);
 
         editor.commit();
@@ -164,7 +166,7 @@ public class UserSessionManager {
         return user;
     }
 
-    public HashMap<String, String> getEssentials(){
+    public HashMap<String, String> getEssentials() {
         HashMap<String, String> id = new HashMap<>();
         id.put(KEY_USER_ID, String.valueOf(pref.getInt(KEY_USER_ID, 0)));
         id.put(KEY_USER_TOKEN, pref.getString(KEY_USER_TOKEN, ""));
@@ -173,11 +175,11 @@ public class UserSessionManager {
         return id;
     }
 
-    public int getUserType(){
+    public int getUserType() {
         return pref.getInt(KEY_USER_TYPE, 0);
     }
 
-    public HashMap<String, String> getDriverDetails(){
+    public HashMap<String, String> getDriverDetails() {
         HashMap<String, String> driver = new HashMap<>();
         driver.put(KEY_DRIVER_ID, String.valueOf(pref.getInt(KEY_DRIVER_ID, 0)));
         driver.put(KEY_DRIVER_NAME, pref.getString(KEY_DRIVER_NAME, ""));
@@ -185,11 +187,11 @@ public class UserSessionManager {
         return driver;
     }
 
-    public String getStudentId(){
+    public String getStudentId() {
         return String.valueOf(pref.getInt(KEY_STUDENT_ID, 0));
     }
 
-    public int getDriverId(){
+    public int getDriverId() {
         return pref.getInt(KEY_DRIVER_ID, 0);
     }
 
@@ -197,27 +199,27 @@ public class UserSessionManager {
         return pref.getString(KEY_USER_IMAGE, null);
     }
 
-    public String getFcmToken(){
+    public String getFcmToken() {
         return pref.getString(KEY_FCM_TOKEN, null);
     }
 
-    public boolean getNotificationStatus(){
+    public boolean getNotificationStatus() {
         return pref.getBoolean(KEY_IS_BUS_NOTIFICATION_RECEIVED, false);
     }
 
-    public int getTodaySDay(){
+    public int getTodaySDay() {
         return pref.getInt(KEY_TODAY_S_DAY, 0);
     }
 
-    public boolean getIsComplaintRegistered(){
+    public boolean getIsComplaintRegistered() {
         return pref.getBoolean(KEY_IS_COMPLAINT_REGISTERED, false);
     }
 
-    public boolean getLastSeenFlag(){
+    public boolean getLastSeenFlag() {
         return pref.getBoolean(KEY_IS_LAST_SEEN_ENABLED, true);
     }
 
-    public boolean getReadUnreadMessagesFlag(){
+    public boolean getReadUnreadMessagesFlag() {
         return pref.getBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, false);
     }
 
@@ -231,7 +233,7 @@ public class UserSessionManager {
 //        return lTime;
 //    }
 
-    public void logoutUser(){
+    public void logoutUser() {
         editor.remove(KEY_USER_ID);
         editor.remove(KEY_USER_TOKEN);
         editor.remove(KEY_USER_NAME);
@@ -270,6 +272,15 @@ public class UserSessionManager {
 
     public boolean isUserLoggedIn() {
         return pref.getBoolean(IS_USER_LOGIN, false);
+    }
+
+    public boolean canReceiveCall() {
+        return pref.getBoolean(KEY_RECEIVE_CALL, true);
+    }
+
+    public void updateReceiveCall(boolean value) {
+        editor.putBoolean(KEY_RECEIVE_CALL, value);
+        editor.commit();
     }
 
 }

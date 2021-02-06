@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -28,9 +26,8 @@ import com.schoolmanager.ChatBoardActivity;
 import com.schoolmanager.ComplainList;
 import com.schoolmanager.Dashboard;
 import com.schoolmanager.LogIn;
-import com.schoolmanager.MyApplication;
 import com.schoolmanager.R;
-import com.schoolmanager.TrackHistory;
+import com.schoolmanager.VoiceCall;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.events.EventDeleteMessage;
 import com.schoolmanager.events.EventNewMessageArrives;
@@ -66,6 +63,18 @@ public class AlertService extends FirebaseMessagingService {
             EventBus.getDefault().post(new EventReadMessage(
                     remoteMessage.getData().get("notification_read_message_id")
             ));
+
+        } else if (remoteMessage.getData().get("notification_type").equals("call_init")) {
+            /**
+             * If driver and teacher have set the flag receive call ot not
+             * then it will manage notification accordinglly 
+             * drfault valueis true so other type of user can reeive call
+             */
+            UserSessionManager userSessionManager = new UserSessionManager(this);
+            boolean isReceiveCall = userSessionManager.canReceiveCall();
+            if (isReceiveCall) {
+                performCallNotification(remoteMessage.getData());
+            }
 
         } else if (remoteMessage.getData().get("notification_type").equals("message_delete")) {
             EventBus.getDefault().post(new EventDeleteMessage(
@@ -261,7 +270,7 @@ public class AlertService extends FirebaseMessagingService {
 
     }
 
-    private void performAlertNotification(Map<String, String> data) {
+    private void performCallNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
         String notifyType = data.get("notification_type");
@@ -305,6 +314,49 @@ public class AlertService extends FirebaseMessagingService {
         new UserSessionManager(this).updateNotificationStatus(true);
     }
 
+    private void performAlertNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long notificationId = System.currentTimeMillis();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createAlertNotificationChannel(notificationManager);
+        }
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
+        if (mp != null && mp.isPlaying()) {
+            mp.stop();
+            mp.release();
+        }
+
+        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+        mp.setLooping(true);
+        mp.start();
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_ID);
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_school_bus)
+                .setContentTitle(notifyTitle)
+                .setContentText(notifyBody)
+                .setSound(notificationSound)
+                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+
+        Notification notification = notificationBuilder.build();
+        notification.flags |= Notification.FLAG_INSISTENT;
+
+        notificationManager.notify((int) notificationId, notification);
+
+    }
+
     private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {
         Intent intent;
         if (new UserSessionManager(getApplicationContext()).getEssentials()
@@ -315,6 +367,17 @@ public class AlertService extends FirebaseMessagingService {
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_TRACKING);
+            } else if (notifyType.equals("call_init")) {
+
+                intent = new Intent(getApplicationContext(), VoiceCall.class);
+                intent.putExtra("channel_name", data.get("notification_call_token"))
+                        .putExtra("from_user_id", "")
+                        .putExtra("to_user_type", "")
+                        .putExtra("to_user_id", "")
+                        .putExtra("type", "receive");
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setAction(Common.ACTION_OPEN_DASHBOARD);
             } else {
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -331,7 +394,8 @@ public class AlertService extends FirebaseMessagingService {
                             Integer.parseInt(data.get("notification_message_sender_id")),
                             Integer.parseInt(data.get("notification_message_sender_type")),
                             Integer.parseInt(data.get("message_read_permission")),
-                            Integer.parseInt(data.get("last_seen_permission"))
+                            Integer.parseInt(data.get("last_seen_permission")),
+                            Integer.parseInt(data.get("user_last_seen"))
                     );
 
                     intent.putExtra("redirect_to_chat", new Gson().toJson(complaintItem));

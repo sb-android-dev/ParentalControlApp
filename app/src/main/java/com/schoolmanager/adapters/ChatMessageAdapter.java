@@ -11,9 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -26,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.androidnetworking.utils.Utils;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.schoolmanager.R;
@@ -38,13 +35,11 @@ import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.databinding.RawSelfMessageAudioBinding;
 import com.schoolmanager.databinding.RawSelfMessageImageBinding;
 import com.schoolmanager.databinding.RawSelfMessageTextBinding;
-import com.schoolmanager.databinding.TopDateViewBinding;
 import com.schoolmanager.model.ChatMessageModal;
 import com.schoolmanager.utilities.UserSessionManager;
 import com.schoolmanager.view.MessageFileDownloadProgressbar;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -53,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.TimeZone;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -327,7 +321,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Collections.reverse(mList);
 
         int itemsInList = this.mList.size();
-        this.mList.addAll(mList);
+        ArrayList<ChatMessageModal> mTempList = new ArrayList<>();
+        mTempList.addAll(mList);
+        mTempList.addAll(this.mList);
+
+        this.mList.clear();
+        this.mList.addAll(mTempList);
+
         if (clear) {
             notifyItemRangeChanged(itemsInList, mList.size());
         } else {

@@ -1,10 +1,5 @@
 package com.schoolmanager;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.Manifest;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -12,8 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
@@ -22,17 +20,8 @@ import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.budiyev.android.codescanner.ScanMode;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.Result;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.BasePermissionListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.schoolmanager.common.Common;
-import com.schoolmanager.dialogs.UploadScanResult;
 import com.schoolmanager.model.ScanItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
@@ -42,11 +31,7 @@ import com.schoolmanager.utilities.UserSessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;

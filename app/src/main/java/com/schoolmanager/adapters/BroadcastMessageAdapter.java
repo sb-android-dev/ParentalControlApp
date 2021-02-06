@@ -1,6 +1,5 @@
 package com.schoolmanager.adapters;
 
-import android.app.Activity;
 import android.icu.util.Calendar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.schoolmanager.BroadCastMessage;
 import com.schoolmanager.R;
 import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.model.BroadCastMessageItem;
@@ -91,7 +91,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
 
         if (ts2 == 0) {
             cardView.setVisibility(View.VISIBLE);
-            timeText.setText(formateDate(ts1*1000));
+            timeText.setText(formateDate(ts1 * 1000));
         } else {
             Calendar cal1 = Calendar.getInstance();
             Calendar cal2 = Calendar.getInstance();
@@ -106,7 +106,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
                 timeText.setText("");
             } else {
                 timeText.setVisibility(View.VISIBLE);
-                timeText.setText(formateDate(ts2*1000));
+                timeText.setText(formateDate(ts2 * 1000));
             }
 
         }
@@ -140,7 +140,7 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
     }
 
     public void addData(boolean clear, ArrayList<BroadCastMessageItem> mList) {
-        if (clear) {
+        /*if (clear) {
             this.mListBroadCastMsg.clear();
         }
 
@@ -148,6 +148,26 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
 
         int itemsInList = this.mListBroadCastMsg.size();
         this.mListBroadCastMsg.addAll(mList);
+        if (clear) {
+            notifyItemRangeChanged(itemsInList, mList.size());
+        } else {
+            notifyDataSetChanged();
+        }*/
+
+        if (clear) {
+            this.mListBroadCastMsg.clear();
+        }
+
+        Collections.reverse(mList);
+
+        int itemsInList = this.mListBroadCastMsg.size();
+        ArrayList<BroadCastMessageItem> mTempList = new ArrayList<>();
+        mTempList.addAll(mList);
+        mTempList.addAll(this.mListBroadCastMsg);
+
+        this.mListBroadCastMsg.clear();
+        this.mListBroadCastMsg.addAll(mTempList);
+
         if (clear) {
             notifyItemRangeChanged(itemsInList, mList.size());
         } else {
