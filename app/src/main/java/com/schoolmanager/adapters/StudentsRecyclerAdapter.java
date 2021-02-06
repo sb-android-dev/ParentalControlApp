@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.schoolmanager.R;
 import com.schoolmanager.model.StudentItem;
 
@@ -52,13 +53,14 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
     class StudentViewHolder extends RecyclerView.ViewHolder{
         TextView studentName, classSectionName;
-        ImageView ivStudentLisCall;
+        ImageView ivStudentLisCall,ivStudentImage;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
             studentName = itemView.findViewById(R.id.tvStudent);
             classSectionName = itemView.findViewById(R.id.tvClassSection);
             ivStudentLisCall = itemView.findViewById(R.id.ivStudentLisCall);
+            ivStudentImage = itemView.findViewById(R.id.ivStudentImage);
         }
 
         public void bindView(StudentItem studentItem) {
@@ -69,6 +71,12 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
             itemView.setOnClickListener(v -> listener.onClick(studentItem, getAbsoluteAdapterPosition()));
             ivStudentLisCall.setOnClickListener(v -> listener.onCall(studentItem, getAbsoluteAdapterPosition()));
+
+            Glide.with(context)
+                    .load(studentItem.getParentImage())
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_person)
+                    .into(ivStudentImage);
         }
     }
 }
