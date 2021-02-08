@@ -39,6 +39,7 @@ public class UserSessionManager {
     public static final String KEY_IS_LAST_SEEN_ENABLED = "is_last_seen_enabled";
     public static final String KEY_IS_READ_UNREAD_MESSAGES_ENABLED = "is_read_unread_message_enabled";
 
+    public static final String KEY_LANGUAGE_CODE = "lang_code";
 
     public UserSessionManager(Context context) {
         this._context = context;
@@ -54,6 +55,11 @@ public class UserSessionManager {
 
     public void upsertFcmToken(String fcmToken){
         editor.putString(KEY_FCM_TOKEN, fcmToken);
+        editor.commit();
+    }
+
+    public void setLanguage(String code){
+        editor.putString(KEY_LANGUAGE_CODE, code);
         editor.commit();
     }
 
@@ -219,6 +225,10 @@ public class UserSessionManager {
 
     public boolean getReadUnreadMessagesFlag(){
         return pref.getBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, false);
+    }
+
+    public String getLanguage(){
+        return  pref.getString(KEY_LANGUAGE_CODE, "en");
     }
 
 //    public HashMap<String, Integer> getLTime(){

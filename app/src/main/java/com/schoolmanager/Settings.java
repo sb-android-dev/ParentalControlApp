@@ -25,7 +25,7 @@ import com.schoolmanager.utilities.UserSessionManager;
 import java.util.HashMap;
 import java.util.List;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends BaseActivity {
 
     private static final String TAG = "settings_activity";
 
@@ -69,6 +69,10 @@ public class Settings extends AppCompatActivity {
 
         driverLayout.setOnClickListener(v -> {
             startActivity(new Intent(this, SelectDriver.class));
+        });
+
+        languageLayout.setOnClickListener(v -> {
+            startActivity(new Intent(this, SelectLanguage.class));
         });
 
         signOutLayout.setOnClickListener(v -> {

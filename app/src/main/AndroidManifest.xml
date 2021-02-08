@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -36,7 +36,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SchoolManager"
+        android:theme="@style/Theme.SchoolManager.NoActionBar"
         android:usesCleartextTraffic="true">
 
         <!--
@@ -72,73 +72,59 @@
         <activity
             android:name=".Dashboard"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".StudentsList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SectionList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ClassList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".TeachersList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".DriversList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LocateOnMap"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ComplainList"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ZoomImage"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ChatBoardActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Settings"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".QRScanner"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MyProfile"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SelectDriver"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".NoticeBoard"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ScanQRCode"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".TrackHistory"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.SchoolManager.NoActionBar" />
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SelectLanguage"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="preloaded_fonts"

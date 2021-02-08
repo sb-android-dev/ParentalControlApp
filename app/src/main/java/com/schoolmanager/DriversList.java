@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DriversList extends AppCompatActivity {
+public class DriversList extends BaseActivity {
 
     private static final String TAG = "driver_list_activity";
 

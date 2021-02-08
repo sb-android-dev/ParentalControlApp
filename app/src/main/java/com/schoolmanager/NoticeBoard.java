@@ -47,7 +47,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class NoticeBoard extends AppCompatActivity {
+public class NoticeBoard extends BaseActivity {
 
     private static final String TAG = "notice_board_activity";
 
