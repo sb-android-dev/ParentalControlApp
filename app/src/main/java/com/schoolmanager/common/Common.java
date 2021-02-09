@@ -38,6 +38,10 @@ public class Common {
     public static final String TRACK_NOTIFICATION_CHANNEL_NAME = "Track History";
     public static final int TRACK_NOTIFICATION_ID = 3;
 
+    public static final String CALL_NOTIFICATION_CHANNEL_ID = "call_channel";
+    public static final String CALL_NOTIFICATION_CHANNEL_NAME = "Call";
+    public static final int CALL_NOTIFICATION_ID = 5;
+
     public static final int REQUEST_IMAGE_PICKER = 1002;
 
     public static final int HOME_TO_SCHOOL = 1;

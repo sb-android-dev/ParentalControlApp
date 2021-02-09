@@ -606,9 +606,12 @@ public class Dashboard extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
 
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            locationSwitch.setChecked(true);
+        if(locationManager != null){
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                locationSwitch.setChecked(true);
+            }
         }
+
         fetchGeneralData();
 
         if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {

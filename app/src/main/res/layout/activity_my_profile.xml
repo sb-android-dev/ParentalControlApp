@@ -208,10 +208,63 @@
                     android:text="@string/receive_call"
                     app:layout_constraintTop_toBottomOf="@id/switchReadUnreadMsg"/>
 
+                <LinearLayout
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/relRange"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switchReceiveCall">
+                   <LinearLayout
+                       android:orientation="horizontal"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+                       <TextView
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_marginStart="10dp"
+                           android:text="@string/distance"
+                           android:textStyle="bold" />
+                       <TextView
+                           android:layout_marginStart="4dp"
+                           android:id="@+id/txtRange"
+                           android:text=""
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"/>
+                   </LinearLayout>
+
+                    <SeekBar
+                        android:id="@+id/seekBarRang"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize" />
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="100 m"/>
+                        <Space
+                            android:layout_weight="1.0"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="1 km"/>
+                    </LinearLayout>
+                </LinearLayout>
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/switchReceiveCall">
+                    app:layout_constraintTop_toBottomOf="@id/relRange">
 
                     <ProgressBar
                         android:id="@+id/progressUpdate"

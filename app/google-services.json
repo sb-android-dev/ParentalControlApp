@@ -1,33 +1,49 @@
 {
   "project_info": {
-    "project_number": "578289437301",
-    "project_id": "parental-control-app-21437",
-    "storage_bucket": "parental-control-app-21437.appspot.com"
+    "project_number": "796843957455",
+    "project_id": "parent-3",
+    "storage_bucket": "parent-3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:578289437301:android:b6b5d737543cc27a64463c",
+        "mobilesdk_app_id": "1:796843957455:android:80a4cd6d4ac9444eccabba",
         "android_client_info": {
           "package_name": "com.schoolmanager"
         }
       },
       "oauth_client": [
         {
-          "client_id": "578289437301-1gfg0gbc17sv9cj4nk4hfc567f5fqvdi.apps.googleusercontent.com",
+          "client_id": "796843957455-h18re11keg3lao56q5rdeuqg51smqefa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.schoolmanager",
+            "certificate_hash": "ed127690c9651d999b278d780a827ea20890bd54"
+          }
+        },
+        {
+          "client_id": "796843957455-negu96gcqtlu4gp0ov8dikd8ecllft2j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.schoolmanager",
+            "certificate_hash": "19990c1a2d2da9da0cd81295b0038aef363de358"
+          }
+        },
+        {
+          "client_id": "796843957455-dammi8rfn7prh7lik0k2j96qvd8123qj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCNp4wLAwDoJtXXSD9EwY8mO-djy_0xjs8"
+          "current_key": "AIzaSyBOVeWUtze85wDpBNs8hAysH3KsAx2Q8JM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "578289437301-1gfg0gbc17sv9cj4nk4hfc567f5fqvdi.apps.googleusercontent.com",
+              "client_id": "796843957455-dammi8rfn7prh7lik0k2j96qvd8123qj.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

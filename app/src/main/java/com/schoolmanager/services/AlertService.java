@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.schoolmanager.MyApplication.mp;
+import static com.schoolmanager.MyApplication.mpCall;
 
 public class AlertService extends FirebaseMessagingService {
 
@@ -66,7 +67,7 @@ public class AlertService extends FirebaseMessagingService {
 
         } else if (remoteMessage.getData().get("notification_type").equals("call_init")) {
             /**
-             * If driver and teacher have set the flag receive call ot not
+             * If driver and teacher have set the flag receive call or not
              * then it will manage notification accordinglly 
              * drfault valueis true so other type of user can reeive call
              */
@@ -279,29 +280,28 @@ public class AlertService extends FirebaseMessagingService {
         long notificationId = System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createAlertNotificationChannel(notificationManager);
+            createCallNotificationChannel(notificationManager);
         }
 
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
-        if (mp != null && mp.isPlaying()) {
-            mp.stop();
-            mp.release();
+     /*   if (mpCall != null) {
+            mpCall.stop();
         }
 
-        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
-        mp.setLooping(true);
-        mp.start();
+        mpCall = MediaPlayer.create(getApplicationContext(), notificationSound);
+        mpCall.setLooping(true);
+        mpCall.start();*/
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_ID);
+                new NotificationCompat.Builder(this, Common.CALL_NOTIFICATION_CHANNEL_ID);
 
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
-//                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
+                .setSound(notificationSound, Notification.FLAG_INSISTENT)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
@@ -429,6 +429,32 @@ public class AlertService extends FirebaseMessagingService {
         notificationChannel.enableLights(true);
         notificationManager.createNotificationChannel(notificationChannel);
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createCallNotificationChannel(NotificationManager notificationManager) {
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
+
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setFlags(Notification.FLAG_INSISTENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.CALL_NOTIFICATION_CHANNEL_ID,
+                Common.CALL_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+
+        notificationChannel.setDescription("Call Notification Channel");
+        notificationChannel.setLightColor(Color.YELLOW);
+        notificationChannel.setSound(notificationSound, audioAttributes);
+        notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createChatNotificationChannel(NotificationManager notificationManager) {

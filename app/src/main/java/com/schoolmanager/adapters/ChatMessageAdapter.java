@@ -361,10 +361,15 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void readMessage(String messageId) {
         int index = 0;
         for (ChatMessageModal chatMessageModal : mList) {
-            if (chatMessageModal.getMessage_id().equals(messageId)) {
+            if(messageId.equals("all")){
                 chatMessageModal.setMessage_is_read(1);
                 notifyItemChanged(index);
-                break;
+            }else {
+                if (chatMessageModal.getMessage_id().equals(messageId)) {
+                    chatMessageModal.setMessage_is_read(1);
+                    notifyItemChanged(index);
+                    break;
+                }
             }
             index += 1;
         }
@@ -537,10 +542,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 });
     }
 
+    boolean isTopVisible = false;
     private void setTimeTextVisibility(long ts1, long ts2, CardView cardView, TextView timeText) {
 
+        Log.e("TIME==>","TS1==>"+ts1+"  "+"TS2==>"+ts2);
+
         if (ts2 == 0) {
-            cardView.setVisibility(View.VISIBLE);
+            cardView.setVisibility(View.GONE);
             timeText.setText(formateDate(ts1 * 1000));
         } else {
             Calendar cal1 = Calendar.getInstance();
@@ -548,16 +556,22 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             cal1.setTimeInMillis(ts1);
             cal2.setTimeInMillis(ts2);
 
-            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    &&
                     cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
 
-            if (sameMonth) {
+
+            sameMonth = formateDate(ts2 * 1000).equals(formateDate(ts1 * 1000));
+            timeText.setVisibility(sameMonth  ? View.GONE : View.VISIBLE);
+            timeText.setText(formateDate(ts2 * 1000));
+
+            /*if (sameMonth) {
                 timeText.setVisibility(View.GONE);
                 timeText.setText("");
             } else {
                 timeText.setVisibility(View.VISIBLE);
                 timeText.setText(formateDate(ts2 * 1000));
-            }
+            }*/
 
         }
     }

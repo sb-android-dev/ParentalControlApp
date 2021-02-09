@@ -1,7 +1,9 @@
 package com.schoolmanager;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -35,6 +37,8 @@ import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+
+import static com.schoolmanager.MyApplication.mpCall;
 
 
 public class VoiceCall extends AppCompatActivity {
@@ -217,10 +221,9 @@ public class VoiceCall extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_call);
 
-        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
+       /* if (MyApplication.mpCall != null){
+            MyApplication.mpCall.stop();
+        }*/
 
         type = getIntent().getStringExtra("type");
         channel_name = getIntent().getStringExtra("channel_name");
@@ -245,6 +248,38 @@ public class VoiceCall extends AppCompatActivity {
         }
     }
 
+   /* @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (MyApplication.mpCall != null) {
+            MyApplication.mpCall.stop();
+            MyApplication.mpCall.release();
+        }
+
+        type = intent.getStringExtra("type");
+        channel_name = intent.getStringExtra("channel_name");
+        from_user_id = intent.getStringExtra("from_user_id");
+        to_user_type = intent.getStringExtra("to_user_type");
+        to_user_id = intent.getStringExtra("to_user_id");
+
+        initUI();
+        if (type.equals("init")) {
+            apiCallInit();
+        }
+        if (type.equals("receive")) {
+            // Ask for permissions at runtime.
+            // This is just an example set of permissions. Other permissions
+            // may be needed, and please refer to our online documents.
+            if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
+                    checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
+                    checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
+                initEngineAndJoinChannel();
+            }
+
+        }
+    }
+*/
     private void apiCallInit() {
 
         UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
@@ -557,7 +592,7 @@ public class VoiceCall extends AppCompatActivity {
             public void run() {
                 finish();
             }
-        },1000);
+        }, 1000);
     }
 
     private void showButtons(boolean show) {

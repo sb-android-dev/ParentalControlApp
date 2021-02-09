@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "578289437301",
+    "project_id": "parental-control-app-21437",
+    "storage_bucket": "parental-control-app-21437.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578289437301:android:b6b5d737543cc27a64463c",
+        "android_client_info": {
+          "package_name": "com.schoolmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578289437301-1gfg0gbc17sv9cj4nk4hfc567f5fqvdi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNp4wLAwDoJtXXSD9EwY8mO-djy_0xjs8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578289437301-1gfg0gbc17sv9cj4nk4hfc567f5fqvdi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

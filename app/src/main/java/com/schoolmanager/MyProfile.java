@@ -6,18 +6,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.DragEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -65,6 +70,11 @@ public class MyProfile extends AppCompatActivity {
     private Button update;
     private ProgressBar progressUpdate;
 
+    //Range seekbar
+    private LinearLayout relRange;
+    private TextView txtRange;
+    private SeekBar seekBarRang;
+
     private Uri selectedImageUri = null;
     private File profileFile = null;
 
@@ -75,8 +85,9 @@ public class MyProfile extends AppCompatActivity {
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
-    private String userId, userToken, userType, deviceId, fcmToken;
+    private String userId, userToken, userType, deviceId, fcmToken, range;
     private boolean isLastSeenEnabled, isReadUnreadMessagesEnabled, isReceiveCall = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +118,9 @@ public class MyProfile extends AppCompatActivity {
         lastSeen = findViewById(R.id.switchLastSeen);
         readUnread = findViewById(R.id.switchReadUnreadMsg);
         switchReceiveCall = findViewById(R.id.switchReceiveCall);
+        relRange = findViewById(R.id.relRange);
+        txtRange = findViewById(R.id.txtRange);
+        seekBarRang = findViewById(R.id.seekBarRang);
         update = findViewById(R.id.btnUpdate);
         progressUpdate = findViewById(R.id.progressUpdate);
 
@@ -126,7 +140,33 @@ public class MyProfile extends AppCompatActivity {
             isReceiveCall = sessionManager.canReceiveCall();
             switchReceiveCall.setChecked(isReceiveCall);
         } else {
-            swipeRefreshLayout.setVisibility(View.GONE);
+            switchReceiveCall.setVisibility(View.GONE);
+        }
+
+        if (userType.equals("1")) {
+            relRange.setVisibility(View.VISIBLE);
+            seekBarRang.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                    txtRange.setText(String.format(" : %S %s", i * 10, " m"));
+                    double km = i * 10;
+                    km = km / 1000;
+                    range = String.valueOf(km);
+                    Log.e("RANGE", range);
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
+        } else {
+            relRange.setVisibility(View.GONE);
         }
 
         getUserProfile();
@@ -209,6 +249,13 @@ public class MyProfile extends AppCompatActivity {
                                     String pNumber = userProfile.getString("user_phone_no");
                                     String uImage = userProfile.getString("user_image");
                                     String uCode = userProfile.getString("user_access_code");
+                                    range = userProfile.getString("user_notification_distance");
+                                    double km = Double.parseDouble(range);
+                                    km = km * 1000;
+                                    range = String.valueOf(km/1000);
+                                    seekBarRang.setProgress((int) km / 10);
+
+                                    Log.e("RANGE", range);
 
                                     isLastSeenEnabled = userProfile.getInt("user_last_seen_status") == 1;
                                     isReadUnreadMessagesEnabled = userProfile.getInt("user_read_status") == 1;
@@ -328,6 +375,7 @@ public class MyProfile extends AppCompatActivity {
                     .addBodyParameter("user_access_code", userAccessCode)
                     .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
+                    .addBodyParameter("user_notification_distance", range)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -382,6 +430,7 @@ public class MyProfile extends AppCompatActivity {
                     .addBodyParameter("user_password", userPassword)
                     .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
+                    .addBodyParameter("user_notification_distance", range)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -437,6 +486,7 @@ public class MyProfile extends AppCompatActivity {
                     .addMultipartParameter("user_password", userPassword)
                     .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
+                    .addMultipartParameter("user_notification_distance", range)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -493,6 +543,7 @@ public class MyProfile extends AppCompatActivity {
                     .addMultipartParameter("user_access_code", userAccessCode)
                     .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
+                    .addMultipartParameter("user_notification_distance", range)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override

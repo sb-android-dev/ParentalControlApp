@@ -84,4 +84,5 @@
     <string name="call_error">Something went wrong...</string>
     <string name="call_decliend">Decliend</string>
     <string name="call_started">Call Started</string>
+    <string name="distance">Distance</string>
 </resources>

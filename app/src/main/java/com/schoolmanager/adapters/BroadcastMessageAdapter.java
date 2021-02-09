@@ -13,11 +13,9 @@ import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.schoolmanager.BroadCastMessage;
 import com.schoolmanager.R;
 import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.model.BroadCastMessageItem;
-import com.schoolmanager.model.ChatMessageModal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
