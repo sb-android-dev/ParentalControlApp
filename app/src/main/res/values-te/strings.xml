@@ -92,12 +92,12 @@
     <string name="likhita_school">లిఖిత స్కూల్</string>
     <string name="delete">తొలగించు</string>
     <string name="last_seen">చివరిగా చూసింది</string>
-    <string name="call">Call</string>
-    <string name="call_to_parent">Call to parent</string>
-    <string name="receive_call">Receive Call</string>
-    <string name="ringing">Ringing</string>
-    <string name="call_error">Something went wrong...</string>
-    <string name="call_decliend">Decliend</string>
-    <string name="call_started">Call Started</string>
-    <string name="distance">Distance</string>
+    <string name="call">కాల్ చేయండి</string>
+    <string name="call_to_parent">తల్లిదండ్రులకు కాల్ చేయండి</string>
+    <string name="receive_call">కాల్ స్వీకరించండి</string>
+    <string name="ringing">రింగింగ్</string>
+    <string name="call_error">ఎక్కడో తేడ జరిగింది…</string>
+    <string name="call_decliend">క్షీణించింది</string>
+    <string name="call_started">కాల్ ప్రారంభమైంది</string>
+    <string name="distance">దూరం</string>
 </resources>
