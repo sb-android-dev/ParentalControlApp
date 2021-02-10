@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MyProfile extends AppCompatActivity {
+public class MyProfile extends BaseActivity {
 
     private static final String TAG = "my_profile_activity";
 

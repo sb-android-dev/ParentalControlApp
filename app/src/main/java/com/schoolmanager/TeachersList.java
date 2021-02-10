@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TeachersList extends AppCompatActivity {
+public class TeachersList extends BaseActivity {
 
     private static final String TAG = "teacher_list_activity";
 
@@ -103,7 +103,7 @@ public class TeachersList extends AppCompatActivity {
                     "",
                     "",
                     0,
-                    "",
+                    teacherItem.getTeacherImage(),
                     teacherItem.getTeacherName(),
                     teacherItem.getTeacherId(),
                     2,
@@ -203,6 +203,12 @@ public class TeachersList extends AppCompatActivity {
                                         teacherItem.setTeacherName(teacher.getString("teacher_name"));
                                         if (!teacher.isNull("teacher_phone_no"))
                                             teacherItem.setTeacherPhoneNo(teacher.getString("teacher_phone_no"));
+                                        if(!teacher.isNull("teacher_profile"))
+                                            teacherItem.setTeacherImage(teacher.getString("teacher_profile"));
+                                        if(!teacher.isNull("teacher_last_seen"))
+                                            teacherItem.setTeacherLastSeen(teacher.getLong("teacher_last_seen"));
+                                        teacherItem.setLastSeenEnabled(teacher.getString("teacher_last_seen_permission").equals("1"));
+                                        teacherItem.setReadUnreadEnabled(teacher.getString("teacher_message_read_permission").equals("1"));
 
                                         teacherList.add(teacherItem);
                                     }

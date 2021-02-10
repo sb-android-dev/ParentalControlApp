@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class SelectDriver extends AppCompatActivity {
+public class SelectDriver extends BaseActivity {
 
     private static final String TAG = "select_driver_activity";
 

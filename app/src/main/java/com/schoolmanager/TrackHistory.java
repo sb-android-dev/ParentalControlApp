@@ -44,7 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class TrackHistory extends AppCompatActivity {
+public class TrackHistory extends BaseActivity {
 
     private static final String TAG = "track_history_activity";
 

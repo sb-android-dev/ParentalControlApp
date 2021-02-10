@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class ComplainList extends AppCompatActivity {
+public class ComplainList extends BaseActivity {
 
     private static final String TAG = "complaint_list_activity";
 
@@ -179,7 +179,7 @@ public class ComplainList extends AppCompatActivity {
                                 } else {
                                     binding.resViewComplaintLlistChatList.setAdapter(null);
                                     binding.llComplaintEmptyView.setVisibility(View.VISIBLE);
-                                    binding.txtComplaintListEmptyMessage.setText("No complaints found");
+                                    binding.txtComplaintListEmptyMessage.setText(getString(R.string.no_any_complaint_yet));
                                 }
 
                             } else if (success == 2) {

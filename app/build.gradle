@@ -109,4 +109,6 @@ dependencies {
 
     implementation 'com.github.transferwise:sequence-layout:1.0.11'
 
+    implementation 'com.zeugmasolutions.localehelper:locale-helper-android:1.1.4'
+
 }

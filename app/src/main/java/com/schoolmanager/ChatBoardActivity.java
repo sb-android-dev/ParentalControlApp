@@ -71,7 +71,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 
-public class ChatBoardActivity extends AppCompatActivity {
+public class ChatBoardActivity extends BaseActivity {
 
     private static final String TAG = "chat_board_activity";
 

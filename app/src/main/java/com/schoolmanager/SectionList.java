@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionList extends AppCompatActivity {
+public class SectionList extends BaseActivity {
 
     private static final String TAG = "section_list_activity";
 

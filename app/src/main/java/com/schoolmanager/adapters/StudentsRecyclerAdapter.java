@@ -4,11 +4,16 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.schoolmanager.R;
 import com.schoolmanager.model.StudentItem;
 
@@ -50,11 +55,13 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
     class StudentViewHolder extends RecyclerView.ViewHolder{
         TextView studentName, classSectionName;
+        ImageView studentImage;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
             studentName = itemView.findViewById(R.id.tvStudent);
             classSectionName = itemView.findViewById(R.id.tvClassSection);
+            studentImage = itemView.findViewById(R.id.ivStudentImage);
         }
 
         public void bindView(StudentItem studentItem) {
@@ -62,6 +69,12 @@ public class StudentsRecyclerAdapter extends RecyclerView.Adapter<StudentsRecycl
 
             String cS = studentItem.getClassName() + " / " + studentItem.getSectionName();
             classSectionName.setText(cS);
+
+            Glide.with(context).load(studentItem.getParentImage())
+                    .placeholder(R.drawable.ic_person)
+                    .apply(new RequestOptions()
+                            .transform(new CenterCrop(), new RoundedCorners(context.getResources().getDimensionPixelSize(R.dimen.recycler_image_corner_radius))))
+                    .into(studentImage);
 
             itemView.setOnClickListener(v -> listener.onClick(studentItem, getAbsoluteAdapterPosition()));
         }

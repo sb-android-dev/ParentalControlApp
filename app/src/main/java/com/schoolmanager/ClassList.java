@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ClassList extends AppCompatActivity {
+public class ClassList extends BaseActivity {
 
     private static final String TAG = "class_list_activity";
 

@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil;
 import com.bumptech.glide.Glide;
 import com.schoolmanager.databinding.ActivityZoomImageBinding;
 
-public class ZoomImage extends AppCompatActivity {
+public class ZoomImage extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

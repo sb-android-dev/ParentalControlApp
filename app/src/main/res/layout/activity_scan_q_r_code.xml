@@ -51,7 +51,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="Home To School"
+                android:text="@string/home_to_school"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,7 +64,7 @@
                 android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="School To Home"
+                android:text="@string/school_to_home"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toBottomOf="@id/btnDriverHomeToSchool" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -83,7 +83,7 @@
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="Home To School"
+                android:text="@string/home_to_school"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -96,7 +96,7 @@
                 android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="School To Home"
+                android:text="@string/school_to_home"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toBottomOf="@id/btnSubAdminHomeToSchool" />
         </androidx.constraintlayout.widget.ConstraintLayout>

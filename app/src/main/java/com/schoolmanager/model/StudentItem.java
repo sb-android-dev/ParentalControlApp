@@ -6,6 +6,7 @@ public class StudentItem {
     private String studentName;
     private String className;
     private String sectionName;
+    private String studentImage;
     private int parentId;
     private String parentName;
     private String parentImage;
@@ -14,11 +15,12 @@ public class StudentItem {
     }
 
     public StudentItem(int studentId, String studentName, String className, String sectionName,
-                       int parentId, String parentName, String parentImage) {
+                       String studentImage, int parentId, String parentName, String parentImage) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.className = className;
         this.sectionName = sectionName;
+        this.studentImage = studentImage;
         this.parentId = parentId;
         this.parentName = parentName;
         this.parentImage = parentImage;
@@ -54,6 +56,14 @@ public class StudentItem {
 
     public void setSectionName(String sectionName) {
         this.sectionName = sectionName;
+    }
+
+    public String getStudentImage() {
+        return studentImage;
+    }
+
+    public void setStudentImage(String studentImage) {
+        this.studentImage = studentImage;
     }
 
     public int getParentId() {
