@@ -49,7 +49,7 @@ public class LogIn extends BaseActivity {
 
         if (fcmToken == null) {
             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                if(!task.isSuccessful()){
+                if (!task.isSuccessful()) {
                     Log.w("getInstanceId failed", task.getException());
 //                    return;
                 }
@@ -65,7 +65,7 @@ public class LogIn extends BaseActivity {
         }
 
         assert userId != null;
-        if(Integer.parseInt(userId) > 0){
+        if (Integer.parseInt(userId) > 0) {
             Intent dashboardIntent = new Intent(LogIn.this, Dashboard.class);
             startActivity(dashboardIntent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -92,7 +92,7 @@ public class LogIn extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(!s.toString().isEmpty()) {
+                if (!s.toString().isEmpty()) {
                     username.setError(null);
                 }
             }
@@ -111,7 +111,7 @@ public class LogIn extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(!s.toString().isEmpty()) {
+                if (!s.toString().isEmpty()) {
                     password.setError(null);
                 }
             }
@@ -119,20 +119,20 @@ public class LogIn extends BaseActivity {
 
     }
 
-    private void validateInputs(){
+    private void validateInputs() {
         String u = Objects.requireNonNull(username.getText()).toString();
         String p = Objects.requireNonNull(password.getText()).toString();
 
-        if(u.isEmpty() || p.isEmpty()){
-            if(p.isEmpty()){
+        if (u.isEmpty() || p.isEmpty()) {
+            if (p.isEmpty()) {
                 password.setError("Please enter password!");
                 password.requestFocus();
             }
-            if(u.isEmpty()){
+            if (u.isEmpty()) {
                 username.setError("Please enter username!");
                 username.requestFocus();
             }
-        }else{
+        } else {
 //            String type;
 //            switch (u){
 //                case "student":
@@ -155,24 +155,25 @@ public class LogIn extends BaseActivity {
 
     /**
      * Log in user with below parameter
+     *
      * @param username - Username of user
      * @param password - password of user
-     * This API returns status of request & user profile data.
-     * If user is teacher it returns user's name and the subject he/she teaches.
-     * If user is driver it return user's name and the vehicle no.
-     * If user is parent it return child's name, class & section of child.
-     * Result JSON is something like:
-     * {
-     *     "status" : 1,
-     *     "message" : "User has successfully signed in"
-     *     "user_details" : {
-     *         "name" : "Smit Patel",
-     *         "type" : 1,
-     *         "subject" : "Science"
-     *     }
-     * }
+     *                 This API returns status of request & user profile data.
+     *                 If user is teacher it returns user's name and the subject he/she teaches.
+     *                 If user is driver it return user's name and the vehicle no.
+     *                 If user is parent it return child's name, class & section of child.
+     *                 Result JSON is something like:
+     *                 {
+     *                 "status" : 1,
+     *                 "message" : "User has successfully signed in"
+     *                 "user_details" : {
+     *                 "name" : "Smit Patel",
+     *                 "type" : 1,
+     *                 "subject" : "Science"
+     *                 }
+     *                 }
      */
-    private void logInUser(String username, String password){
+    private void logInUser(String username, String password) {
         progressSignIn.setVisibility(View.VISIBLE);
         logIn.setVisibility(View.INVISIBLE);
         AndroidNetworking.post(Common.BASE_URL + "app-user-login")
@@ -190,7 +191,7 @@ public class LogIn extends BaseActivity {
                         try {
                             int success = response.getInt("success");
                             String message = response.getString("message");
-                            if(success == 1){
+                            if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
                                 int userId = data.getInt("user_id");
                                 String userToken = data.getString("user_token");
@@ -198,10 +199,10 @@ public class LogIn extends BaseActivity {
                                 String userName = data.getString("user_name");
                                 String userPhoneNo = data.getString("user_phone_no");
                                 String userImage = data.getString("user_image_url");
-                                boolean isLastSeenEnabled = data.getInt("user_last_seen_status")==1;
-                                boolean isReadUnreadMessageEnabled = data.getInt("user_read_status")==1;
+                                boolean isLastSeenEnabled = data.getInt("user_last_seen_status") == 1;
+                                boolean isReadUnreadMessageEnabled = data.getInt("user_read_status") == 1;
 
-                                if(userType == 1){
+                                if (userType == 1) {
                                     int studentId = data.getInt("user_student_id");
                                     int driverId = data.getInt("user_driver_id");
                                     String driverName = data.getString("user_driver_name");
@@ -209,7 +210,7 @@ public class LogIn extends BaseActivity {
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
                                             userType, userPhoneNo, userImage, studentId);
                                     sessionManager.upsertDriver(driverId, driverName, driverPhoneNo);
-                                }else{
+                                } else {
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
                                             userType, userPhoneNo, userImage);
                                 }
@@ -218,6 +219,8 @@ public class LogIn extends BaseActivity {
 
 //                                Snackbar.make(logIn, "Done!!!", Snackbar.LENGTH_SHORT).show();
 
+                                //Last seen api
+                                MyApplication.apiCallLastSeen(LogIn.this);
                                 Intent dashboardIntent = new Intent(LogIn.this, Dashboard.class);
                                 startActivity(dashboardIntent);
                                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
