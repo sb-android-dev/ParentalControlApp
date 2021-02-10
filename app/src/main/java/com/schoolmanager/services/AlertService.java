@@ -309,8 +309,6 @@ public class AlertService extends FirebaseMessagingService {
         notification.flags |= Notification.FLAG_INSISTENT;
 
         notificationManager.notify((int) notificationId, notification);
-
-        new UserSessionManager(this).updateNotificationStatus(true);
     }
 
     private void performAlertNotification(Map<String, String> data) {
