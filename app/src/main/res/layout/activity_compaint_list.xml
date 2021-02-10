@@ -70,6 +70,7 @@
                     android:id="@+id/searchView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:hint="@string/search_hint"
                     app:type="card"
                     android:backgroundTint="?attr/colorPrimary"
                     app:backIconTint="?attr/colorPrimary"

@@ -28,7 +28,7 @@ import static com.schoolmanager.common.Common.DRIVER_DROPPED;
 import static com.schoolmanager.common.Common.HOME_TO_SCHOOL;
 import static com.schoolmanager.common.Common.SCHOOL_TO_HOME;
 
-public class ScanQRCode extends AppCompatActivity {
+public class ScanQRCode extends BaseActivity {
 
     private static final String TAG = "scan_qr_code_activity";
 

@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/all"
-        android:title="All" />
+        android:title="@string/all" />
     <item
         android:id="@+id/today"
-        android:title="Today's" />
+        android:title="@string/today_s" />
     <item
         android:id="@+id/yesterday"
-        android:title="Yesterday" />
+        android:title="@string/yesterday" />
     <item
         android:id="@+id/one_week_ago"
-        android:title="One week ago" />
+        android:title="@string/one_week_ago" />
 </menu>

@@ -55,7 +55,7 @@ import java.util.List;
 import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;
 
-public class Dashboard extends AppCompatActivity {
+public class Dashboard extends BaseActivity {
 
     private static final String TAG = "dashboard_activity";
 
@@ -233,7 +233,7 @@ public class Dashboard extends AppCompatActivity {
                                 .withIcon(R.drawable.ic_my_location).build())
                         .check();
 
-                locationSwitch.setText("See live locations");
+                locationSwitch.setText(R.string.see_live_locations);
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (TrackingService.isTracking) {
                     locationSwitch.setChecked(true);

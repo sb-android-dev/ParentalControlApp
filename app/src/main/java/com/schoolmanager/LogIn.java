@@ -26,9 +26,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Objects;
 
-//import com.google.firebase.installations.FirebaseInstallations;
-
-public class LogIn extends AppCompatActivity {
+public class LogIn extends BaseActivity {
 
     private static final String TAG = "log_in_activity";
 

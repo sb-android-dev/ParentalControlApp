@@ -36,7 +36,7 @@ import java.util.HashMap;
 import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;
 
-public class QRScanner extends AppCompatActivity {
+public class QRScanner extends BaseActivity {
 
     private static final String TAG = "qr_scanner_activity";
 

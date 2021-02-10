@@ -40,6 +40,7 @@ public class UserSessionManager {
     public static final String KEY_IS_READ_UNREAD_MESSAGES_ENABLED = "is_read_unread_message_enabled";
     public static final String KEY_RECEIVE_CALL = "receive_call";
 
+    public static final String KEY_LANGUAGE_CODE = "lang_code";
 
     public UserSessionManager(Context context) {
         this._context = context;
@@ -58,6 +59,11 @@ public class UserSessionManager {
         editor.commit();
     }
 
+
+    public void setLanguage(String code){
+        editor.putString(KEY_LANGUAGE_CODE, code);
+        editor.commit();
+    }
 
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
                                        String userPhone, String userImage) {
@@ -221,6 +227,10 @@ public class UserSessionManager {
 
     public boolean getReadUnreadMessagesFlag() {
         return pref.getBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, false);
+    }
+
+    public String getLanguage(){
+        return  pref.getString(KEY_LANGUAGE_CODE, "en");
     }
 
 //    public HashMap<String, Integer> getLTime(){

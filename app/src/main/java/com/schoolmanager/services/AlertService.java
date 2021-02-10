@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -26,6 +28,7 @@ import com.schoolmanager.ChatBoardActivity;
 import com.schoolmanager.ComplainList;
 import com.schoolmanager.Dashboard;
 import com.schoolmanager.LogIn;
+import com.schoolmanager.MyApplication;
 import com.schoolmanager.R;
 import com.schoolmanager.VoiceCall;
 import com.schoolmanager.common.Common;
@@ -68,7 +71,7 @@ public class AlertService extends FirebaseMessagingService {
         } else if (remoteMessage.getData().get("notification_type").equals("call_init")) {
             /**
              * If driver and teacher have set the flag receive call or not
-             * then it will manage notification accordinglly 
+             * then it will manage notification accordinglly
              * drfault valueis true so other type of user can reeive call
              */
             UserSessionManager userSessionManager = new UserSessionManager(this);
@@ -355,6 +358,7 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationManager.notify((int) notificationId, notification);
 
+        new UserSessionManager(this).updateNotificationStatus(true);
     }
 
     private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {

@@ -85,7 +85,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class LocateOnMap extends AppCompatActivity implements OnMapReadyCallback, TrackingService.Callbacks, TaskLoadedCallback {
+public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, TrackingService.Callbacks, TaskLoadedCallback {
 
     private static final String TAG = "locate_on_map_activity";
 

@@ -12,7 +12,7 @@ import com.schoolmanager.utilities.UserSessionManager;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class Splash extends AppCompatActivity {
+public class Splash extends BaseActivity {
 
     private static final String TAG = "splash_activity";
 

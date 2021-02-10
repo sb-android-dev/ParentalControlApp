@@ -219,7 +219,7 @@
 
                 <TextView
                     android:id="@+id/tvComplaintDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/chat_with_parents"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -270,7 +270,7 @@
 
                 <TextView
                     android:id="@+id/tvDriversDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/list_of_drivers"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -321,16 +321,16 @@
 
                 <TextView
                     android:id="@+id/tvStudentsDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/class_section_wise_list_of_students"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     android:textColor="?attr/caption_color"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/ivStudents"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvStudents" />
+                    app:layout_constraintTop_toBottomOf="@id/tvStudents"
+                    app:layout_constraintHorizontal_weight="1"/>
 
                 <ImageView
                     android:id="@+id/ivStudents"
@@ -372,7 +372,7 @@
 
                 <TextView
                     android:id="@+id/tvGiveComplaintDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/chat_with_teachers"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -423,7 +423,7 @@
 
                 <TextView
                     android:id="@+id/tvLocateChildDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/see_current_location_of_driver"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -474,7 +474,7 @@
 
                 <TextView
                     android:id="@+id/tvTeachersDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/see_list_of_teachers"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -525,7 +525,7 @@
 
                 <TextView
                     android:id="@+id/tvTrackingHistoryDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/track_your_child"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -576,7 +576,7 @@
 
                 <TextView
                     android:id="@+id/tvScanCodeDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/scan_qr_code_of_children"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -627,7 +627,7 @@
 
                 <TextView
                     android:id="@+id/tvNoticeBoardDescription"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/see_all_notices"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
@@ -678,9 +678,9 @@
 
                 <TextView
                     android:id="@+id/tvManagementMsg"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Messages for management"
+                    android:text="@string/messages_for_management"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     android:textColor="?attr/caption_color"
                     app:layout_constraintBottom_toBottomOf="parent"
