@@ -1,9 +1,7 @@
 package com.schoolmanager;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -37,8 +35,6 @@ import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
-
-import static com.schoolmanager.MyApplication.mpCall;
 
 
 public class VoiceCall extends AppCompatActivity {

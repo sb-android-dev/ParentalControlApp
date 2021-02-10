@@ -16,7 +16,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -202,7 +201,7 @@ public class ChatBoardActivity extends BaseActivity {
         //Fetch message data
         apiCallFetchMessages(current_page);
 
-        if (mComplaintModal.getChat_last_seen_permission() == 1 && !userType.equals("1")) {
+        if (mComplaintModal.getChat_last_seen_permission() == 1) {
             binding.txtChatBoardLastSeen.setVisibility(View.VISIBLE);
         } else {
             binding.txtChatBoardLastSeen.setVisibility(View.GONE);

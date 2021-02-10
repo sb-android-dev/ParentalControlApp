@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -28,7 +26,6 @@ import com.schoolmanager.ChatBoardActivity;
 import com.schoolmanager.ComplainList;
 import com.schoolmanager.Dashboard;
 import com.schoolmanager.LogIn;
-import com.schoolmanager.MyApplication;
 import com.schoolmanager.R;
 import com.schoolmanager.VoiceCall;
 import com.schoolmanager.common.Common;
@@ -47,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.schoolmanager.MyApplication.mp;
-import static com.schoolmanager.MyApplication.mpCall;
 
 public class AlertService extends FirebaseMessagingService {
 

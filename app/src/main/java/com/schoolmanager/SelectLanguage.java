@@ -1,27 +1,17 @@
 package com.schoolmanager;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.schoolmanager.adapters.DriversRecyclerAdapter;
 import com.schoolmanager.adapters.LanguageRecyclerAdapter;
-import com.schoolmanager.common.Common;
-import com.schoolmanager.model.DriverItem;
 import com.schoolmanager.model.LanguageItem;
-import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.SpaceItemDecoration;
 import com.schoolmanager.utilities.UserSessionManager;
-import com.zeugmasolutions.localehelper.LocaleHelper;
-import com.zeugmasolutions.localehelper.Locales;
 
 import org.jetbrains.annotations.NotNull;
 

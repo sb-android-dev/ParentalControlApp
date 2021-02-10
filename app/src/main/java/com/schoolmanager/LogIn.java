@@ -9,8 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
