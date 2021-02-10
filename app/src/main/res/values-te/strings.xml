@@ -23,7 +23,7 @@
 
     <string name="clear_date">క్లియర్ తేదీ</string>
     <string name="type_a_message">సందేశాన్ని టైప్ చేయండి</string>
-    <string name="slide_to_cancel">రద్దు చేయడానికి స్లయిడ్ ...</string>
+    <string name="slide_to_cancel">రద్దు చేయడానికి స్లయిడ్ …</string>
     <string name="complaints">ఫిర్యాదులు</string>
     <string name="no_any_complaint_yet">ఇంకా ఎటువంటి ఫిర్యాదు లేదు</string>
     <string name="today_s_complaints">నేటి ఫిర్యాదులు</string>
@@ -89,5 +89,7 @@
     <string name="today_s">నేటి</string>
     <string name="yesterday">నిన్న</string>
     <string name="one_week_ago">ఒక వారం క్రితం</string>
-    <string name="likhita_school">Likhita School</string>
+    <string name="likhita_school">లిఖిత స్కూల్</string>
+    <string name="delete">తొలగించు</string>
+    <string name="last_seen">చివరిగా చూసింది</string>
 </resources>
