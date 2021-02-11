@@ -21,7 +21,7 @@
             android:layout_height="?attr/actionBarSize">
 
             <LinearLayout
-                android:background="?attr/colorPrimary"
+                android:background="@color/primary_color"
                 android:gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -78,12 +78,12 @@
                         android:textSize="16sp" />
 
                     <TextView
-                        android:visibility="gone"
-                        android:id="@+id/txt_ChatBoard_studentName"
+                        android:visibility="visible"
+                        android:id="@+id/txt_ChatBoard_lastSeen"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline2"
-                        android:text="Online"
+                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="12sp" />
                 </LinearLayout>
@@ -164,7 +164,7 @@
                                 android:inputType="textMultiLine"
                                 android:imeOptions="actionDone"
                                 android:paddingHorizontal="16dp"
-                                android:hint="@string/type_a_message"
+                                android:hint="Type a message"
                                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"
                                 android:background="@android:color/transparent"
                                 android:layout_width="0dp"
@@ -221,7 +221,7 @@
                         app:slide_to_cancel_arrow_color="#000000"
                         app:slide_to_cancel_bounds="8dp"
                         app:slide_to_cancel_margin_right="10dp"
-                        app:slide_to_cancel_text="@string/slide_to_cancel" />
+                        app:slide_to_cancel_text="Slide To Cancel..." />
 
                     <com.devlomi.record_view.RecordButton
                         android:layout_alignParentEnd="true"

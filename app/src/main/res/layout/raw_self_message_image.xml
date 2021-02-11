@@ -2,61 +2,89 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
-        android:paddingStart="56dp"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_alignParentEnd="true"
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+        <include
+            android:id="@+id/topDateView"
+            layout="@layout/top_date_view"/>
+
+        <RelativeLayout
+            android:paddingStart="56dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <androidx.cardview.widget.CardView
-                app:cardBackgroundColor="?attr/colorPrimary"
-                android:layout_width="wrap_content"
+            <LinearLayout
                 android:layout_alignParentEnd="true"
-                android:minHeight="44dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="@dimen/message_radius"
-                app:cardElevation="0dp"
-                app:cardPreventCornerOverlap="false"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <androidx.cardview.widget.CardView
-                    app:cardBackgroundColor="@color/purple_200"
+                    app:cardBackgroundColor="?attr/colorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="2dp"
+                    android:minHeight="44dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
                     app:cardCornerRadius="@dimen/message_radius"
+                    app:cardElevation="0dp"
                     app:cardPreventCornerOverlap="false"
                     android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:id="@+id/img_rowSelfImage_img"
-                        android:layout_width="250dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/place_holder"
-                        android:layout_height="250dp"/>
+                    <androidx.cardview.widget.CardView
+                        app:cardBackgroundColor="@color/purple_200"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="2dp"
+                        app:cardCornerRadius="@dimen/message_radius"
+                        app:cardPreventCornerOverlap="false"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/img_rowSelfImage_img"
+                            android:layout_width="250dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/place_holder"
+                            android:layout_height="250dp"/>
+
+                    </androidx.cardview.widget.CardView>
 
                 </androidx.cardview.widget.CardView>
 
-            </androidx.cardview.widget.CardView>
+                <LinearLayout
+                    android:layout_marginEnd="18dp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_rowSelfImage_time"
+                        android:layout_gravity="end"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                        android:text="yesterday"
+                        android:layout_marginEnd="8dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/light_gray"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/txt_rowSelfImage_time"
-                android:layout_marginTop="4dp"
-                android:layout_gravity="end"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-                android:text="yesterday"
-                android:layout_marginEnd="18dp"
-                android:textSize="12sp"
-                android:textColor="@color/light_gray"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                    <ImageView
+                        android:id="@+id/img_rowSelfImage_tick"
+                        android:layout_width="15dp"
+                        android:layout_height="10dp"
+                        android:scaleType="centerInside"
+                        android:tint="@color/purple_500"
+                        android:src="@drawable/single_tick" />
+                </LinearLayout>
 
-    </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
 </layout>

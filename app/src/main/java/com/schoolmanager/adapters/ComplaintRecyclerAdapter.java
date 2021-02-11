@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,7 +50,7 @@ public class ComplaintRecyclerAdapter extends RecyclerView.Adapter<ComplaintRecy
         ComplaintItem modal = mList.get(position);
         RecyclerComplaintsBinding binding = holder.binding;
 
-        String ago = TimeAgo.getTimeAgo(Long.parseLong(modal.getChat_last_message_time()));
+        String ago = TimeAgo.getTimeAgo((Long.parseLong(modal.getChat_last_message_time())*1000L));
 
         holder.binding.txtRawChatListLastMessage.setText(modal.getChat_last_message());
         holder.binding.txtRawChatListTime.setText(ago);
@@ -68,13 +69,21 @@ public class ComplaintRecyclerAdapter extends RecyclerView.Adapter<ComplaintRecy
                         .putExtra("complaint_data", new Gson().toJson(modal)));
             }
         });
+
+        if(modal.getChat_unread_count() > 0){
+            holder.binding.txtRawChatListCount.setText(String.valueOf(modal.getChat_unread_count()));
+            holder.binding.txtRawChatListCount.setVisibility(View.VISIBLE);
+            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity,R.color.colorPrimary));
+        }else {
+            holder.binding.txtRawChatListCount.setVisibility(View.INVISIBLE);
+            holder.binding.txtRawChatListTime.setTextColor(ContextCompat.getColor(activity,R.color.light_gray));
+        }
     }
 
     @Override
     public int getItemCount() {
         return mList.size();
     }
-
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         RecyclerComplaintsBinding binding;

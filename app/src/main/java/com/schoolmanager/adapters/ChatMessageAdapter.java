@@ -5,32 +5,56 @@ import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.utils.Utils;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.schoolmanager.R;
 import com.schoolmanager.ZoomImage;
+import com.schoolmanager.common.Common;
 import com.schoolmanager.databinding.RawApntMessageAudioBinding;
 import com.schoolmanager.databinding.RawApntMessageImageBinding;
 import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.databinding.RawSelfMessageAudioBinding;
 import com.schoolmanager.databinding.RawSelfMessageImageBinding;
 import com.schoolmanager.databinding.RawSelfMessageTextBinding;
+import com.schoolmanager.databinding.TopDateViewBinding;
 import com.schoolmanager.model.ChatMessageModal;
 import com.schoolmanager.utilities.UserSessionManager;
 import com.schoolmanager.view.MessageFileDownloadProgressbar;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -45,9 +69,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<ChatMessageModal> mList;
 
     private String user_id = "", userType = ""; //get it from preferance
+    private int chat_read_permission = 0;
 
 
-    public ChatMessageAdapter(Activity activity, ArrayList<ChatMessageModal> mList) {
+    public ChatMessageAdapter(Activity activity, ArrayList<ChatMessageModal> mList, int chat_read_permission) {
         this.activity = activity;
         this.mList = mList;
 
@@ -55,6 +80,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         HashMap<String, String> hashMap = sessionManager.getEssentials();
         user_id = hashMap.get(UserSessionManager.KEY_USER_ID);
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        this.chat_read_permission = chat_read_permission;
     }
 
     @NonNull
@@ -152,7 +178,13 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void bindSelfText(SelfTextViewHolder holder, int position) {
         holder.binding.txtRowSelfMessage.setText(mList.get(position).getMessage_text());
         holder.binding.txtRowSelfTime.setText(getTimeOfMessage(mList.get(position).getMessage_time()));
+        deleteMessage(holder.binding.getRoot(), holder.binding.txtRowSelfMessage, mList.get(position), position);
+        showSingleAndDoubleTik(mList.get(position), holder.binding.imgRowSelfTick);
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
+
 
     private void bindSelfImage(SelfImageViewHolder holder, int position) {
         Glide.with(activity).load(mList.get(position).getMessage_file_url()).into(holder.binding.imgRowSelfImageImg);
@@ -163,6 +195,12 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 fullScreenImage(mList.get(position).getMessage_file_url());
             }
         });
+        deleteMessage(holder.binding.getRoot(), holder.binding.imgRowSelfImageImg, mList.get(position), position);
+        showSingleAndDoubleTik(mList.get(position), holder.binding.imgRowSelfImageTick);
+
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
 
     private void bindSelfAudio(SelfAudioViewHolder holder, int position) {
@@ -198,11 +236,19 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.binding.apRawSelfAudioAudio.setAudioTarget(fileDecrypted.getAbsolutePath());
         holder.binding.apRawSelfAudioAudio.commitClickEvents();
         holder.binding.txtRowSelfTime.setText(getTimeOfMessage(mList.get(position).getMessage_time()));
+        deleteMessage(holder.binding.getRoot(), holder.binding.txtRowSelfTime, mList.get(position), position);
+        showSingleAndDoubleTik(mList.get(position), holder.binding.imgRowSelfImageTick);
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
 
     private void bindApntText(ApntTextViewHolder holder, int position) {
         holder.binding.txtRowApntMessage.setText(mList.get(position).getMessage_text());
         holder.binding.txtRowApntTime.setText(getTimeOfMessage(mList.get(position).getMessage_time()));
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
 
     private void bindApntImage(ApntImageViewHolder holder, int position) {
@@ -214,6 +260,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 fullScreenImage(mList.get(position).getMessage_file_url());
             }
         });
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
 
     private void bindApntAudio(ApntAudioViewHolder holder, int position) {
@@ -248,12 +297,16 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         holder.binding.apRawApntAudioAudio.setAudioTarget(fileDecrypted.getAbsolutePath());
         holder.binding.apRawApntAudioAudio.commitClickEvents();
         holder.binding.txtRawApntAudioTime.setText(getTimeOfMessage(mList.get(position).getMessage_time()));
+        bindTopDate(position,
+                holder.binding.topDateView.relTopDateView,
+                holder.binding.topDateView.txtTopDateViewDate);
     }
 
     private String getTimeOfMessage(String time) {
 
         // Create a DateFormatter object for displaying date in specified format.
         SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
@@ -264,15 +317,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         Log.e("TIME ", time);
         Log.e("TIME", str_fromated_time);
         return str_fromated_time;
-
-      /*
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
-        Date date = new Date();
-        date.setTime(Long.parseLong(time));
-        String str_fromated_time = simpleDateFormat.format(date);
-        Log.e("TIME ", time);
-        Log.e("TIME", str_fromated_time);
-        return str_fromated_time;*/
     }
 
     public void addData(boolean clear, ArrayList<ChatMessageModal> mList) {
@@ -292,20 +336,64 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     }
 
+    public void replaceMyLastMessage(ChatMessageModal modal) {
+        try {
+            ChatMessageModal lastMessageModal = mList.get(mList.size() - 1);
+            if (lastMessageModal != null) {
+                if (StringUtils.isNotEmpty(lastMessageModal.getMessage_id())) {
+                    mList.set(mList.size() - 1, modal);
+                }
+            }
+            notifyItemChanged(mList.size() - 1);
+            Log.e("MESSAGE_REPLACED", new Gson().toJson(mList.get(mList.size() - 1)));
+        } catch (Exception e) {
+            e.getMessage();
+        }
+
+    }
+
     public void addMessageToList(ChatMessageModal mModal) {
         this.mList.add(mModal);
         int itemsInList = this.mList.size();
         notifyItemRangeChanged(itemsInList, 1);
     }
 
-    private void fullScreenImage(String image) {
-        activity.startActivity(new Intent(activity, ZoomImage.class)
-                .putExtra("image", image));
+    public void readMessage(String messageId) {
+        int index = 0;
+        for (ChatMessageModal chatMessageModal : mList) {
+            if (chatMessageModal.getMessage_id().equals(messageId)) {
+                chatMessageModal.setMessage_is_read(1);
+                notifyItemChanged(index);
+                break;
+            }
+            index += 1;
+        }
+    }
+
+    public void deleteThisMessage(String message_id) {
+        int index = 0;
+        int index_of_delete_mesage = 0;
+
+        for (ChatMessageModal modal : mList) {
+            if (modal.getMessage_id().equals(message_id)) {
+                index_of_delete_mesage = index;
+                break;
+            }
+            index = index + 1;
+        }
+
+        mList.remove(index_of_delete_mesage);
+        notifyItemRemoved(index_of_delete_mesage);
     }
 
     public void clear() {
         this.mList.clear();
         notifyDataSetChanged();
+    }
+
+    private void fullScreenImage(String image) {
+        activity.startActivity(new Intent(activity, ZoomImage.class)
+                .putExtra("image", image));
     }
 
     class SelfTextViewHolder extends RecyclerView.ViewHolder {
@@ -369,5 +457,131 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
+    private void showSingleAndDoubleTik(ChatMessageModal modal, ImageView tikImageView) {
+        if (chat_read_permission == 1) {
+            tikImageView.setVisibility(View.VISIBLE);
+        } else {
+            tikImageView.setVisibility(View.INVISIBLE);
+        }
+        if (modal.getMessage_is_read() == 0) {
+            tikImageView.setImageResource(R.drawable.single_tick);
+        } else {
+            tikImageView.setImageResource(R.drawable.double_tick);
+        }
+    }
 
+    private void deleteMessage(View view, View viewForPopup, ChatMessageModal messageModal, int position) {
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                PopupMenu menu = new PopupMenu(activity, viewForPopup);
+                menu.inflate(R.menu.message_menu);
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        apiCallDeleteMessage(messageModal, position);
+                        return false;
+                    }
+                });
+
+                MenuPopupHelper menuHelper = new MenuPopupHelper(activity, (MenuBuilder) menu.getMenu(), viewForPopup);
+                menuHelper.setForceShowIcon(true);
+                menuHelper.setGravity(Gravity.END);
+                menuHelper.show();
+
+                return false;
+            }
+        });
+    }
+
+    private void apiCallDeleteMessage(ChatMessageModal messageModal, int position) {
+
+        UserSessionManager sessionManager = new UserSessionManager(activity.getBaseContext());
+        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        String userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        String userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        String userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        String deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        String fcmToken = sessionManager.getFcmToken();
+
+        AndroidNetworking.post(Common.BASE_URL + "app-delete-message")
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("receiver_id", String.valueOf(messageModal.getMessage_receiver_id()))
+                .addBodyParameter("receiver_type", String.valueOf(messageModal.getMessage_receiver_type()))
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("message_id", messageModal.getMessage_id())
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            String message = response.getString("message");
+                            Log.e("DELETE_MESSAGE==>", message);
+                            mList.remove(messageModal);
+                            notifyItemRemoved(position);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+    }
+
+    private void setTimeTextVisibility(long ts1, long ts2, CardView cardView, TextView timeText) {
+
+        if (ts2 == 0) {
+            cardView.setVisibility(View.VISIBLE);
+            timeText.setText(formateDate(ts1 * 1000));
+        } else {
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal1.setTimeInMillis(ts1);
+            cal2.setTimeInMillis(ts2);
+
+            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                    cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
+
+            if (sameMonth) {
+                timeText.setVisibility(View.GONE);
+                timeText.setText("");
+            } else {
+                timeText.setVisibility(View.VISIBLE);
+                timeText.setText(formateDate(ts2 * 1000));
+            }
+
+        }
+    }
+
+    private String formateDate(long milis) {
+        // New date object from millis
+        Date date = new Date(milis);
+        // formattter
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy, EEEE");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        // Pass date object
+        String formatted = formatter.format(date);
+
+        return formatted;
+    }
+
+    private void bindTopDate(int position, CardView relTopDateView, TextView txtTopDateViewDate) {
+        final ChatMessageModal m = mList.get(position);
+        long previousTs = 0;
+        if (position > 1) {
+            ChatMessageModal cm = mList.get(position - 1);
+            previousTs = Long.parseLong(cm.getMessage_time());
+        }
+        setTimeTextVisibility(Long.parseLong(m.getMessage_time()), previousTs, relTopDateView, txtTopDateViewDate);
+
+    }
 }

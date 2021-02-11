@@ -311,7 +311,7 @@ public class Dashboard extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         managementMsgLayout.setOnClickListener(v -> {
-
+            startActivity(new Intent(Dashboard.this,BroadCastMessage.class));
         });
         arrived.setOnClickListener(v -> {
             childArrived();
@@ -335,6 +335,8 @@ public class Dashboard extends BaseActivity {
                 sendCommandToService(Common.ACTION_STOP_SERVICE);
             }
         });
+
+        navigateToChatBoardFromNotification(getIntent());
     }
 
     private void childArrived() {
@@ -600,6 +602,8 @@ public class Dashboard extends BaseActivity {
             MyApplication.mp.release();
         }
 
+        navigateToChatBoardFromNotification(intent);
+
     }
 
     public void onLogOut() {
@@ -652,5 +656,14 @@ public class Dashboard extends BaseActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    private void navigateToChatBoardFromNotification(Intent intent){
+        if(intent.getExtras()!= null){
+            if(intent.hasExtra("redirect_to_chat")){
+                startActivity(new Intent(Dashboard.this, ChatBoardActivity.class)
+                        .putExtra("complaint_data",intent.getStringExtra("redirect_to_chat")));
+            }
+        }
     }
 }

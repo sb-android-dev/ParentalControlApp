@@ -2,7 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/topDateView"
+            layout="@layout/top_date_view"/>
+
+      <RelativeLayout
         android:paddingEnd="56dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -58,4 +67,6 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    </LinearLayout>
 </layout>

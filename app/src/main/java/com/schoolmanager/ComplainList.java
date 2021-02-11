@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import com.schoolmanager.adapters.ComplaintRecyclerAdapter;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.databinding.ActivityCompaintListBinding;
+import com.schoolmanager.events.EventDeleteMessage;
 import com.schoolmanager.events.EventNewMessageArrives;
 import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.services.TrackingService;
@@ -89,13 +90,13 @@ public class ComplainList extends BaseActivity {
             @Override
             public void onRefresh() {
                 currentPage = Common.PAGE_START;
-                apiCallFetchComplainList(currentPage);
+                apiCallFetchComplainList(currentPage, true);
             }
         });
 
         initRecyclerview(mList);
         initSearch();
-        apiCallFetchComplainList(currentPage);
+        apiCallFetchComplainList(currentPage, true);
     }
 
     @Override
@@ -103,7 +104,7 @@ public class ComplainList extends BaseActivity {
         super.onResume();
     }
 
-    private void apiCallFetchComplainList(int pageNumber) {
+    private void apiCallFetchComplainList(int pageNumber, boolean showLoader) {
 
         if (!detector.isConnectingToInternet()) {
             binding.llComplaintEmptyView.setVisibility(View.VISIBLE);
@@ -120,7 +121,9 @@ public class ComplainList extends BaseActivity {
         binding.pBarCompaintList.setVisibility(View.VISIBLE);
 
         if (pageNumber == Common.PAGE_START) {
-            binding.swipyComplaintLlistChatList.setRefreshing(true);
+            if (showLoader) {
+                binding.swipyComplaintLlistChatList.setRefreshing(true);
+            }
             binding.pBarCompaintList.setVisibility(View.INVISIBLE);
         } else {
             if (binding.swipyComplaintLlistChatList.isRefreshing())
@@ -232,7 +235,7 @@ public class ComplainList extends BaseActivity {
                 if (!isLastPage && !isNextPageCalled) {
                     if (detector.isConnectingToInternet())
                         currentPage++;
-                    apiCallFetchComplainList(currentPage);
+                    apiCallFetchComplainList(currentPage, true);
                 }
             }
         });
@@ -259,7 +262,7 @@ public class ComplainList extends BaseActivity {
                         mFilter = "3";
                         break;
                 }
-                apiCallFetchComplainList(currentPage);
+                apiCallFetchComplainList(currentPage, true);
                 return true;
             }
         });
@@ -380,9 +383,14 @@ public class ComplainList extends BaseActivity {
     public void onNewMessageArrives(EventNewMessageArrives event) {
         if (event.getReload_list()) {
             currentPage = Common.PAGE_START;
-            apiCallFetchComplainList(currentPage);
+            apiCallFetchComplainList(currentPage, false);
         }
     }
 
-    ;
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageDelete(EventDeleteMessage deleteMesage) {
+        currentPage = Common.PAGE_START;
+        apiCallFetchComplainList(currentPage, false);
+    }
 }

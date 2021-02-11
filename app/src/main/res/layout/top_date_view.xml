@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/rel_TopDateView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@color/dark_gray"
+        app:cardCornerRadius="4dp">
+
+        <TextView
+            android:id="@+id/txt_TopDateView_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minEms="8"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="4dp"
+            android:text="25th Jan 2021"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </androidx.cardview.widget.CardView>
+</layout>

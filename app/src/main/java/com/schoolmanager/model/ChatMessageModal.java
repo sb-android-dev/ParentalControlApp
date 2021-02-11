@@ -11,6 +11,7 @@ public class ChatMessageModal {
     private String message_sender_type = "";
     private String message_receiver_type = "";
     private String message_receiver_id = "";
+    private int message_is_read = 0;
 
     public ChatMessageModal(
             String message_id,
@@ -21,7 +22,8 @@ public class ChatMessageModal {
             String message_sender_id,
             String message_receiver_id,
             String message_sender_type,
-            String message_receiver_type) {
+            String message_receiver_type,
+            int message_is_read) {
 
         this.message_id = message_id;
         this.message_time = message_time;
@@ -32,6 +34,7 @@ public class ChatMessageModal {
         this.message_receiver_id = message_receiver_id;
         this.message_sender_type = message_sender_type;
         this.message_receiver_type = message_receiver_type;
+        this.message_is_read = message_is_read;
     }
 
     public String getMessage_id() {
@@ -104,5 +107,13 @@ public class ChatMessageModal {
 
     public void setMessage_receiver_type(String message_receiver_type) {
         this.message_receiver_type = message_receiver_type;
+    }
+
+    public int getMessage_is_read() {
+        return message_is_read;
+    }
+
+    public void setMessage_is_read(int message_is_read) {
+        this.message_is_read = message_is_read;
     }
 }
