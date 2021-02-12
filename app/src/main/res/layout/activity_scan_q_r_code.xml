@@ -44,19 +44,32 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
             <Button
-                android:id="@+id/btnDriverHomeToSchool"
+                android:id="@+id/btnDriverHomeToBus"
                 style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="@string/home_to_school"
+                android:text="Home To Bus"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/btnDriverSchoolToHome"
+                android:id="@+id/btnDriverBusToSchool"
+                style="@style/RegularButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="50dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="50dp"
+                android:elevation="0dp"
+                android:text="Bus To School"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@id/btnDriverHomeToBus" />
+
+            <Button
+                android:id="@+id/btnDriverSchoolToBus"
                 style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_centerInParent="true"
@@ -64,9 +77,22 @@
                 android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
                 android:elevation="0dp"
-                android:text="@string/school_to_home"
+                android:text="School To Bus"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toBottomOf="@id/btnDriverHomeToSchool" />
+                app:layout_constraintTop_toBottomOf="@id/btnDriverBusToSchool" />
+
+            <Button
+                android:id="@+id/btnDriverBusToHome"
+                style="@style/RegularButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginEnd="50dp"
+                android:elevation="0dp"
+                android:text="Bus To Home"
+                android:textAllCaps="false"
+                app:layout_constraintTop_toBottomOf="@id/btnDriverSchoolToBus" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

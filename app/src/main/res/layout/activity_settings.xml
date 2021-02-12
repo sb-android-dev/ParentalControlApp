@@ -195,7 +195,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clSignOut"
+            android:id="@+id/clAppTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
@@ -206,6 +206,58 @@
             android:focusable="true"
             android:padding="15dp"
             app:layout_constraintTop_toBottomOf="@id/clLanguage">
+
+            <TextView
+                android:id="@+id/tvAppTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_theme"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?attr/pure_txt_color"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/tvAppThemeDescription"
+                app:layout_constraintEnd_toStartOf="@id/ivAppTheme"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvAppThemeDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/change_theme_of_the_app"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:textColor="?attr/caption_color"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ivAppTheme"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAppTheme" />
+
+            <ImageView
+                android:id="@+id/ivAppTheme"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_driver"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorPrimary"
+                android:visibility="gone"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clSignOut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/bg_dashboard_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="15dp"
+            app:layout_constraintTop_toBottomOf="@id/clAppTheme">
 
             <TextView
                 android:id="@+id/tvSignOut"

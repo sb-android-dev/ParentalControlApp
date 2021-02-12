@@ -390,7 +390,7 @@ public class AlertService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createChatNotificationChannel(NotificationManager notificationManager) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
                 .build();
 
@@ -410,7 +410,7 @@ public class AlertService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createTrackNotificationChannel(NotificationManager notificationManager, String notifyTrackStatus) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .build();
 

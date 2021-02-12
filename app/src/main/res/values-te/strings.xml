@@ -92,4 +92,6 @@
     <string name="likhita_school">లిఖిత స్కూల్</string>
     <string name="delete">తొలగించు</string>
     <string name="last_seen">చివరిగా చూసింది</string>
+    <string name="app_theme">App Theme</string>
+    <string name="change_theme_of_the_app">Change theme of the app</string>
 </resources>

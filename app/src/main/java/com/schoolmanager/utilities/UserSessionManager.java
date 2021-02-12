@@ -40,6 +40,7 @@ public class UserSessionManager {
     public static final String KEY_IS_READ_UNREAD_MESSAGES_ENABLED = "is_read_unread_message_enabled";
 
     public static final String KEY_LANGUAGE_CODE = "lang_code";
+    public static final String KEY_THEME_VALUE = "theme_value";
 
     public UserSessionManager(Context context) {
         this._context = context;
@@ -60,6 +61,11 @@ public class UserSessionManager {
 
     public void setLanguage(String code){
         editor.putString(KEY_LANGUAGE_CODE, code);
+        editor.commit();
+    }
+
+    public void setTheme(int value){
+        editor.putInt(KEY_THEME_VALUE, value);
         editor.commit();
     }
 
@@ -229,6 +235,10 @@ public class UserSessionManager {
 
     public String getLanguage(){
         return  pref.getString(KEY_LANGUAGE_CODE, "en");
+    }
+
+    public int getTheme(){
+        return pref.getInt(KEY_THEME_VALUE, -1);
     }
 
 //    public HashMap<String, Integer> getLTime(){

@@ -96,8 +96,9 @@
     <string name="one_week_ago">One week ago</string>
 
 
-
     <string name="agora_app_id" translatable="false">6bb7966f95b44d09ba3a2e55cf1d57f7</string>
     <string name="agora_access_token" translatable="false">0066bb7966f95b44d09ba3a2e55cf1d57f7IADOFvJB86aff1VFf4JOtlncde7HzQzZAxcs69/o7d82Z+IVUyEAAAAAEAAH/Ych4ywaYAEAAQDiLBpg</string>
+    <string name="app_theme">App Theme</string>
+    <string name="change_theme_of_the_app">Change theme of the app</string>
 
 </resources>

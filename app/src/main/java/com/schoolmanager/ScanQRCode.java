@@ -1,7 +1,6 @@
 package com.schoolmanager;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -11,16 +10,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.UserSessionManager;
 
@@ -37,7 +32,7 @@ public class ScanQRCode extends BaseActivity {
     private static final String TAG = "scan_qr_code_activity";
 
     private ConstraintLayout driverLayout, subAdminLayout;
-    private Button dHomeToSchool, dSchoolToHome, sHomeToSchool, sSchoolToHome;
+    private Button dHomeToBus, dBusToSchool, dSchoolToBus, dBusToHome, sHomeToSchool, sSchoolToHome;
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
@@ -62,8 +57,10 @@ public class ScanQRCode extends BaseActivity {
 
         driverLayout = findViewById(R.id.clDriverScanner);
         subAdminLayout = findViewById(R.id.clSubAdminScanner);
-        dHomeToSchool = findViewById(R.id.btnDriverHomeToSchool);
-        dSchoolToHome = findViewById(R.id.btnDriverSchoolToHome);
+        dHomeToBus = findViewById(R.id.btnDriverHomeToBus);
+        dBusToSchool = findViewById(R.id.btnDriverBusToSchool);
+        dSchoolToBus = findViewById(R.id.btnDriverSchoolToBus);
+        dBusToHome = findViewById(R.id.btnDriverBusToHome);
         sHomeToSchool = findViewById(R.id.btnSubAdminHomeToSchool);
         sSchoolToHome = findViewById(R.id.btnSubAdminSchoolToHome);
 
@@ -75,10 +72,16 @@ public class ScanQRCode extends BaseActivity {
             subAdminLayout.setVisibility(View.VISIBLE);
         }
 
-        dHomeToSchool.setOnClickListener(v -> {
+        dHomeToBus.setOnClickListener(v -> {
             openScanner(HOME_TO_SCHOOL);
         });
-        dSchoolToHome.setOnClickListener(v -> {
+        dBusToSchool.setOnClickListener(v -> {
+            openScanner(AT_SCHOOL);
+        });
+        dSchoolToBus.setOnClickListener(v -> {
+            openScanner(SCHOOL_TO_HOME);
+        });
+        dBusToHome.setOnClickListener(v -> {
             openScanner(DRIVER_DROPPED);
         });
         sHomeToSchool.setOnClickListener(v -> {
