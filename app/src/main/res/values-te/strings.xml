@@ -99,5 +99,6 @@
     <string name="call_error">ఎక్కడో తేడ జరిగింది…</string>
     <string name="call_decliend">క్షీణించింది</string>
     <string name="call_started">కాల్ ప్రారంభమైంది</string>
+    <string name="call_ringing">రింగింగ్</string>
     <string name="distance">దూరం</string>
 </resources>

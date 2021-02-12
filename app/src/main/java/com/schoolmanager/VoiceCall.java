@@ -25,8 +25,13 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.events.EventCallEnd;
+import com.schoolmanager.events.EventCallReceive;
 import com.schoolmanager.utilities.UserSessionManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -86,7 +91,6 @@ public class VoiceCall extends AppCompatActivity {
                 @Override
                 public void run() {
                     Log.e(TAG, "Join channel success, uid: " + (uid & 0xFFFFFFFFL));
-                    voiceCallStatus.setText(getString(R.string.call_started));
                     joinChannel();
                 }
             });
@@ -216,22 +220,30 @@ public class VoiceCall extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_call);
+        EventBus.getDefault().register(this);
 
-       /* if (MyApplication.mpCall != null){
+
+        if (MyApplication.mpCall != null && MyApplication.mpCall.isPlaying()) {
             MyApplication.mpCall.stop();
-        }*/
+            MyApplication.mpCall.release();
+            MyApplication.mpCall = null;
+        }
 
         type = getIntent().getStringExtra("type");
         channel_name = getIntent().getStringExtra("channel_name");
         from_user_id = getIntent().getStringExtra("from_user_id");
         to_user_type = getIntent().getStringExtra("to_user_type");
         to_user_id = getIntent().getStringExtra("to_user_id");
+        call_id = getIntent().hasExtra("call_id") ? getIntent().getStringExtra("call_id") : "";
+
 
         initUI();
         if (type.equals("init")) {
             apiCallInit();
         }
         if (type.equals("receive")) {
+            
+            apiCallCalReceive();
             // Ask for permissions at runtime.
             // This is just an example set of permissions. Other permissions
             // may be needed, and please refer to our online documents.
@@ -244,38 +256,52 @@ public class VoiceCall extends AppCompatActivity {
         }
     }
 
-   /* @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+    private void apiCallCalReceive() {
 
-        if (MyApplication.mpCall != null) {
-            MyApplication.mpCall.stop();
-            MyApplication.mpCall.release();
-        }
 
-        type = intent.getStringExtra("type");
-        channel_name = intent.getStringExtra("channel_name");
-        from_user_id = intent.getStringExtra("from_user_id");
-        to_user_type = intent.getStringExtra("to_user_type");
-        to_user_id = intent.getStringExtra("to_user_id");
+        UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
+        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        String userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        String userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        String userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        String deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        String fcmToken = sessionManager.getFcmToken();
 
-        initUI();
-        if (type.equals("init")) {
-            apiCallInit();
-        }
-        if (type.equals("receive")) {
-            // Ask for permissions at runtime.
-            // This is just an example set of permissions. Other permissions
-            // may be needed, and please refer to our online documents.
-            if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
-                    checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
-                    checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
-                initEngineAndJoinChannel();
-            }
 
-        }
+        AndroidNetworking.post(Common.BASE_URL + "app-call-receive")
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("receiver_id", to_user_id)
+                .addBodyParameter("receiver_type", to_user_type)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("call_token", channel_name)
+                .addBodyParameter("call_id", call_id)
+                .addBodyParameter("call_status", "1")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            String message = response.getString("message");
+                            Log.e("RECEIVE_CALL==>", message);
+                            voiceCallStatus.setText(getString(R.string.call_started));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+
     }
-*/
+
     private void apiCallInit() {
 
         UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
@@ -413,6 +439,8 @@ public class VoiceCall extends AppCompatActivity {
 
         // Sample logs are optional.
         showSampleLogs();
+
+        voiceCallStatus.setText(getString(R.string.call_ringing));
     }
 
 
@@ -472,6 +500,7 @@ public class VoiceCall extends AppCompatActivity {
     private void initializeEngine() {
         try {
             mRtcEngine = RtcEngine.create(getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
+            mRtcEngine.setDefaultAudioRoutetoSpeakerphone(false);
         } catch (Exception e) {
             Log.e(TAG, Log.getStackTraceString(e));
             throw new RuntimeException("NEED TO check rtc sdk init fatal error\n" + Log.getStackTraceString(e));
@@ -525,6 +554,7 @@ public class VoiceCall extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         if (!mCallEnd) {
             leaveChannel();
         }
@@ -632,5 +662,19 @@ public class VoiceCall extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCallEnd(EventCallEnd callEnd) {
+        if (call_id == callEnd.getCall_id()) {
+            endCall();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCallReceive(EventCallReceive callReceive) {
+        if (call_id.equals(callReceive.getCall_id())) {
+            voiceCallStatus.setText(getString(R.string.call_started));
+        }
     }
 }

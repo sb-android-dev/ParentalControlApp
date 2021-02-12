@@ -394,9 +394,9 @@ public class ChatBoardActivity extends BaseActivity {
 
                                     ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
                                     chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
+                                }else {
                                 }
                             } catch (Exception e) {
-
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -407,6 +407,7 @@ public class ChatBoardActivity extends BaseActivity {
                     public void onError(ANError anError) {
                         Log.e(TAG, anError.getErrorBody());
                     }
+
                 });
     }
 

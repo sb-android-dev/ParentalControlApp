@@ -85,27 +85,36 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
         return str_fromated_time;
     }
 
+    boolean isTopVisible = false;
     private void setTimeTextVisibility(long ts1, long ts2, CardView cardView, TextView timeText) {
 
+//        Log.e("TIME==>","TS1==>"+ts1+"  "+"TS2==>"+ts2);
+
         if (ts2 == 0) {
-            cardView.setVisibility(View.VISIBLE);
-            timeText.setText(formateDate(ts1 * 1000));
+            cardView.setVisibility(View.GONE);
+            timeText.setText(formateDate(ts1));
         } else {
             Calendar cal1 = Calendar.getInstance();
             Calendar cal2 = Calendar.getInstance();
             cal1.setTimeInMillis(ts1);
             cal2.setTimeInMillis(ts2);
 
-            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+            boolean sameMonth = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                    &&
                     cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
 
-            if (sameMonth) {
+
+            sameMonth = formateDate(ts2).equals(formateDate(ts1));
+            timeText.setVisibility(sameMonth? View.GONE : View.VISIBLE);
+            timeText.setText(formateDate(ts2 > ts1 ? ts2 : ts1));
+
+            /*if (sameMonth) {
                 timeText.setVisibility(View.GONE);
                 timeText.setText("");
             } else {
                 timeText.setVisibility(View.VISIBLE);
                 timeText.setText(formateDate(ts2 * 1000));
-            }
+            }*/
 
         }
     }

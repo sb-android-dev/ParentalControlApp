@@ -344,12 +344,13 @@ public class Dashboard extends BaseActivity {
         clParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Dashboard.this,StudentsList.class));
+                startActivity(new Intent(Dashboard.this, StudentsList.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
         navigateToChatBoardFromNotification(getIntent());
+        navigateToBroadcastFromNotification(getIntent());
     }
 
     private void childArrived() {
@@ -605,7 +606,7 @@ public class Dashboard extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
 
-        if(locationManager != null){
+        if (locationManager != null) {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locationSwitch.setChecked(true);
             }
@@ -619,6 +620,7 @@ public class Dashboard extends BaseActivity {
         }
 
         navigateToChatBoardFromNotification(intent);
+        navigateToBroadcastFromNotification(intent);
 
     }
 
@@ -679,6 +681,14 @@ public class Dashboard extends BaseActivity {
             if (intent.hasExtra("redirect_to_chat")) {
                 startActivity(new Intent(Dashboard.this, ChatBoardActivity.class)
                         .putExtra("complaint_data", intent.getStringExtra("redirect_to_chat")));
+            }
+        }
+    }
+
+    private void navigateToBroadcastFromNotification(Intent intent) {
+        if (intent.getExtras() != null) {
+            if (intent.hasExtra("redirect_to_broadcast")) {
+                startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
             }
         }
     }

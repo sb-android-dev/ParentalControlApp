@@ -1,10 +1,10 @@
 package com.schoolmanager;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;

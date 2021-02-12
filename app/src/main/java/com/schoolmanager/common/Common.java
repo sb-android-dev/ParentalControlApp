@@ -2,7 +2,7 @@ package com.schoolmanager.common;
 
 public class Common {
 
-//    public static final String BASE_URL = "http://aksharcomposite.in/parent_app/api/";
+    //    public static final String BASE_URL = "http://aksharcomposite.in/parent_app/api/";
 //    public static final String BASE_URL = "http://139.59.58.40/api/";
     public static final String BASE_URL = "http://139.59.58.40/dev/api/";
     public static final String APP_CODE = "758368";
@@ -41,6 +41,11 @@ public class Common {
     public static final String CALL_NOTIFICATION_CHANNEL_ID = "call_channel";
     public static final String CALL_NOTIFICATION_CHANNEL_NAME = "Call";
     public static final int CALL_NOTIFICATION_ID = 5;
+
+    public static final String BROADCAST_NOTIFICATION_CHANNEL_ID = "broadcast_channel";
+    public static final String BROADCAST_NOTIFICATION_CHANNEL_NAME = "Broadcast Message";
+    public static final int BROADCAST_NOTIFICATION_ID = 6;
+
 
     public static final int REQUEST_IMAGE_PICKER = 1002;
 
