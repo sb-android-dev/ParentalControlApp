@@ -1,10 +1,5 @@
 package com.schoolmanager;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +10,10 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -43,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class TrackHistory extends BaseActivity {
 
@@ -53,12 +53,12 @@ public class TrackHistory extends BaseActivity {
     private SequenceLayout sequenceLayout;
     private LinearLayout noDataLayout;
 
-    private String trackDate = "", scanDate="";
+    private String trackDate = "", scanDate = "";
     private Calendar calendar;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
     private SimpleDateFormat sdf2 = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-    private SimpleDateFormat tf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+    private SimpleDateFormat tf = new SimpleDateFormat("hh:mm a");
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
@@ -86,9 +86,11 @@ public class TrackHistory extends BaseActivity {
         sequenceLayout = findViewById(R.id.slTrackingHistory);
         noDataLayout = findViewById(R.id.llNoData);
 
+        tf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         calendar = Calendar.getInstance();
         trackDate = calendar.get(Calendar.YEAR) + "-"
-                + new DecimalFormat("00").format(calendar.get(Calendar.MONTH)+1) + "-"
+                + new DecimalFormat("00").format(calendar.get(Calendar.MONTH) + 1) + "-"
                 + calendar.get(Calendar.DAY_OF_MONTH);
         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
         getTrackingDataFor(trackDate);
@@ -120,7 +122,7 @@ public class TrackHistory extends BaseActivity {
 //        sequenceLayout.setAdapter(new TrackingHistorySequenceAdapter(this, historyList));
 //    }
 
-    private void getTrackingDataFor(String date){
+    private void getTrackingDataFor(String date) {
         if (!detector.isConnectingToInternet()) {
             Snackbar.make(sequenceLayout, getString(R.string.you_are_not_connected),
                     Snackbar.LENGTH_LONG).show();
@@ -150,50 +152,62 @@ public class TrackHistory extends BaseActivity {
                                     JSONObject data = response.getJSONObject("data");
 
                                     trackingDate.setText(scanDate);
+                                    long unix1 = 0, unix2 = 0, unix3 = 0, unix4 = 0;
+                                    String time1 = "", time2 = "", time3 = "", time4 = "";
+                                    String t1 = "", t2 = "", t3 = "", t4 = "";
 
                                     ArrayList<TrackingHistoryItem> historyList = new ArrayList<>();
 
                                     JSONObject status1 = data.getJSONObject("status_1");
-                                    boolean active1 = status1.getInt("active")!=0;
-                                    String time1 = status1.getString("time");
-                                    String t1 = "";
-                                    if(!time1.isEmpty()){
-                                        t1 = tf.format(sdf.parse(time1));
+                                    boolean active1 = status1.getInt("active") != 0;
+
+                                    if (status1.has("time") && !status1.getString("time").equals(""))
+                                        unix1 = status1.getLong("time");
+//                                    if (status1.has("time1") && !status1.getString("time1").equals(""))
+//                                        time1 = status1.getString("time1");
+                                    if (unix1 != 0L) {
+                                        t1 = tf.format(new Date(unix1*1000));
                                     }
 
                                     JSONObject status2 = data.getJSONObject("status_2");
-                                    boolean active2 = status2.getInt("active")!=0;
-                                    if(active2)
+                                    boolean active2 = status2.getInt("active") != 0;
+                                    if (active2)
                                         active1 = false;
-                                    String time2 = status2.getString("time");
-                                    String t2 = "";
-                                    if(!time2.isEmpty()){
-                                        t2 = tf.format(sdf.parse(time2));
+                                    if (status2.has("time") && !status2.getString("time").equals(""))
+                                        unix2 = status2.getLong("time");
+//                                    if (status2.has("time1") && !status2.getString("time1").equals(""))
+//                                        time2 = status2.getString("time1");
+                                    if (unix2 != 0L) {
+                                        t2 = tf.format(new Date(unix2*1000));
                                     }
 
                                     JSONObject status3 = data.getJSONObject("status_3");
-                                    boolean active3 = status3.getInt("active")!=0;
-                                    if(active3){
+                                    boolean active3 = status3.getInt("active") != 0;
+                                    if (active3) {
                                         active1 = false;
                                         active2 = false;
                                     }
-                                    String time3 = status3.getString("time");
-                                    String t3 = "";
-                                    if(!time3.isEmpty()){
-                                        t3 = tf.format(sdf.parse(time3));
+                                    if (status3.has("time") && !status3.getString("time").equals(""))
+                                        unix3 = status3.getLong("time");
+//                                    if (status3.has("time1") && !status3.getString("time1").equals(""))
+//                                        time3 = status3.getString("time1");
+                                    if (unix3 != 0L) {
+                                        t3 = tf.format(new Date(unix3*1000));
                                     }
 
                                     JSONObject status4 = data.getJSONObject("status_4");
-                                    boolean active4 = status4.getInt("active")!=0;
-                                    if(active4){
+                                    boolean active4 = status4.getInt("active") != 0;
+                                    if (active4) {
                                         active1 = false;
                                         active2 = false;
                                         active3 = false;
                                     }
-                                    String time4 = status4.getString("time");
-                                    String t4 = "";
-                                    if(!time4.isEmpty()){
-                                        t4 = tf.format(sdf.parse(time4));
+                                    if (status4.has("time") && !status4.getString("time").equals(""))
+                                        unix4 = status4.getLong("time");
+//                                    if (status4.has("time1") && !status4.getString("time1").equals(""))
+//                                        time4 = status4.getString("time1");
+                                    if (unix4 != 0L) {
+                                        t4 = tf.format(new Date(unix4*1000));
                                     }
                                     historyList.add(new TrackingHistoryItem("Driver Picked", "Going to school", t1, active1));
                                     historyList.add(new TrackingHistoryItem("At School", "Reached", t2, active2));
@@ -202,11 +216,11 @@ public class TrackHistory extends BaseActivity {
 //                                    historyList.add(new TrackingHistoryItem("Arrived", "", "01:05 PM", false));
                                     sequenceLayout.setAdapter(new TrackingHistorySequenceAdapter(TrackHistory.this, historyList));
 
-                                    if(active1 || active2 || active3 || active4){
+                                    if (active1 || active2 || active3 || active4) {
                                         noDataLayout.setVisibility(View.INVISIBLE);
                                         sequenceLayout.setVisibility(View.VISIBLE);
                                         trackingDate.setVisibility(View.VISIBLE);
-                                    }else{
+                                    } else {
                                         noDataLayout.setVisibility(View.VISIBLE);
                                         sequenceLayout.setVisibility(View.INVISIBLE);
                                         trackingDate.setVisibility(View.INVISIBLE);
@@ -217,7 +231,7 @@ public class TrackHistory extends BaseActivity {
                                 } else {
                                     Toast.makeText(TrackHistory.this, message, Toast.LENGTH_SHORT).show();
                                 }
-                            } catch (JSONException | ParseException e) {
+                            } catch (JSONException e) {
                                 e.printStackTrace();
                                 Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
 
@@ -247,7 +261,7 @@ public class TrackHistory extends BaseActivity {
     }
 
     private void getCalendar() {
-        if(calendar == null){
+        if (calendar == null) {
             calendar = Calendar.getInstance();
         }
         new SpinnerDatePickerDialogBuilder().context(this)
@@ -255,7 +269,7 @@ public class TrackHistory extends BaseActivity {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         calendar.set(year, monthOfYear, dayOfMonth);
-                        trackDate = year + "-" + new DecimalFormat("00").format(monthOfYear+1) + "-" + dayOfMonth;
+                        trackDate = year + "-" + new DecimalFormat("00").format(monthOfYear + 1) + "-" + dayOfMonth;
                         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
                         getTrackingDataFor(trackDate);
                     }
@@ -264,7 +278,7 @@ public class TrackHistory extends BaseActivity {
                     public void onClearDate(DatePicker view) {
                         calendar = Calendar.getInstance();
                         trackDate = calendar.get(Calendar.YEAR) + "-"
-                                + new DecimalFormat("00").format(calendar.get(Calendar.MONTH)+1) + "-"
+                                + new DecimalFormat("00").format(calendar.get(Calendar.MONTH) + 1) + "-"
                                 + calendar.get(Calendar.DAY_OF_MONTH);
                         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
                         getTrackingDataFor(trackDate);
