@@ -10,10 +10,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.utilities.UserSessionManager;
 import com.schoolmanager.utilities.UserSessionManager;
 import com.zeugmasolutions.localehelper.LocaleAwareApplication;
 
@@ -34,6 +37,8 @@ public class MyApplication extends LocaleAwareApplication implements Application
         super.onCreate();
         AndroidNetworking.initialize(getApplicationContext());
         registerActivityLifecycleCallbacks(this);
+        initTheme(new UserSessionManager(this).getTheme());
+
     }
 
     @Override
@@ -181,5 +186,11 @@ public class MyApplication extends LocaleAwareApplication implements Application
 
                     }
                 });
+
+        initTheme(new UserSessionManager(this).getTheme());
+    }
+
+    public static void initTheme(int mode) {
+        AppCompatDelegate.setDefaultNightMode(mode);
     }
 }

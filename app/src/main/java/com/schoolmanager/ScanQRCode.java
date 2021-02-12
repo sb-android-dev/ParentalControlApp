@@ -1,5 +1,9 @@
 package com.schoolmanager;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +36,7 @@ public class ScanQRCode extends BaseActivity {
     private static final String TAG = "scan_qr_code_activity";
 
     private ConstraintLayout driverLayout, subAdminLayout;
-    private Button dHomeToSchool, dSchoolToHome, sHomeToSchool, sSchoolToHome;
+    private Button dHomeToBus, dBusToSchool, dSchoolToBus, dBusToHome, sHomeToSchool, sSchoolToHome;
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
@@ -57,8 +61,10 @@ public class ScanQRCode extends BaseActivity {
 
         driverLayout = findViewById(R.id.clDriverScanner);
         subAdminLayout = findViewById(R.id.clSubAdminScanner);
-        dHomeToSchool = findViewById(R.id.btnDriverHomeToSchool);
-        dSchoolToHome = findViewById(R.id.btnDriverSchoolToHome);
+        dHomeToBus = findViewById(R.id.btnDriverHomeToBus);
+        dBusToSchool = findViewById(R.id.btnDriverBusToSchool);
+        dSchoolToBus = findViewById(R.id.btnDriverSchoolToBus);
+        dBusToHome = findViewById(R.id.btnDriverBusToHome);
         sHomeToSchool = findViewById(R.id.btnSubAdminHomeToSchool);
         sSchoolToHome = findViewById(R.id.btnSubAdminSchoolToHome);
 
@@ -70,10 +76,16 @@ public class ScanQRCode extends BaseActivity {
             subAdminLayout.setVisibility(View.VISIBLE);
         }
 
-        dHomeToSchool.setOnClickListener(v -> {
+        dHomeToBus.setOnClickListener(v -> {
             openScanner(HOME_TO_SCHOOL);
         });
-        dSchoolToHome.setOnClickListener(v -> {
+        dBusToSchool.setOnClickListener(v -> {
+            openScanner(AT_SCHOOL);
+        });
+        dSchoolToBus.setOnClickListener(v -> {
+            openScanner(SCHOOL_TO_HOME);
+        });
+        dBusToHome.setOnClickListener(v -> {
             openScanner(DRIVER_DROPPED);
         });
         sHomeToSchool.setOnClickListener(v -> {

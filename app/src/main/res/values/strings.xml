@@ -108,5 +108,7 @@
     <string name="call_started">Call Started</string>
     <string name="call_ringing">Ringing</string>
     <string name="distance">Distance</string>
+    <string name="app_theme">App Theme</string>
+    <string name="change_theme_of_the_app">Change theme of the app</string>
 
 </resources>

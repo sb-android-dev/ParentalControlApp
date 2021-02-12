@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -260,12 +261,35 @@ public class AlertService extends FirebaseMessagingService {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
         String notifyType = data.get("notification_type");
+        String notifyTrackStatus = data.get("notification_track_status");
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         long notificationId = System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createTrackNotificationChannel(notificationManager);
+            createTrackNotificationChannel(notificationManager, notifyTrackStatus);
+        }
+
+        Uri notificationSound;
+        switch (notifyTrackStatus){
+            case "1":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
+                break;
+            case "2":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
+                break;
+            case "3":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
+                break;
+            case "4":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
+                break;
+            default:
+                notificationSound = null;
         }
 
         NotificationCompat.Builder notificationBuilder =
@@ -277,6 +301,7 @@ public class AlertService extends FirebaseMessagingService {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_tracking)
+                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
@@ -503,7 +528,7 @@ public class AlertService extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createChatNotificationChannel(NotificationManager notificationManager) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
                 .build();
 
@@ -521,19 +546,42 @@ public class AlertService extends FirebaseMessagingService {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createTrackNotificationChannel(NotificationManager notificationManager) {
+    private void createTrackNotificationChannel(NotificationManager notificationManager, String notifyTrackStatus) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID,
                 Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
 
+        Uri notificationSound;
+        switch (notifyTrackStatus){
+            case "1":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
+                break;
+            case "2":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
+                break;
+            case "3":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
+                break;
+            case "4":
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
+                break;
+            default:
+                notificationSound = null;
+        }
+
+
         notificationChannel.setDescription("Track Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
 
-        notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
+        notificationChannel.setSound(notificationSound, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
         notificationChannel.enableVibration(true);
         notificationChannel.enableLights(true);

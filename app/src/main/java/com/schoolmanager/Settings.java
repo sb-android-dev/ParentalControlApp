@@ -28,7 +28,7 @@ public class Settings extends BaseActivity {
 
     private static final String TAG = "settings_activity";
 
-    private ConstraintLayout profileLayout, driverLayout, languageLayout, signOutLayout;
+    private ConstraintLayout profileLayout, driverLayout, languageLayout, themeLayout, signOutLayout;
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
@@ -56,6 +56,7 @@ public class Settings extends BaseActivity {
         profileLayout = findViewById(R.id.clMyProfile);
         driverLayout = findViewById(R.id.clSetDriver);
         languageLayout = findViewById(R.id.clLanguage);
+        themeLayout = findViewById(R.id.clAppTheme);
         signOutLayout = findViewById(R.id.clSignOut);
 
         if(!userType.equals("1")){
@@ -72,6 +73,10 @@ public class Settings extends BaseActivity {
 
         languageLayout.setOnClickListener(v -> {
             startActivity(new Intent(this, SelectLanguage.class));
+        });
+
+        themeLayout.setOnClickListener(v -> {
+            startActivity(new Intent(this, ChangeAppTheme.class));
         });
 
         signOutLayout.setOnClickListener(v -> {
