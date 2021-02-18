@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.schoolmanager.R;
-import com.schoolmanager.model.LanguageItem;
 import com.schoolmanager.model.ThemeItem;
 
 import java.util.List;

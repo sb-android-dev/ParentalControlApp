@@ -1,9 +1,5 @@
 package com.schoolmanager;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;

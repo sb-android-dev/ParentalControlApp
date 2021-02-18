@@ -1,26 +1,21 @@
 package com.schoolmanager;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.UiModeManager;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-
-import com.schoolmanager.adapters.LanguageRecyclerAdapter;
 import com.schoolmanager.adapters.ThemeRecyclerAdapter;
-import com.schoolmanager.model.LanguageItem;
 import com.schoolmanager.model.ThemeItem;
 import com.schoolmanager.utilities.SpaceItemDecoration;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ChangeAppTheme extends BaseActivity {
 

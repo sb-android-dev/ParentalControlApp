@@ -1,13 +1,16 @@
 package com.schoolmanager;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.icu.util.Calendar;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,12 +31,9 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
 import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
-import com.esafirm.imagepicker.features.ImagePicker;
-import com.esafirm.imagepicker.model.Image;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.iceteck.silicompressorr.FileUtils;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -50,6 +50,9 @@ import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.model.NotificationItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.IImageCompressTaskListener;
+import com.schoolmanager.utilities.ImageCompressTask;
+import com.schoolmanager.utilities.PathFinder;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +68,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class ChatBoardActivity extends BaseActivity {
@@ -92,6 +97,9 @@ public class ChatBoardActivity extends BaseActivity {
     private boolean isNextPageCalled = false;
     private UserSessionManager sessionManager;
     private String userId, userToken, userType, deviceId, fcmToken;
+    private ImageCompressTask imageCompressTask;
+    private IImageCompressTaskListener compressTaskListener;
+    private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -334,7 +342,7 @@ public class ChatBoardActivity extends BaseActivity {
 
     }
 
-    private void apiCallSendMessage(int m_message_type, String message, String file_url) {
+    private void apiCallSendMessage(int m_message_type, String message, String file_url,File image_file) {
 
         if (!detector.isConnectingToInternet()) {
 
@@ -348,18 +356,20 @@ public class ChatBoardActivity extends BaseActivity {
                 pushLocalTextMessage("0", message, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 2:
-                pushLocalImageMessage("0", file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
+                pushLocalImageMessage("0", Uri.fromFile(image_file).toString(), userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 3:
                 pushLocalAudioMessage("0", file_url, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
         }
 
-        File file = (m_message_type == 3) ? new File(mAudioFile) : FileUtils.getFile(ChatBoardActivity.this, Uri.parse(file_url));
+        File file = (m_message_type == 3) ? new File(mAudioFile) : image_file;
+//        File file = (m_message_type == 3) ? new File(mAudioFile) : new File(getPath(ChatBoardActivity.this, Uri.parse(file_url)));
 
         binding.edChatboardMessage.setText("");
 
         AndroidNetworking.upload(Common.BASE_URL + "app-send-message")
+                .setPriority(Priority.HIGH)
                 .addMultipartFile("message_file", file)
                 .addMultipartParameter("user_id", userId)
                 .addMultipartParameter("user_token", userToken)
@@ -371,18 +381,22 @@ public class ChatBoardActivity extends BaseActivity {
                 .addMultipartParameter("user_app_code", Common.APP_CODE)
                 .addMultipartParameter("device_id", deviceId)
                 .addMultipartParameter("device_type", "1")
-                .setPriority(Priority.HIGH)
                 .build()
                 .setUploadProgressListener(new UploadProgressListener() {
                     @Override
                     public void onProgress(long bytesUploaded, long totalBytes) {
-                        EventBus.getDefault().post(new EventNewMessageArrives(null, true));
+                        if(bytesUploaded == totalBytes){
+                            EventBus.getDefault().post(new EventNewMessageArrives(null, true));
+                        }
                     }
+
+
                 })
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+
                             Log.e("CHAT_RESPONSE", response.toString());
                             binding.edChatboardMessage.setText("");
                             try {
@@ -394,7 +408,7 @@ public class ChatBoardActivity extends BaseActivity {
 
                                     ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
                                     chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
-                                }else {
+                                } else {
                                 }
                             } catch (Exception e) {
                             }
@@ -405,10 +419,27 @@ public class ChatBoardActivity extends BaseActivity {
 
                     @Override
                     public void onError(ANError anError) {
-                        Log.e(TAG, anError.getErrorBody());
+                        anError.printStackTrace();
+                        Log.e("ERROR",anError.getErrorDetail()+"");
+                        Log.e("ERROR",anError.getMessage()+"");
                     }
 
                 });
+    }
+
+    public static String getRealPathFromUri(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
     private void pushLocalTextMessage(String message_id, String message, String sender_type, String receiver_type) {
@@ -494,10 +525,18 @@ public class ChatBoardActivity extends BaseActivity {
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted()) {
 
-                            ImagePicker.create(ChatBoardActivity.this)
-                                    .limit(1)
-                                    .theme(R.style.ImagePickerTheme)
-                                    .start();
+//                            ImagePicker.create(ChatBoardActivity.this)
+//                                    .limit(1)
+//                                    .theme(R.style.ImagePickerTheme)
+//                                    .start();
+
+                            Intent intentPick = new Intent(Intent.ACTION_PICK);
+                            // Sets the type as image/*. This ensures only components of type image are selected
+                            intentPick.setType("image/*");
+                            //We pass an extra array with the accepted mime types. This will ensure only components with these MIME types as targeted.
+                            String[] mimeTypes = {"image/jpeg", "image/png"};
+                            intentPick.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                            startActivityForResult(intentPick, Common.REQUEST_IMAGE_PICKER);
                         } else {
 
                         }
@@ -595,7 +634,7 @@ public class ChatBoardActivity extends BaseActivity {
                             public void run() {
                                 Log.e("RECORDTIME==>", recordTime + "");
                                 if (recordTime >= 2000) {
-                                    apiCallSendMessage(3, "", mAudioFile);
+                                    apiCallSendMessage(3, "", mAudioFile,null);
                                 }
                             }
                         }, 1000);
@@ -649,13 +688,43 @@ public class ChatBoardActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+       /* if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
             // Get a list of picked images
             List<com.esafirm.imagepicker.model.Image> images = ImagePicker.getImages(data);
             Log.e("IMAGE", images.get(0).getUri().toString());
             // or get a single image only
             Image image = ImagePicker.getFirstImageOrNull(data);
             apiCallSendMessage(2, "", images.get(0).getUri().toString());
+        }*/
+        if (requestCode == Common.REQUEST_IMAGE_PICKER && resultCode == RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+//            apiCallSendMessage(2, "", selectedImageUri.toString());
+            Log.e(TAG, "onActivityResult: selectedImageUri -> " + selectedImageUri);
+
+            imageCompressTask = new ImageCompressTask(this,
+                    new PathFinder(ChatBoardActivity.this).getPath(selectedImageUri), 250, 250,
+                    new IImageCompressTaskListener() {
+                        @Override
+                        public void onComplete(List<File> compressed) {
+                            if (compressed.get(0) != null) {
+                                File imageFile = compressed.get(0);
+                                Log.d("ImageCompressor", "New photo size ==> " + imageFile.length());
+
+                                apiCallSendMessage(2, "","",imageFile);
+
+                            } else {
+                                Log.e("ImageCompressor", "onComplete: received result is null");
+
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable error) {
+                            Log.e(TAG, "onError: " + error.getLocalizedMessage());
+
+                        }
+                    });
+            mExecutorService.execute(imageCompressTask);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -668,7 +737,7 @@ public class ChatBoardActivity extends BaseActivity {
 
         public void onSend(View view) {
             if (StringUtils.isNotEmpty(binding.edChatboardMessage.getText().toString())) {
-                apiCallSendMessage(1, binding.edChatboardMessage.getText().toString(), "");
+                apiCallSendMessage(1, binding.edChatboardMessage.getText().toString(), "",null);
             }
         }
 

@@ -74,11 +74,15 @@ public class AlertService extends FirebaseMessagingService {
              * then it will manage notification accordinglly
              * drfault valueis true so other type of user can reeive call
              */
+
             UserSessionManager userSessionManager = new UserSessionManager(this);
-            boolean isReceiveCall = userSessionManager.canReceiveCall();
-            if (isReceiveCall) {
-                performCallNotification(remoteMessage.getData());
+            if (userSessionManager.getUserType() != 0) {
+                boolean isReceiveCall = userSessionManager.canReceiveCall();
+                if (isReceiveCall) {
+                    performCallNotification(remoteMessage.getData());
+                }
             }
+
 
         } else if (remoteMessage.getData().get("notification_type").equals("call_end")) {
             EventBus.getDefault().post(new EventCallEnd(
@@ -271,7 +275,7 @@ public class AlertService extends FirebaseMessagingService {
         }
 
         Uri notificationSound;
-        switch (notifyTrackStatus){
+        switch (notifyTrackStatus) {
             case "1":
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
@@ -556,7 +560,7 @@ public class AlertService extends FirebaseMessagingService {
                 Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
 
         Uri notificationSound;
-        switch (notifyTrackStatus){
+        switch (notifyTrackStatus) {
             case "1":
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
