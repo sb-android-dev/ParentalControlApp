@@ -20,6 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -32,6 +35,7 @@ import com.schoolmanager.VoiceCall;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.events.EventCallEnd;
 import com.schoolmanager.events.EventCallReceive;
+import com.schoolmanager.events.EventCallRinging;
 import com.schoolmanager.events.EventDeleteMessage;
 import com.schoolmanager.events.EventNewMessageArrives;
 import com.schoolmanager.events.EventReadMessage;
@@ -39,15 +43,16 @@ import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.model.NotificationItem;
 import com.schoolmanager.utilities.UserSessionManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static com.schoolmanager.MyApplication.mp;
-import static com.schoolmanager.MyApplication.mpCall;
 
 public class AlertService extends FirebaseMessagingService {
 
@@ -84,7 +89,17 @@ public class AlertService extends FirebaseMessagingService {
             }
 
 
+        } else if (remoteMessage.getData().get("notification_type").equals("call_ringing")) {
+            EventBus.getDefault().post(new EventCallRinging(
+                    remoteMessage.getData().get("notification_call_id"),
+                    remoteMessage.getData().get("notification_call_token")
+            ));
         } else if (remoteMessage.getData().get("notification_type").equals("call_end")) {
+
+            UserSessionManager userSessionManager = new UserSessionManager(this);
+            int call_notification_id = userSessionManager.getInitiatedCallId();
+            cancelNotification(this,call_notification_id);
+
             EventBus.getDefault().post(new EventCallEnd(
                     remoteMessage.getData().get("notification_call_id"),
                     remoteMessage.getData().get("notification_call_token")
@@ -348,9 +363,11 @@ public class AlertService extends FirebaseMessagingService {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
         String notifyType = data.get("notification_type");
+        String notifyId = data.get("notification_id");
+
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        long notificationId = System.currentTimeMillis();
+        int notificationId = (int) System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createCallNotificationChannel(notificationManager);
@@ -359,7 +376,7 @@ public class AlertService extends FirebaseMessagingService {
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
-        if (mpCall != null && mpCall.isPlaying()) {
+      /*  if (mpCall != null && mpCall.isPlaying()) {
             mpCall.stop();
             mpCall.release();
             mpCall = null;
@@ -367,13 +384,12 @@ public class AlertService extends FirebaseMessagingService {
 
         mpCall = MediaPlayer.create(getApplicationContext(), notificationSound);
         mpCall.setLooping(true);
-        mpCall.start();
+        mpCall.start();*/
 
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, Common.CALL_NOTIFICATION_CHANNEL_ID);
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(0)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
                 .setContentTitle(notifyTitle)
@@ -383,8 +399,10 @@ public class AlertService extends FirebaseMessagingService {
 
         Notification notification = notificationBuilder.build();
         notification.flags |= Notification.FLAG_INSISTENT;
-
         notificationManager.notify((int) notificationId, notification);
+
+        UserSessionManager userSessionManager = new UserSessionManager(this);
+        userSessionManager.setInitiatedCallId(notificationId);
     }
 
     private void performAlertNotification(Map<String, String> data) {
@@ -448,6 +466,7 @@ public class AlertService extends FirebaseMessagingService {
                 intent.putExtra("redirect_to_broadcast", "");
             } else if (notifyType.equals("call_init")) {
 
+
                 intent = new Intent(getApplicationContext(), VoiceCall.class);
                 intent.putExtra("channel_name", data.get("notification_call_token"))
                         .putExtra("from_user_id", "")
@@ -455,10 +474,15 @@ public class AlertService extends FirebaseMessagingService {
                         .putExtra("to_user_id", "")
                         .putExtra("to_user_id", "")
                         .putExtra("call_id", data.get("notification_call_id"))
-                        .putExtra("type", "receive");
+                        .putExtra("type", "receive")
+                        .putExtra("name", data.get("notification_sender_name"))
+                        .putExtra("image", data.get("notification_sender_image"))
+                ;
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setAction(Common.ACTION_OPEN_DASHBOARD);
+
+                apiCallRinging(data.get("notification_call_token"), data.get("notification_call_id"));
             } else {
                 intent = new Intent(getApplicationContext(), Dashboard.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -513,9 +537,13 @@ public class AlertService extends FirebaseMessagingService {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createCallNotificationChannel(NotificationManager notificationManager) {
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
+
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .setUsage(AudioAttributes.USAGE_ALARM)
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.CALL_NOTIFICATION_CHANNEL_ID,
@@ -524,6 +552,7 @@ public class AlertService extends FirebaseMessagingService {
         notificationChannel.setDescription("Call Notification Channel");
         notificationChannel.setLightColor(Color.YELLOW);
         notificationChannel.enableVibration(true);
+        notificationChannel.setSound(notificationSound, audioAttributes);
         notificationChannel.enableLights(true);
         notificationManager.createNotificationChannel(notificationChannel);
 
@@ -642,5 +671,56 @@ public class AlertService extends FirebaseMessagingService {
         }
 
         return isDerisedActivity;
+    }
+
+
+    private void apiCallRinging(String callToken, String callId) {
+
+        UserSessionManager sessionManager = new UserSessionManager(this);
+        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        String userId = hashMap.get(UserSessionManager.KEY_USER_ID);
+        String userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
+        String userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
+        String deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        String fcmToken = sessionManager.getFcmToken();
+
+        AndroidNetworking.post(Common.BASE_URL + "app-call-ringing")
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("call_token", callToken)
+                .addBodyParameter("call_id", callId)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            String message = response.getString("message");
+                            Log.e("CALL_RINGING==>", message);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+
+                    }
+                });
+
+    }
+
+    public void cancelNotification(Context ctx, int notifyId) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        nMgr.cancel(notifyId);
+
+        UserSessionManager userSessionManager = new UserSessionManager(this);
+        userSessionManager.setInitiatedCallId(0);
     }
 }

@@ -103,4 +103,5 @@
     <string name="distance">దూరం</string>
     <string name="app_theme">App Theme</string>
     <string name="change_theme_of_the_app">Change theme of the app</string>
+    <string name="calling">Calling...</string>
 </resources>

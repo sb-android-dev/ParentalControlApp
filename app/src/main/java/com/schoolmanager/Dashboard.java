@@ -293,6 +293,7 @@ public class Dashboard extends BaseActivity {
                 nextIntent.putExtra("driver_name", driverDetail.get(UserSessionManager.KEY_DRIVER_NAME));
                 nextIntent.putExtra("driver_phone", driverDetail.get(UserSessionManager.KEY_DRIVER_PHONE));
                 nextIntent.putExtra("driver_id", Integer.parseInt(driverDetail.get(UserSessionManager.KEY_DRIVER_ID)));
+                nextIntent.putExtra("driver_image", "");
                 startActivity(nextIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }

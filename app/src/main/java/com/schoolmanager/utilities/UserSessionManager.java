@@ -31,6 +31,7 @@ public class UserSessionManager {
     public static final String KEY_DRIVER_ID = "driver_id";
     public static final String KEY_DRIVER_NAME = "driver_name";
     public static final String KEY_DRIVER_PHONE = "driver_phone";
+    public static final String KEY_DRIVER_IMAGE = "driver_image";
 
     public static final String KEY_IS_BUS_NOTIFICATION_RECEIVED = "is_bus_notification_received";
     public static final String KEY_TODAY_S_DAY = "today_s_day";
@@ -42,6 +43,8 @@ public class UserSessionManager {
 
     public static final String KEY_LANGUAGE_CODE = "lang_code";
     public static final String KEY_THEME_VALUE = "theme_value";
+
+    public static final String KEY_INITIATED_CALL_ID = "call_id";
 
     public UserSessionManager(Context context) {
         this._context = context;
@@ -61,14 +64,23 @@ public class UserSessionManager {
     }
 
 
-    public void setLanguage(String code){
+    public void setLanguage(String code) {
         editor.putString(KEY_LANGUAGE_CODE, code);
         editor.commit();
     }
 
-    public void setTheme(int value){
+    public void setTheme(int value) {
         editor.putInt(KEY_THEME_VALUE, value);
         editor.commit();
+    }
+
+    public void setInitiatedCallId(int call_id) {
+        editor.putInt(KEY_INITIATED_CALL_ID, call_id);
+        editor.commit();
+    }
+
+    public int getInitiatedCallId() {
+        return pref.getInt(KEY_INITIATED_CALL_ID, 0);
     }
 
     public void createUserLoginSession(int userId, String userToken, String userName, int userType,
@@ -235,11 +247,11 @@ public class UserSessionManager {
         return pref.getBoolean(KEY_IS_READ_UNREAD_MESSAGES_ENABLED, false);
     }
 
-    public String getLanguage(){
-        return  pref.getString(KEY_LANGUAGE_CODE, "en");
+    public String getLanguage() {
+        return pref.getString(KEY_LANGUAGE_CODE, "en");
     }
 
-    public int getTheme(){
+    public int getTheme() {
         return pref.getInt(KEY_THEME_VALUE, -1);
     }
 

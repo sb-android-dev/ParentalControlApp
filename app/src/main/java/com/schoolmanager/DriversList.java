@@ -99,6 +99,7 @@ public class DriversList extends BaseActivity {
                 nextIntent.putExtra("driver_name", driverItem.getDriverName());
                 nextIntent.putExtra("driver_phone", driverItem.getPhoneNo());
                 nextIntent.putExtra("driver_id", driverItem.getDriverId());
+                nextIntent.putExtra("driver_image", driverItem.getDriverImage());
                 startActivity(nextIntent);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 //            }

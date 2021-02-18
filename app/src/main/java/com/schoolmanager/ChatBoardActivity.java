@@ -16,6 +16,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -342,7 +343,7 @@ public class ChatBoardActivity extends BaseActivity {
 
     }
 
-    private void apiCallSendMessage(int m_message_type, String message, String file_url,File image_file) {
+    private void apiCallSendMessage(int m_message_type, String message, String file_url, File image_file) {
 
         if (!detector.isConnectingToInternet()) {
 
@@ -351,8 +352,10 @@ public class ChatBoardActivity extends BaseActivity {
             return;
         }
 
+
         switch (m_message_type) {
             case 1:
+                Toast.makeText(this, "Test : Local message pushed", Toast.LENGTH_SHORT).show();
                 pushLocalTextMessage("0", message, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 2:
@@ -363,10 +366,28 @@ public class ChatBoardActivity extends BaseActivity {
                 break;
         }
 
+
         File file = (m_message_type == 3) ? new File(mAudioFile) : image_file;
-//        File file = (m_message_type == 3) ? new File(mAudioFile) : new File(getPath(ChatBoardActivity.this, Uri.parse(file_url)));
 
         binding.edChatboardMessage.setText("");
+
+        Toast.makeText(this, "Test : Api call init", Toast.LENGTH_SHORT).show();
+
+
+        String toastText =
+                "message_file: " + file +
+                        "\nuser_id: " + userId +
+                        "\nuser_token: " + userToken +
+                        "\nuser_type: " + userType +
+                        "\nmessage_type: " + String.valueOf(m_message_type) +
+                        "\nmessage_text: " + message +
+                        "\nreceiver_id: " + String.valueOf(mComplaintModal.getChat_receiver_id()) +
+                        "\nreceiver_type: " + String.valueOf(mComplaintModal.getChat_receiver_type()) +
+                        "\nuser_app_code: " + Common.APP_CODE +
+                        "\ndevice_id: " + deviceId +
+                        "\ndevice_type: " + "1";
+
+        Toast.makeText(this, "Test : Api call params\n" + toastText, Toast.LENGTH_LONG).show();
 
         AndroidNetworking.upload(Common.BASE_URL + "app-send-message")
                 .setPriority(Priority.HIGH)
@@ -385,7 +406,7 @@ public class ChatBoardActivity extends BaseActivity {
                 .setUploadProgressListener(new UploadProgressListener() {
                     @Override
                     public void onProgress(long bytesUploaded, long totalBytes) {
-                        if(bytesUploaded == totalBytes){
+                        if (bytesUploaded == totalBytes) {
                             EventBus.getDefault().post(new EventNewMessageArrives(null, true));
                         }
                     }
@@ -396,7 +417,7 @@ public class ChatBoardActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
+                            Toast.makeText(ChatBoardActivity.this, "Test : Api call response\n" + response.toString(), Toast.LENGTH_LONG).show();
                             Log.e("CHAT_RESPONSE", response.toString());
                             binding.edChatboardMessage.setText("");
                             try {
@@ -408,20 +429,31 @@ public class ChatBoardActivity extends BaseActivity {
 
                                     ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
                                     chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
+
+                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call success\n" + message, Toast.LENGTH_LONG).show();
+
                                 } else {
+                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call false\n" + message, Toast.LENGTH_LONG).show();
                                 }
                             } catch (Exception e) {
+                                Toast.makeText(ChatBoardActivity.this, "Test : Api call catch one\n" + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
+                            Toast.makeText(ChatBoardActivity.this, "Test : Api call catch two\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+
                         }
                     }
 
                     @Override
                     public void onError(ANError anError) {
                         anError.printStackTrace();
-                        Log.e("ERROR",anError.getErrorDetail()+"");
-                        Log.e("ERROR",anError.getMessage()+"");
+                        Log.e("ERROR", anError.getErrorDetail() + "");
+                        Log.e("ERROR", anError.getMessage() + "");
+                        Toast.makeText(ChatBoardActivity.this, "Test : Api call onError\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatBoardActivity.this, "Test : Api call body\n" + anError.getErrorBody(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChatBoardActivity.this, "Test : Api call detail\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+
                     }
 
                 });
@@ -634,7 +666,7 @@ public class ChatBoardActivity extends BaseActivity {
                             public void run() {
                                 Log.e("RECORDTIME==>", recordTime + "");
                                 if (recordTime >= 2000) {
-                                    apiCallSendMessage(3, "", mAudioFile,null);
+                                    apiCallSendMessage(3, "", mAudioFile, null);
                                 }
                             }
                         }, 1000);
@@ -710,7 +742,7 @@ public class ChatBoardActivity extends BaseActivity {
                                 File imageFile = compressed.get(0);
                                 Log.d("ImageCompressor", "New photo size ==> " + imageFile.length());
 
-                                apiCallSendMessage(2, "","",imageFile);
+                                apiCallSendMessage(2, "", "", imageFile);
 
                             } else {
                                 Log.e("ImageCompressor", "onComplete: received result is null");
@@ -737,7 +769,8 @@ public class ChatBoardActivity extends BaseActivity {
 
         public void onSend(View view) {
             if (StringUtils.isNotEmpty(binding.edChatboardMessage.getText().toString())) {
-                apiCallSendMessage(1, binding.edChatboardMessage.getText().toString(), "",null);
+                Toast.makeText(ChatBoardActivity.this, "Test : Send message", Toast.LENGTH_SHORT).show();
+                apiCallSendMessage(1, binding.edChatboardMessage.getText().toString(), "", null);
             }
         }
 

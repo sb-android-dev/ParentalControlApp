@@ -127,6 +127,8 @@ public class TeachersList extends BaseActivity {
                         .putExtra("to_user_type", "2")
                         .putExtra("to_user_id", teacherItem.getTeacherId() + "")
                         .putExtra("type", "init")
+                        .putExtra("name", teacherItem.getTeacherName())
+                        .putExtra("image", teacherItem.getTeacher_profile())
                 );
             }
         });

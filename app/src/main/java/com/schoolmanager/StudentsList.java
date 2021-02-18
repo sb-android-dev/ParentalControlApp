@@ -134,6 +134,8 @@ public class StudentsList extends BaseActivity {
                         .putExtra("to_user_type", "1")
                         .putExtra("to_user_id", studentItem.getParentId() + "")
                         .putExtra("type", "init")
+                        .putExtra("name", studentItem.getParentName())
+                        .putExtra("image", studentItem.getParentImage())
                 );
             }
         });

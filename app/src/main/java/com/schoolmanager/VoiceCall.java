@@ -24,9 +24,11 @@ import androidx.core.content.ContextCompat;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.bumptech.glide.Glide;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.events.EventCallEnd;
 import com.schoolmanager.events.EventCallReceive;
+import com.schoolmanager.events.EventCallRinging;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -68,6 +70,8 @@ public class VoiceCall extends AppCompatActivity {
     private ImageView mCallBtn;
     private ImageView mMuteBtn;
     private ImageView mSwitchCameraBtn;
+    private ImageView img_VoiceCall_propic;
+    private TextView voiceCallNameOfUser;
     private TextView voiceCallStatus;
 
     /**
@@ -210,6 +214,8 @@ public class VoiceCall extends AppCompatActivity {
     private String to_user_type = "";  // Typpe of user whome you want to call
     private String to_user_id = ""; // Id of user whome you want to call
     private String type = ""; // init : to init call , receive : to receive call
+    private String name = ""; // name of apponent
+    private String image = ""; // image of apponent
 
     private String call_id = ""; // string : api response id of initiated call
 
@@ -221,6 +227,9 @@ public class VoiceCall extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_call);
         EventBus.getDefault().register(this);
+
+        //Initialize ids
+        initUI();
 
 
         if (MyApplication.mpCall != null && MyApplication.mpCall.isPlaying()) {
@@ -235,14 +244,21 @@ public class VoiceCall extends AppCompatActivity {
         to_user_type = getIntent().getStringExtra("to_user_type");
         to_user_id = getIntent().getStringExtra("to_user_id");
         call_id = getIntent().hasExtra("call_id") ? getIntent().getStringExtra("call_id") : "";
+        name = getIntent().hasExtra("name") ? getIntent().getStringExtra("name") : "";
+        image = getIntent().hasExtra("image") ? getIntent().getStringExtra("image") : "";
 
 
-        initUI();
+        Glide.with(this)
+                .load(image)
+                .into(img_VoiceCall_propic);
+
+        voiceCallNameOfUser.setText(name);
+
         if (type.equals("init")) {
             apiCallInit();
         }
         if (type.equals("receive")) {
-            
+
             apiCallCalReceive();
             // Ask for permissions at runtime.
             // This is just an example set of permissions. Other permissions
@@ -253,6 +269,8 @@ public class VoiceCall extends AppCompatActivity {
                 initEngineAndJoinChannel();
             }
 
+            UserSessionManager userSessionManager = new UserSessionManager(this);
+            userSessionManager.setInitiatedCallId(0);
         }
     }
 
@@ -435,14 +453,14 @@ public class VoiceCall extends AppCompatActivity {
         mMuteBtn = findViewById(R.id.btn_mute);
         mSwitchCameraBtn = findViewById(R.id.btn_switch_camera);
         voiceCallStatus = findViewById(R.id.voiceCallStatus);
-
+        img_VoiceCall_propic = findViewById(R.id.img_VoiceCall_propic);
+        voiceCallNameOfUser = findViewById(R.id.voiceCallNameOfUser);
 
         // Sample logs are optional.
         showSampleLogs();
 
-        voiceCallStatus.setText(getString(R.string.call_ringing));
+        voiceCallStatus.setText(getString(R.string.calling));
     }
-
 
     private void showSampleLogs() {
         Log.e(TAG, "Welcome to Agora 1v1 video call");
@@ -675,6 +693,13 @@ public class VoiceCall extends AppCompatActivity {
     public void onCallReceive(EventCallReceive callReceive) {
         if (call_id.equals(callReceive.getCall_id())) {
             voiceCallStatus.setText(getString(R.string.call_started));
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCallRinging(EventCallRinging callRinging) {
+        if (call_id.equals(callRinging.getCall_id())) {
+            voiceCallStatus.setText(getString(R.string.call_ringing));
         }
     }
 }

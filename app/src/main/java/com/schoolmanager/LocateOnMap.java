@@ -156,7 +156,7 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private LatLng currentLatLng, driverLatLng;
-    private String dName, dPhone;
+    private String dName, dPhone,dImage;
     private int driverId;
 
     // Keys for storing activity state.
@@ -196,6 +196,7 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
 //            driverLatLng = getIntent().getParcelableExtra("location");
             dName = getIntent().getStringExtra("driver_name");
             dPhone = getIntent().getStringExtra("driver_phone");
+            dImage = getIntent().getStringExtra("driver_image");
             driverId = getIntent().getIntExtra("driver_id", 0);
         }
 
@@ -232,6 +233,8 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
                         .putExtra("to_user_type", "3")
                         .putExtra("to_user_id", String.valueOf(driverId))
                         .putExtra("type", "init")
+                        .putExtra("name", dName)
+                        .putExtra("image", dImage)
                 );
             }
         });
