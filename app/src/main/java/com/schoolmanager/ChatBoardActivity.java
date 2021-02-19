@@ -54,7 +54,9 @@ import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.IImageCompressTaskListener;
 import com.schoolmanager.utilities.ImageCompressTask;
 import com.schoolmanager.utilities.PathFinder;
+import com.schoolmanager.utilities.TimeAgo;
 import com.schoolmanager.utilities.UserSessionManager;
+import com.vanniktech.emoji.EmojiPopup;
 
 import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
@@ -66,6 +68,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
@@ -101,6 +104,7 @@ public class ChatBoardActivity extends BaseActivity {
     private ImageCompressTask imageCompressTask;
     private IImageCompressTaskListener compressTaskListener;
     private ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private EmojiPopup emojiPopup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,12 +199,17 @@ public class ChatBoardActivity extends BaseActivity {
         binding.resViewChatBoard.setLayoutManager(mLayoutManager);
         binding.resViewChatBoard.setAdapter(chatMessageAdapter);
 
+        emojiPopup = EmojiPopup.Builder.fromRootView(binding.llChatBoardMain).build(binding.edChatboardMessage);
+
         if (mComplaintModal.getChat_receiver_last_seen() != 0) {
+
+            int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+            Date localDateLastSeen = new Date((mComplaintModal.getChat_receiver_last_seen() * 1000L) - (offset));
+
             binding.txtChatBoardLastSeen.setText(
                     String.format("%s %s",
                             getString(R.string.last_seen),
-                            getLastSeenTime(mComplaintModal.getChat_receiver_last_seen())
-                    ));
+                            TimeAgo.getTimeAgo(localDateLastSeen.getTime())));
         } else {
             binding.txtChatBoardLastSeen.setText("");
         }
@@ -344,6 +353,11 @@ public class ChatBoardActivity extends BaseActivity {
     }
 
     private void apiCallSendMessage(int m_message_type, String message, String file_url, File image_file) {
+
+        if (emojiPopup.isShowing()) {
+            binding.emoji.setImageResource(R.drawable.ic_emoji);
+            emojiPopup.dismiss();
+        }
 
         if (!detector.isConnectingToInternet()) {
 
@@ -781,6 +795,16 @@ public class ChatBoardActivity extends BaseActivity {
 
         public void onAudioClick(View view) {
 
+        }
+
+        public void onClickEmoji(View view) {
+            if (emojiPopup.isShowing()) {
+                binding.emoji.setImageResource(R.drawable.ic_emoji);
+                emojiPopup.dismiss();
+            } else {
+                binding.emoji.setImageResource(R.drawable.ic_keyboard);
+                emojiPopup.toggle();
+            }
         }
     }
 

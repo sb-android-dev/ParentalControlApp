@@ -108,10 +108,11 @@ public class UserSessionManager {
         editor.commit();
     }
 
-    public void upsertDriver(int driverId, String driverName, String driverPhone) {
+    public void upsertDriver(int driverId, String driverName, String driverPhone,String driverImage) {
         editor.putInt(KEY_DRIVER_ID, driverId);
         editor.putString(KEY_DRIVER_NAME, driverName);
         editor.putString(KEY_DRIVER_PHONE, driverPhone);
+        editor.putString(KEY_DRIVER_IMAGE, driverImage);
         editor.commit();
     }
 
@@ -208,6 +209,7 @@ public class UserSessionManager {
         driver.put(KEY_DRIVER_ID, String.valueOf(pref.getInt(KEY_DRIVER_ID, 0)));
         driver.put(KEY_DRIVER_NAME, pref.getString(KEY_DRIVER_NAME, ""));
         driver.put(KEY_DRIVER_PHONE, pref.getString(KEY_DRIVER_PHONE, ""));
+        driver.put(KEY_DRIVER_IMAGE, pref.getString(KEY_DRIVER_IMAGE, ""));
         return driver;
     }
 

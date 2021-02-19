@@ -16,6 +16,8 @@ import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.utilities.UserSessionManager;
+import com.vanniktech.emoji.EmojiManager;
+import com.vanniktech.emoji.ios.IosEmojiProvider;
 import com.zeugmasolutions.localehelper.LocaleAwareApplication;
 
 import org.json.JSONObject;
@@ -33,6 +35,7 @@ public class MyApplication extends LocaleAwareApplication implements Application
     @Override
     public void onCreate() {
         super.onCreate();
+        EmojiManager.install(new IosEmojiProvider());
         AndroidNetworking.initialize(getApplicationContext());
         registerActivityLifecycleCallbacks(this);
         initTheme(new UserSessionManager(this).getTheme());

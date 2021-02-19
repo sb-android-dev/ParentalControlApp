@@ -13,9 +13,11 @@ import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.schoolmanager.BroadCastMessage;
 import com.schoolmanager.R;
 import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.model.BroadCastMessageItem;
+import com.schoolmanager.model.ChatMessageModal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -136,10 +138,16 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
         long previousTs = 0;
         if (position > 1) {
             BroadCastMessageItem cm = mListBroadCastMsg.get(position - 1);
-            previousTs = Long.parseLong(cm.getBroadcast_time());
+            previousTs = getLocalDate(Long.parseLong(cm.getBroadcast_time())).getTime();
         }
-        setTimeTextVisibility(Long.parseLong(m.getBroadcast_time()), previousTs, relTopDateView, txtTopDateViewDate);
+        setTimeTextVisibility(getLocalDate(Long.parseLong(m.getBroadcast_time())).getTime(), previousTs, relTopDateView, txtTopDateViewDate);
 
+    }
+
+    private Date getLocalDate (long timeStemp){
+        int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+        Date localDate = new Date((timeStemp * 1000L) - (offset));
+        return localDate;
     }
 
     public static Date dateToUTC(Date date) {

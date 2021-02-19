@@ -46,6 +46,10 @@ public class Common {
     public static final String BROADCAST_NOTIFICATION_CHANNEL_NAME = "Broadcast Message";
     public static final int BROADCAST_NOTIFICATION_ID = 6;
 
+    public static final String VOICE_CALL_NOTIFICATION_CHANNEL_ID = "voice_call_noti_channel";
+    public static final String VOICE_CALL_NOTIFICATION_CHANNEL_NAME = "Voice call notification";
+    public static final int VOICE_CALL_NOTIFICATION_NOTIFICATION_ID = 7;
+
 
     public static final int REQUEST_IMAGE_PICKER = 1002;
 

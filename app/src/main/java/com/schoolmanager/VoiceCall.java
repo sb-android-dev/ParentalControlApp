@@ -1,7 +1,15 @@
 package com.schoolmanager;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -13,12 +21,15 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.androidnetworking.AndroidNetworking;
@@ -272,6 +283,8 @@ public class VoiceCall extends AppCompatActivity {
             UserSessionManager userSessionManager = new UserSessionManager(this);
             userSessionManager.setInitiatedCallId(0);
         }
+
+        showVoiceCallNotification();
     }
 
     private void apiCallCalReceive() {
@@ -400,6 +413,7 @@ public class VoiceCall extends AppCompatActivity {
     }
 
     private void apiCallEnd() {
+        clearInitNotificaion();
 
         UserSessionManager sessionManager = new UserSessionManager(VoiceCall.this);
         HashMap<String, String> hashMap = sessionManager.getEssentials();
@@ -575,6 +589,7 @@ public class VoiceCall extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
         if (!mCallEnd) {
             leaveChannel();
+            apiCallEnd();
         }
         /*
           Destroys the RtcEngine instance and releases all resources used by the Agora SDK.
@@ -701,5 +716,85 @@ public class VoiceCall extends AppCompatActivity {
         if (call_id.equals(callRinging.getCall_id())) {
             voiceCallStatus.setText(getString(R.string.call_ringing));
         }
+    }
+
+
+    private void showVoiceCallNotification() {
+
+
+        long when = System.currentTimeMillis();
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createVoiceCallNotificationChannel(mNotificationManager);
+        }
+
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.content_voice_call_notification);
+
+       /* if (StringUtils.isNotEmpty(image)) {
+            URL appImgUrlLink = null;
+            try {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+                StrictMode.setThreadPolicy(policy);
+
+                appImgUrlLink = new URL(image);
+                contentView.setImageViewBitmap(R.id.image_app, BitmapFactory.decodeStream(appImgUrlLink.openConnection().getInputStream()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }*/
+
+        contentView.setTextViewText(R.id.title, name);
+
+
+        Intent notificationIntent = new Intent(getApplicationContext(), VoiceCall.class);
+        notificationIntent.putExtra("channel_name", channel_name)
+                .putExtra("from_user_id", from_user_id)
+                .putExtra("to_user_type", to_user_type)
+                .putExtra("to_user_id", to_user_id)
+                .putExtra("to_user_id", to_user_type)
+                .putExtra("call_id", call_id)
+                .putExtra("type", "receive")
+                .putExtra("name", name)
+                .putExtra("image", image);
+        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Common.VOICE_CALL_NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setCustomContentView(contentView)
+                .setContentTitle(name)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(false)
+                .setWhen(when);
+
+        mNotificationManager.notify(111111, notificationBuilder.build());
+
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createVoiceCallNotificationChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.VOICE_CALL_NOTIFICATION_CHANNEL_ID,
+                Common.VOICE_CALL_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        notificationChannel.setDescription("Voice call notification channel");
+        notificationChannel.setLightColor(Color.BLUE);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    public void clearInitNotificaion() {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) getSystemService(ns);
+        nMgr.cancel(111111);
     }
 }

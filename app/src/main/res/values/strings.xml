@@ -111,5 +111,6 @@
     <string name="app_theme">App Theme</string>
     <string name="change_theme_of_the_app">Change theme of the app</string>
     <string name="calling">Calling...</string>
+    <string name="tap_to_return_to_call">Tap to return to call</string>
 
 </resources>

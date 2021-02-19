@@ -207,9 +207,11 @@ public class LogIn extends BaseActivity {
                                     int driverId = data.getInt("user_driver_id");
                                     String driverName = data.getString("user_driver_name");
                                     String driverPhoneNo = data.getString("user_driver_phone_no");
+                                    String driverImage = data.has("user_driver_image") ? data.getString("user_driver_image") : "";
+
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
                                             userType, userPhoneNo, userImage, studentId);
-                                    sessionManager.upsertDriver(driverId, driverName, driverPhoneNo);
+                                    sessionManager.upsertDriver(driverId, driverName, driverPhoneNo,driverImage);
                                 } else {
                                     sessionManager.createUserLoginSession(userId, userToken, userName,
                                             userType, userPhoneNo, userImage);

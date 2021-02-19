@@ -11,6 +11,7 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/ll_ChatBoard_main"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -156,16 +157,26 @@
                             android:id="@+id/ll_ChatBoard_message"
                             android:layout_width="match_parent"
                             android:orientation="horizontal"
+                            android:paddingStart="16dp"
                             android:layout_gravity="center_vertical"
                             android:layout_height="match_parent">
 
-                            <EditText
+
+                            <ImageView
+                                android:onClick="@{(view)-> handler.onClickEmoji(view)}"
+                                android:id="@+id/emoji"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center_vertical"
+                                android:contentDescription="@string/app_name"
+                                android:src="@drawable/ic_emoji" />
+
+                            <com.vanniktech.emoji.EmojiEditText
                                 android:id="@+id/ed_Chatboard_message"
-                                android:layout_weight="1.0"
                                 android:textColorHint="@color/dark_gray"
-                                android:textColor="@color/black"
                                 android:textSize="14sp"
                                 android:text=""
+                                android:layout_weight="1.0"
                                 android:minHeight="40dp"
                                 android:inputType="textMultiLine"
                                 android:imeOptions="actionDone"
@@ -176,6 +187,23 @@
                                 android:layout_width="0dp"
                                 android:maxHeight="150dp"
                                 android:layout_height="match_parent"/>
+
+<!--                            <EditText-->
+<!--                                android:layout_weight="0.0"-->
+<!--                                android:textColorHint="@color/dark_gray"-->
+<!--                                android:textColor="@color/black"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:text=""-->
+<!--                                android:minHeight="40dp"-->
+<!--                                android:inputType="textMultiLine"-->
+<!--                                android:imeOptions="actionDone"-->
+<!--                                android:paddingHorizontal="16dp"-->
+<!--                                android:hint="Type a message"-->
+<!--                                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline3"-->
+<!--                                android:background="@android:color/transparent"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:maxHeight="150dp"-->
+<!--                                android:layout_height="match_parent"/>-->
 
                             <ImageView
                                 android:layout_gravity="center_vertical"
