@@ -119,14 +119,17 @@ public class AlertService extends FirebaseMessagingService {
         } else if (remoteMessage.getData().get("notification_type").equals("track_status")) {
             if (new UserSessionManager(this).getUserType() == 1)
                 performTrackNotification(remoteMessage.getData());
+        } else if (remoteMessage.getData().get("notification_type").equals("complaint")) {
+            if(new UserSessionManager(this).getUserType() == 3)
+                performComplaintNotification(remoteMessage.getData());
         } else {
             UserSessionManager sessionManager = new UserSessionManager(this);
 
-            if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
-                sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-                sessionManager.updateNotificationStatus(false);
-            }
-            if (!sessionManager.getNotificationStatus())
+//            if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+//                sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+//                sessionManager.updateNotificationStatus(false);
+//            }
+//            if (!sessionManager.getNotificationStatus())
                 performAlertNotification(remoteMessage.getData());
         }
 //        showNotification(remoteMessage.getData());
@@ -276,6 +279,36 @@ public class AlertService extends FirebaseMessagingService {
         }
     }
 
+    private void performComplaintNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long notificationId = System.currentTimeMillis();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createComplaintChannel(notificationManager);
+        }
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, Common.COMPLAINT_NOTIFICATION_CHANNEL_ID);
+
+        Log.e(TAG, "performComplaintNotification: complaint notification");
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_complaint)
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setContentTitle(notifyTitle)
+                .setContentText(notifyBody)
+                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+
+        notificationManager.notify((int) notificationId, notificationBuilder.build());
+
+    }
+
     private void performTrackNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
@@ -286,33 +319,57 @@ public class AlertService extends FirebaseMessagingService {
         long notificationId = System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createTrackNotificationChannel(notificationManager, notifyTrackStatus);
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID);
+            if(notificationChannel != null)
+                notificationManager.deleteNotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID);
+
+            switch (notifyTrackStatus){
+                case "1":
+                    createDriverHomeToSchoolChannel(notificationManager);
+                    break;
+                case "2":
+                    createSubAdminHomeToSchoolChannel(notificationManager);
+                    break;
+                case "3":
+                    createSubAdminSchoolToHomeChannel(notificationManager);
+                    break;
+                case "4":
+                    createDriverSchoolToHomeChannel(notificationManager);
+                    break;
+            }
+
         }
 
         Uri notificationSound;
+        String notificationChannelId;
         switch (notifyTrackStatus) {
             case "1":
+                notificationChannelId = Common.DRIVER_HOME_TO_SCHOOL_CHANNEL_ID;
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
                 break;
             case "2":
+                notificationChannelId = Common.SUB_ADMIN_HOME_TO_SCHOOL_CHANNEL_ID;
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
                 break;
             case "3":
+                notificationChannelId = Common.SUB_ADMIN_SCHOOL_TO_HOME_CHANNEL_ID;
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
                 break;
             case "4":
+                notificationChannelId = Common.DRIVER_SCHOOL_TO_HOME_CHANNEL_ID;
                 notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
                 break;
             default:
                 notificationSound = null;
+                notificationChannelId = "";
         }
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, Common.TRACK_NOTIFICATION_CHANNEL_ID);
+                new NotificationCompat.Builder(this, notificationChannelId);
 
         Log.e(TAG, "performTrackNotification: track notification");
 
@@ -320,7 +377,7 @@ public class AlertService extends FirebaseMessagingService {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_tracking)
-                .setSound(notificationSound, AudioManager.STREAM_NOTIFICATION)
+                .setSound(notificationSound)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
@@ -328,7 +385,6 @@ public class AlertService extends FirebaseMessagingService {
         notificationManager.notify((int) notificationId, notificationBuilder.build());
 
     }
-
 
     private void performBroadcastNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
@@ -414,6 +470,10 @@ public class AlertService extends FirebaseMessagingService {
         long notificationId = System.currentTimeMillis();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID);
+            if(notificationChannel != null)
+                notificationManager.deleteNotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID);
+
             createAlertNotificationChannel(notificationManager);
         }
 
@@ -430,7 +490,7 @@ public class AlertService extends FirebaseMessagingService {
         mp.start();
 
         NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_ID);
+                new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_NEW_ID);
 
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -446,7 +506,7 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationManager.notify((int) notificationId, notification);
 
-        new UserSessionManager(this).updateNotificationStatus(true);
+//        new UserSessionManager(this).updateNotificationStatus(true);
     }
 
     private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {
@@ -515,7 +575,6 @@ public class AlertService extends FirebaseMessagingService {
                 1, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createAlertNotificationChannel(NotificationManager notificationManager) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -523,12 +582,12 @@ public class AlertService extends FirebaseMessagingService {
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .build();
 
-        NotificationChannel notificationChannel = new NotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID,
+        NotificationChannel notificationChannel = new NotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_NEW_ID,
                 Common.ALERT_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         notificationChannel.setDescription("Alert Notification Channel");
         notificationChannel.setLightColor(Color.YELLOW);
-//        notificationChannel.setSound(Settings.System.DEFAULT_RINGTONE_URI, audioAttributes);
+        notificationChannel.setSound(null, null);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
         notificationChannel.enableVibration(true);
         notificationChannel.enableLights(true);
@@ -579,42 +638,133 @@ public class AlertService extends FirebaseMessagingService {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createTrackNotificationChannel(NotificationManager notificationManager, String notifyTrackStatus) {
+    private void createDriverSchoolToHomeChannel(NotificationManager notificationManager) {
         AudioAttributes audioAttributes = new AudioAttributes.Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
                 .build();
 
-        NotificationChannel notificationChannel = new NotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID,
+        NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_SCHOOL_TO_HOME_CHANNEL_ID,
                 Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
 
-        Uri notificationSound;
-        switch (notifyTrackStatus) {
-            case "1":
-                notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
-                break;
-            case "2":
-                notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
-                break;
-            case "3":
-                notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
-                break;
-            case "4":
-                notificationSound = Uri.parse("android.resource://"
+        Uri notificationSound = Uri.parse("android.resource://"
                         + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
-                break;
-            default:
-                notificationSound = null;
-        }
-
 
         notificationChannel.setDescription("Track Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
 
         notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createDriverHomeToSchoolChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_HOME_TO_SCHOOL_CHANNEL_ID,
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
+
+        notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createSubAdminSchoolToHomeChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.SUB_ADMIN_SCHOOL_TO_HOME_CHANNEL_ID,
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
+
+        notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createSubAdminHomeToSchoolChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.SUB_ADMIN_HOME_TO_SCHOOL_CHANNEL_ID,
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
+
+        notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createTrackNotificationChannel(NotificationManager notificationManager, String notifyTrackStatus) {
+//        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+//                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+//                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID,
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+//        Uri notificationSound;
+//        switch (notifyTrackStatus) {
+//            case "1":
+//                notificationSound = Uri.parse("android.resource://"
+//                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
+//                break;
+//            case "2":
+//                notificationSound = Uri.parse("android.resource://"
+//                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
+//                break;
+//            case "3":
+//                notificationSound = Uri.parse("android.resource://"
+//                        + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
+//                break;
+//            case "4":
+//                notificationSound = Uri.parse("android.resource://"
+//                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
+//                break;
+//            default:
+//                notificationSound = null;
+//        }
+
+        notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+//        notificationChannel.setSound(notificationSound, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
         notificationChannel.enableVibration(true);
         notificationChannel.enableLights(true);
@@ -633,6 +783,26 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationChannel.setDescription("Track Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createComplaintChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.COMPLAINT_NOTIFICATION_CHANNEL_ID,
+                Common.COMPLAINT_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+
+        notificationChannel.setDescription("Complaint Notification Channel");
+        notificationChannel.setLightColor(Color.RED);
 
         notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});
@@ -672,7 +842,6 @@ public class AlertService extends FirebaseMessagingService {
 
         return isDerisedActivity;
     }
-
 
     private void apiCallRinging(String callToken, String callId) {
 

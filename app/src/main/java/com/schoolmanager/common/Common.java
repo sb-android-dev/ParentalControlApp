@@ -23,10 +23,15 @@ public class Common {
     public static final long FASTEST_INTERVAL = 2 * 1000; /* 2 secs */
 
     public static final String TRACKING_NOTIFICATION_CHANNEL_ID = "tracking_channel";
+    public static final String DRIVER_HOME_TO_SCHOOL_CHANNEL_ID = "d_home_school_channel";
+    public static final String DRIVER_SCHOOL_TO_HOME_CHANNEL_ID = "d_school_home_channel";
+    public static final String SUB_ADMIN_SCHOOL_TO_HOME_CHANNEL_ID = "s_school_home_channel";
+    public static final String SUB_ADMIN_HOME_TO_SCHOOL_CHANNEL_ID = "s_home_school_channel";
     public static final String TRACKING_NOTIFICATION_CHANNEL_NAME = "Tracking User";
     public static final int TRACKING_NOTIFICATION_ID = 1;
 
     public static final String ALERT_NOTIFICATION_CHANNEL_ID = "alert_channel";
+    public static final String ALERT_NOTIFICATION_CHANNEL_NEW_ID = "alert_channel_new";
     public static final String ALERT_NOTIFICATION_CHANNEL_NAME = "Alert";
     public static final int ALERT_NOTIFICATION_ID = 2;
 
@@ -49,6 +54,10 @@ public class Common {
     public static final String VOICE_CALL_NOTIFICATION_CHANNEL_ID = "voice_call_noti_channel";
     public static final String VOICE_CALL_NOTIFICATION_CHANNEL_NAME = "Voice call notification";
     public static final int VOICE_CALL_NOTIFICATION_NOTIFICATION_ID = 7;
+
+    public static final String COMPLAINT_NOTIFICATION_CHANNEL_ID = "complaint_channel";
+    public static final String COMPLAINT_NOTIFICATION_CHANNEL_NAME = "Complaint";
+    public static final int COMPLAINT_NOTIFICATION_NOTIFICATION_ID = 8;
 
 
     public static final int REQUEST_IMAGE_PICKER = 1002;

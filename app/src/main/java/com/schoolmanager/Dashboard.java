@@ -77,6 +77,7 @@ public class Dashboard extends BaseActivity {
     private UserSessionManager sessionManager;
     private String userId, userType, userToken, uName, uImage, deviceId, fcmToken;
     private String studentId;
+    private int driverId;
 
     private MediaPlayer mp;
     private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -110,6 +111,8 @@ public class Dashboard extends BaseActivity {
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
         Log.e(TAG, "onCreate: deviceId -> " + deviceId);
         studentId = hashMap.get(UserSessionManager.KEY_STUDENT_ID);
+        driverId = sessionManager.getDriverId();
+
         fcmToken = sessionManager.getFcmToken();
 
         if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
@@ -220,6 +223,12 @@ public class Dashboard extends BaseActivity {
                 scanLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
                 clParent.setVisibility(View.GONE);
+
+                if(driverId == 0){
+                    locateChildLayout.setVisibility(View.GONE);
+                } else {
+                    locateChildLayout.setVisibility(View.VISIBLE);
+                }
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -440,7 +449,7 @@ public class Dashboard extends BaseActivity {
                                 mp.start();
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
-                                sessionManager.updateNotificationStatus(false);
+//                                sessionManager.updateNotificationStatus(false);
                                 sessionManager.registerComplaint(true);
                                 notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
@@ -669,6 +678,14 @@ public class Dashboard extends BaseActivity {
 
         if (detector.isConnectingToInternet())
             uploadStoredResult();
+
+        if(userType.equals("1")){
+            driverId = sessionManager.getDriverId();
+            if(driverId == 0)
+                locateChildLayout.setVisibility(View.GONE);
+            else
+                locateChildLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
