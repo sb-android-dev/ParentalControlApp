@@ -251,7 +251,7 @@ public class AlertService extends FirebaseMessagingService {
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.logo)
+                .setSmallIcon(R.drawable.ic_give_complaint)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
@@ -406,7 +406,7 @@ public class AlertService extends FirebaseMessagingService {
         notificationBuilder.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_tracking)
+                .setSmallIcon(R.drawable.ic_management)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
@@ -447,7 +447,7 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationBuilder.setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_school_bus)
+                .setSmallIcon(R.drawable.ic_call)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setSound(notificationSound)
@@ -498,13 +498,20 @@ public class AlertService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_school_bus)
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
-                .setSound(notificationSound)
+//                .setSound(notificationSound)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
 
         Notification notification = notificationBuilder.build();
-        notification.flags |= Notification.FLAG_INSISTENT;
+//        notification.flags |= Notification.FLAG_INSISTENT;
 
         notificationManager.notify((int) notificationId, notification);
+
+//        if (checkForCruntActivityInStack(Dashboard.class.getName())) {
+//            Intent intent = new Intent(getApplicationContext(), Dashboard.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.setAction(Common.ACTION_OPEN_DASHBOARD);
+//            startActivity(intent);
+//        }
 
 //        new UserSessionManager(this).updateNotificationStatus(true);
     }
@@ -525,7 +532,6 @@ public class AlertService extends FirebaseMessagingService {
                 intent.setAction(Common.ACTION_OPEN_DASHBOARD);
                 intent.putExtra("redirect_to_broadcast", "");
             } else if (notifyType.equals("call_init")) {
-
 
                 intent = new Intent(getApplicationContext(), VoiceCall.class);
                 intent.putExtra("channel_name", data.get("notification_call_token"))
@@ -564,6 +570,8 @@ public class AlertService extends FirebaseMessagingService {
                     );
 
                     intent.putExtra("redirect_to_chat", new Gson().toJson(complaintItem));
+                } else if(notifyType.equals("location")){
+                    intent.putExtra("notification_for_arrive", true);
                 }
             }
 

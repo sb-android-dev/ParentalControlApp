@@ -26,10 +26,10 @@ public class Splash extends BaseActivity {
         HashMap<String, String> hashMap = sessionManager.getEssentials();
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
 
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
+//        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+//            MyApplication.mp.stop();
+//            MyApplication.mp.release();
+//        }
 
         assert deviceId != null;
         if(deviceId.isEmpty()){

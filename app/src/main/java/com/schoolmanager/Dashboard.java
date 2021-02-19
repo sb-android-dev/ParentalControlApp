@@ -65,7 +65,7 @@ public class Dashboard extends BaseActivity {
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
     private SwitchMaterial locationSwitch;
-    private TextView arrived, notArrived;
+    private TextView arrived, notArrived, ok;
     private RelativeLayout notArrivedLayout;
     private ProgressBar progressArrived, progressComplaint;
 
@@ -115,10 +115,10 @@ public class Dashboard extends BaseActivity {
 
         fcmToken = sessionManager.getFcmToken();
 
-        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
+//        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
+//            MyApplication.mp.stop();
+//            MyApplication.mp.release();
+//        }
 
         mp = MediaPlayer.create(getApplicationContext(), alarmSound);
 
@@ -146,6 +146,7 @@ public class Dashboard extends BaseActivity {
         notArrivedLayout = findViewById(R.id.rlNotArrived);
         notArrived = findViewById(R.id.btnNotArrived);
         progressComplaint = findViewById(R.id.progressNotArrived);
+        ok = findViewById(R.id.btnOk);
         clParent = findViewById(R.id.clParent);
 
         userName.setText(uName);
@@ -262,6 +263,11 @@ public class Dashboard extends BaseActivity {
                 clParent.setVisibility(View.GONE);
         }
 
+        if(getIntent().hasExtra("notification_for_arrive")
+                && getIntent().getBooleanExtra("notification_for_arrive", false)){
+            arrivedLayout.setVisibility(View.VISIBLE);
+        }
+
         fetchGeneralData();
 
         logOut.setOnClickListener(v -> {
@@ -333,6 +339,12 @@ public class Dashboard extends BaseActivity {
         });
         notArrived.setOnClickListener(v -> {
             childNotArrived();
+        });
+        ok.setOnClickListener(v -> {
+            if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
+                MyApplication.mp.stop();
+                MyApplication.mp.release();
+            }
         });
 
         locationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -504,11 +516,11 @@ public class Dashboard extends BaseActivity {
                                 if (data.has("is_arrived")) {
                                     boolean isArrived = data.getInt("is_arrived") == 1;
                                     if (userType.equals("1")) {
-                                        if (!isArrived) {
-                                            arrivedLayout.setVisibility(View.VISIBLE);
-                                        } else {
-                                            arrivedLayout.setVisibility(View.GONE);
-                                        }
+//                                        if (!isArrived) {
+//                                            arrivedLayout.setVisibility(View.VISIBLE);
+//                                        } else {
+//                                            arrivedLayout.setVisibility(View.GONE);
+//                                        }
 
                                         if (sessionManager.getIsComplaintRegistered()) {
                                             notArrivedLayout.setVisibility(View.GONE);
@@ -616,6 +628,11 @@ public class Dashboard extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
 
+        if(intent.hasExtra("notification_for_arrive")
+                && intent.getBooleanExtra("notification_for_arrive", false)){
+            arrivedLayout.setVisibility(View.VISIBLE);
+        }
+
         if (locationManager != null) {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locationSwitch.setChecked(true);
@@ -624,10 +641,10 @@ public class Dashboard extends BaseActivity {
 
         fetchGeneralData();
 
-        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
+//        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
+//            MyApplication.mp.stop();
+//            MyApplication.mp.release();
+//        }
 
         navigateToChatBoardFromNotification(intent);
         navigateToBroadcastFromNotification(intent);
