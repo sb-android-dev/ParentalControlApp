@@ -96,7 +96,6 @@
     <string name="one_week_ago">One week ago</string>
 
 
-
     <string name="agora_app_id" translatable="false">25b67e207f614ef2ae6aae914b040ffc</string>
     <string name="agora_access_token" translatable="false">0066bb7966f95b44d09ba3a2e55cf1d57f7IACWui5ZepI9qt6/JrrYwwwuFbsnZ0NbQpFKhzBUx2IdzrryKFcAAAAAEABwjq6PEy4eYAEAAQAQLh5g</string>
     <string name="call">Call</string>
@@ -113,5 +112,7 @@
     <string name="today">Today</string>
     <string name="calling">Calling...</string>
     <string name="tap_to_return_to_call">Tap to return to call</string>
+    <string name="place">Place</string>
+    <string name="nothing_found_place">No place found</string>
 
 </resources>
