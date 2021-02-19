@@ -74,7 +74,9 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
                      Calendar maxDate,
                      boolean isDayShown,
                      boolean isTitleShown,
-                     String customTitle) {
+                     String customTitle,
+                     boolean isNeutralButtonShown,
+                     String neutralButtonTitle) {
         super(context, theme);
 
         mCallBack = callBack;
@@ -90,7 +92,9 @@ public class DatePickerDialog extends AlertDialog implements OnClickListener,
                 this);
         setButton(BUTTON_NEGATIVE, context.getText(android.R.string.cancel),
                 this);
-        setButton(BUTTON_NEUTRAL, context.getText(R.string.clear_date), this);
+
+        if(isNeutralButtonShown)
+            setButton(BUTTON_NEUTRAL, neutralButtonTitle, this);
 
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -39,6 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -88,6 +89,11 @@ public class NoticeBoard extends BaseActivity {
         noticesRecycler = findViewById(R.id.rvNotice);
         noDataLayout = findViewById(R.id.llNoData);
         loadingProgress = findViewById(R.id.progressLoading);
+
+        calendar = Calendar.getInstance();
+        noticeDate = calendar.get(Calendar.YEAR) + "-"
+                + new DecimalFormat("00").format((calendar.get(Calendar.MONTH)+1)) + "-"
+                + new DecimalFormat("00").format(calendar.get(Calendar.DAY_OF_MONTH));
 
         noticesRecycler.setLayoutManager(new GridLayoutManager(this, 1,
                 RecyclerView.VERTICAL, false));
@@ -243,19 +249,24 @@ public class NoticeBoard extends BaseActivity {
             calendar = Calendar.getInstance();
         }
         new SpinnerDatePickerDialogBuilder().context(this)
+                .showNeutralButton(true, getString(R.string.today))
                 .callback(new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         calendar.set(year, monthOfYear, dayOfMonth);
-                        noticeDate = year + "-" + (monthOfYear+1) + "-" + dayOfMonth;
+                        noticeDate = year + "-"
+                                + new DecimalFormat("00").format((monthOfYear+1)) + "-"
+                                + new DecimalFormat("00").format(dayOfMonth);
                         currentPage = Common.PAGE_START;
                         getListOfNotice(currentPage);
                     }
 
                     @Override
                     public void onClearDate(DatePicker view) {
-                        calendar = null;
-                        noticeDate = "";
+                        calendar = Calendar.getInstance();
+                        noticeDate = calendar.get(Calendar.YEAR) + "-"
+                                + new DecimalFormat("00").format(calendar.get(Calendar.MONTH) + 1) + "-"
+                                + new DecimalFormat("00").format(calendar.get(Calendar.DAY_OF_MONTH));
                         currentPage = Common.PAGE_START;
                         getListOfNotice(currentPage);
                     }

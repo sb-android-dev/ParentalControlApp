@@ -12,6 +12,8 @@ public class SpinnerDatePickerDialogBuilder {
     private DatePickerDialog.OnDateCancelListener onCancel;
     private boolean isDayShown = true;
     private boolean isTitleShown = true;
+    private boolean isNeutralButtonShown = true;
+    private String neutralButtonTitle = "";
     private String customTitle = "";
     private int theme = 0;                 //default theme
     private int spinnerTheme = 0;          //default theme
@@ -27,6 +29,12 @@ public class SpinnerDatePickerDialogBuilder {
 
     public SpinnerDatePickerDialogBuilder callback(DatePickerDialog.OnDateSetListener callBack) {
         this.callBack = callBack;
+        return this;
+    }
+
+    public SpinnerDatePickerDialogBuilder showNeutralButton(boolean isNeutralButtonShown, String neutralButtonTitle){
+        this.isNeutralButtonShown = isNeutralButtonShown;
+        this.neutralButtonTitle = neutralButtonTitle;
         return this;
     }
 
@@ -79,6 +87,6 @@ public class SpinnerDatePickerDialogBuilder {
         if (context == null) throw new IllegalArgumentException("Context must not be null");
         if (maxDate.getTime().getTime() <= minDate.getTime().getTime()) throw new IllegalArgumentException("Max date is not after Min date");
 
-        return new DatePickerDialog(context, theme, spinnerTheme, callBack, onCancel, defaultDate, minDate, maxDate, isDayShown, isTitleShown, customTitle);
+        return new DatePickerDialog(context, theme, spinnerTheme, callBack, onCancel, defaultDate, minDate, maxDate, isDayShown, isTitleShown, customTitle, isNeutralButtonShown, neutralButtonTitle);
     }
 }
