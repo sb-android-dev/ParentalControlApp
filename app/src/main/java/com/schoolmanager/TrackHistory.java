@@ -90,7 +90,7 @@ public class TrackHistory extends BaseActivity {
         calendar = Calendar.getInstance();
         trackDate = calendar.get(Calendar.YEAR) + "-"
                 + new DecimalFormat("00").format(calendar.get(Calendar.MONTH) + 1) + "-"
-                + calendar.get(Calendar.DAY_OF_MONTH);
+                + new DecimalFormat("00").format(calendar.get(Calendar.DAY_OF_MONTH));
         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
         getTrackingDataFor(trackDate);
 
@@ -264,11 +264,14 @@ public class TrackHistory extends BaseActivity {
             calendar = Calendar.getInstance();
         }
         new SpinnerDatePickerDialogBuilder().context(this)
+                .showNeutralButton(true, getString(R.string.today))
                 .callback(new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                         calendar.set(year, monthOfYear, dayOfMonth);
-                        trackDate = year + "-" + new DecimalFormat("00").format(monthOfYear + 1) + "-" + dayOfMonth;
+                        trackDate = year + "-"
+                                + new DecimalFormat("00").format(monthOfYear + 1) + "-"
+                                + new DecimalFormat("00").format(dayOfMonth);
                         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
                         getTrackingDataFor(trackDate);
                     }
@@ -278,7 +281,7 @@ public class TrackHistory extends BaseActivity {
                         calendar = Calendar.getInstance();
                         trackDate = calendar.get(Calendar.YEAR) + "-"
                                 + new DecimalFormat("00").format(calendar.get(Calendar.MONTH) + 1) + "-"
-                                + calendar.get(Calendar.DAY_OF_MONTH);
+                                + new DecimalFormat("00").format(calendar.get(Calendar.DAY_OF_MONTH));
                         scanDate = sdf2.format(new Date(calendar.getTimeInMillis()));
                         getTrackingDataFor(trackDate);
                     }

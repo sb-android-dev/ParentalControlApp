@@ -1,5 +1,13 @@
 package com.schoolmanager;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -152,11 +160,19 @@ public class SelectDriver extends BaseActivity {
                                     driverId = userProfile.getInt("user_driver_id");
                                     String dName = userProfile.getString("user_driver_name");
                                     String dPhone = userProfile.getString("user_driver_phone_no");
-                                    String dIMage = userProfile.has("user_driver_image") ? userProfile.getString("user_driver_image") : "";
 
-                                    driverName.setText(dName);
-                                    driverPhoneNo.setText(dPhone);
-                                    sessionManager.upsertDriver(driverId, dName, dPhone,dIMage);
+                                    if(driverId == 0){
+                                        driverName.setText("None");
+                                        driverPhoneNo.setText("");
+                                        driverPhoneNo.setVisibility(View.GONE);
+                                        sessionManager.upsertDriver(0, "None", "", "");
+                                    }else{
+                                        driverName.setText(dName);
+                                        driverPhoneNo.setText(dPhone);
+                                        driverPhoneNo.setVisibility(View.VISIBLE);
+                                        sessionManager.upsertDriver(driverId, dName, dPhone, "");
+                                    }
+
 
                                     currentPage = Common.PAGE_START;
                                     getListOfDrivers(currentPage);
@@ -201,8 +217,8 @@ public class SelectDriver extends BaseActivity {
             if (pageNumber == Common.PAGE_START) {
                 swipeRefreshLayout.setRefreshing(true);
                 loadingProgress.setVisibility(View.INVISIBLE);
-            } else {
-                if (swipeRefreshLayout.isRefreshing())
+            }else{
+                if(swipeRefreshLayout.isRefreshing())
                     swipeRefreshLayout.setRefreshing(false);
                 loadingProgress.setVisibility(View.VISIBLE);
             }
@@ -234,6 +250,14 @@ public class SelectDriver extends BaseActivity {
 
                                     if (currentPage == Common.PAGE_START) {
                                         driverList.clear();
+
+                                        DriverItem driverItem = new DriverItem();
+                                        driverItem.setDriverId(0);
+                                        driverItem.setDriverName("None");
+                                        if(driverItem.getDriverId() == driverId)
+                                            driverItem.setSelected(true);
+
+                                        driverList.add(driverItem);
                                     }
 
                                     int itemsInList = driverList.size();
@@ -252,12 +276,12 @@ public class SelectDriver extends BaseActivity {
                                                 && !driver.getString("driver_address").isEmpty()
                                                 && !driver.getString("driver_address").equals("null"))
                                             driverItem.setDriverAddress(driver.getString("driver_address"));
-                                        if (!driver.isNull("driver_profile")
+                                        if(!driver.isNull("driver_profile")
                                                 && !driver.getString("driver_profile").isEmpty()
                                                 && !driver.getString("driver_profile").equals("null"))
                                             driverItem.setDriverImage(driver.getString("driver_profile"));
 
-                                        if (driverItem.getDriverId() == driverId)
+                                        if(driverItem.getDriverId() == driverId)
                                             driverItem.setSelected(true);
 
                                         driverList.add(driverItem);
@@ -297,7 +321,7 @@ public class SelectDriver extends BaseActivity {
         }
     }
 
-    private void setDriver() {
+    private void setDriver(){
         if (!detector.isConnectingToInternet()) {
             Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();

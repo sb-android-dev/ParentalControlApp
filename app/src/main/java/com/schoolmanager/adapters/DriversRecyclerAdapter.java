@@ -75,7 +75,14 @@ public class DriversRecyclerAdapter extends RecyclerView.Adapter<DriversRecycler
 
         public void bindView(DriverItem driverItem) {
             driverName.setText(driverItem.getDriverName());
-            vehicleNo.setText(driverItem.getPhoneNo());
+
+            if(driverItem.getPhoneNo() != null && !driverItem.getPhoneNo().isEmpty()
+                    && !driverItem.getPhoneNo().equalsIgnoreCase("null")) {
+                vehicleNo.setText(driverItem.getPhoneNo());
+                vehicleNo.setVisibility(View.VISIBLE);
+            } else {
+                vehicleNo.setVisibility(View.GONE);
+            }
 
             if(isForSelection) {
                 if (driverItem.isSelected()) {
