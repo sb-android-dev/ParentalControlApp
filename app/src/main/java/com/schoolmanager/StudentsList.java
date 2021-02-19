@@ -63,7 +63,7 @@ public class StudentsList extends BaseActivity {
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
-    private String userId, userToken, userType, deviceId, fcmToken;
+    private String userId, userToken, userType, deviceId, fcmToken, place_id = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +90,9 @@ public class StudentsList extends BaseActivity {
         if (getIntent() != null) {
             classId = getIntent().getIntExtra("class_id", 0);
             sectionId = getIntent().getIntExtra("section_id", 0);
+            if (getIntent().hasExtra("place_id")) {
+                place_id = getIntent().getStringExtra("place_id");
+            }
         }
 
         studentsRecycler.setLayoutManager(new GridLayoutManager(this, 1,
@@ -105,22 +108,25 @@ public class StudentsList extends BaseActivity {
                  * Redirect to ChatBoard to chat with Teacher
                  *
                  */
-                Intent intent = new Intent(StudentsList.this, ChatBoardActivity.class);
-                ComplaintItem complaintItem = new ComplaintItem(
-                        "0",
-                        "",
-                        "",
-                        0,
-                        studentItem.getParentImage(),
-                        studentItem.getParentName(),
-                        studentItem.getParentId(),
-                        1,
-                        1,
-                        1,
-                        0
-                );
-                intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
-                startActivity(intent);
+                if(!userType.equals("3")){
+                    Intent intent = new Intent(StudentsList.this, ChatBoardActivity.class);
+                    ComplaintItem complaintItem = new ComplaintItem(
+                            "0",
+                            "",
+                            "",
+                            0,
+                            studentItem.getParentImage(),
+                            studentItem.getParentName(),
+                            studentItem.getParentId(),
+                            1,
+                            1,
+                            1,
+                            0
+                    );
+                    intent.putExtra("complaint_data", new Gson().toJson(complaintItem));
+                    startActivity(intent);
+                }
+
             }
 
             @Override
@@ -200,6 +206,7 @@ public class StudentsList extends BaseActivity {
                     .addBodyParameter("fcm_token", fcmToken)
                     .addBodyParameter("device_type", "1")
                     .addBodyParameter("search_text", search)
+                    .addBodyParameter("place_id", place_id)
                     .addBodyParameter("page_no", String.valueOf(pageNumber))
                     .addBodyParameter("section_id", String.valueOf(sectionId).equals("0") ? "" : String.valueOf(sectionId))
                     .addBodyParameter("class_id", String.valueOf(classId).equals("0") ? "" : String.valueOf(classId))
@@ -330,4 +337,6 @@ public class StudentsList extends BaseActivity {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
+
+
 }

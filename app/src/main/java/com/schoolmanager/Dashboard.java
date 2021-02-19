@@ -345,7 +345,7 @@ public class Dashboard extends BaseActivity {
         clParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Dashboard.this, StudentsList.class));
+                startActivity(new Intent(Dashboard.this, StudentPlaceScreen.class));
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
