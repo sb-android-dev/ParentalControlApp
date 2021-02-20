@@ -200,6 +200,10 @@ public class UserSessionManager {
         return id;
     }
 
+    public int getUserId(){
+        return pref.getInt(KEY_USER_ID, 0);
+    }
+
     public int getUserType() {
         return pref.getInt(KEY_USER_TYPE, 0);
     }

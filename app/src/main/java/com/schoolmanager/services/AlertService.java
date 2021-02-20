@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -43,11 +42,9 @@ import com.schoolmanager.model.ComplaintItem;
 import com.schoolmanager.model.NotificationItem;
 import com.schoolmanager.utilities.UserSessionManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,77 +59,99 @@ public class AlertService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-//        Log.e(TAG, "onMessageReceived: " + remoteMessage.getMessageType());
         Log.e(TAG, "onMessageReceived: data ->" + remoteMessage.getData().toString());
 
-        if (remoteMessage.getData().get("notification_type").equals("message")) {
-            // Notification to handle message
-            performChatNotification(remoteMessage.getData());
-        } else if (remoteMessage.getData().get("notification_type").equals("message_read")) {
-            EventBus.getDefault().post(new EventReadMessage(
-                    remoteMessage.getData().get("notification_read_message_id")
-            ));
+        UserSessionManager sessionManager = new UserSessionManager(this);
+        int userId = sessionManager.getUserId();
+        int userType = sessionManager.getUserType();
 
-        } else if (remoteMessage.getData().get("notification_type").equals("call_init")) {
-            /**
-             * If driver and teacher have set the flag receive call or not
-             * then it will manage notification accordinglly
-             * drfault valueis true so other type of user can reeive call
-             */
+        if(userId > 0) {
 
-            UserSessionManager userSessionManager = new UserSessionManager(this);
-            if (userSessionManager.getUserType() != 0) {
-                boolean isReceiveCall = userSessionManager.canReceiveCall();
-                if (isReceiveCall) {
-                    performCallNotification(remoteMessage.getData());
-                }
+            switch (remoteMessage.getData().get("notification_type")) {
+                case "message":
+                    performChatNotification(remoteMessage.getData());
+
+                    break;
+
+                case "message_read":
+                    EventBus.getDefault().post(new EventReadMessage(
+                            remoteMessage.getData().get("notification_read_message_id")
+                    ));
+
+                    break;
+                case "call_init":
+                    /*
+                     * If driver and teacher have set the flag receive call or not
+                     * then it will manage notification accordingly
+                     * default value is true so other type of user can receive call
+                     */
+
+                    if (userType != 0) {
+                        boolean isReceiveCall = sessionManager.canReceiveCall();
+                        if (isReceiveCall) {
+                            performCallNotification(remoteMessage.getData());
+                        }
+                    }
+
+                    break;
+                case "call_ringing":
+                    EventBus.getDefault().post(new EventCallRinging(
+                            remoteMessage.getData().get("notification_call_id"),
+                            remoteMessage.getData().get("notification_call_token")
+                    ));
+
+                    break;
+                case "call_end":
+                    int call_notification_id = sessionManager.getInitiatedCallId();
+                    cancelNotification(this, call_notification_id);
+
+                    EventBus.getDefault().post(new EventCallEnd(
+                            remoteMessage.getData().get("notification_call_id"),
+                            remoteMessage.getData().get("notification_call_token")
+                    ));
+
+                    break;
+                case "call_receive":
+                    EventBus.getDefault().post(new EventCallReceive(
+                            remoteMessage.getData().get("notification_call_id"),
+                            remoteMessage.getData().get("notification_call_token")
+                    ));
+
+                    break;
+                case "broadcast_alert":
+                    performBroadcastNotification(remoteMessage.getData());
+
+                    break;
+                case "message_delete":
+                    EventBus.getDefault().post(new EventDeleteMessage(
+                            remoteMessage.getData().get("notification_delete_message_id")
+                    ));
+
+                    break;
+                case "track_status":
+                    if (userType == 1)
+                        performTrackNotification(remoteMessage.getData());
+
+                    break;
+                case "complaint":
+                    if (userType == 3)
+                        performComplaintNotification(remoteMessage.getData());
+
+                    break;
+                case "location":
+                    if (userType == 1)
+                        performAlertNotification(remoteMessage.getData());
+
+//                    if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
+//                        sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
+//                        sessionManager.updateNotificationStatus(false);
+//                    }
+//                    if (!sessionManager.getNotificationStatus())
+                    break;
+                default:
+                    performGeneralNotification(remoteMessage.getData());
             }
-
-
-        } else if (remoteMessage.getData().get("notification_type").equals("call_ringing")) {
-            EventBus.getDefault().post(new EventCallRinging(
-                    remoteMessage.getData().get("notification_call_id"),
-                    remoteMessage.getData().get("notification_call_token")
-            ));
-        } else if (remoteMessage.getData().get("notification_type").equals("call_end")) {
-
-            UserSessionManager userSessionManager = new UserSessionManager(this);
-            int call_notification_id = userSessionManager.getInitiatedCallId();
-            cancelNotification(this,call_notification_id);
-
-            EventBus.getDefault().post(new EventCallEnd(
-                    remoteMessage.getData().get("notification_call_id"),
-                    remoteMessage.getData().get("notification_call_token")
-            ));
-        } else if (remoteMessage.getData().get("notification_type").equals("call_receive")) {
-            EventBus.getDefault().post(new EventCallReceive(
-                    remoteMessage.getData().get("notification_call_id"),
-                    remoteMessage.getData().get("notification_call_token")
-            ));
-        } else if (remoteMessage.getData().get("notification_type").equals("broadcast_alert")) {
-            performBroadcastNotification(remoteMessage.getData());
-        } else if (remoteMessage.getData().get("notification_type").equals("message_delete")) {
-            EventBus.getDefault().post(new EventDeleteMessage(
-                    remoteMessage.getData().get("notification_delete_message_id")
-            ));
-
-        } else if (remoteMessage.getData().get("notification_type").equals("track_status")) {
-            if (new UserSessionManager(this).getUserType() == 1)
-                performTrackNotification(remoteMessage.getData());
-        } else if (remoteMessage.getData().get("notification_type").equals("complaint")) {
-            if(new UserSessionManager(this).getUserType() == 3)
-                performComplaintNotification(remoteMessage.getData());
-        } else {
-            UserSessionManager sessionManager = new UserSessionManager(this);
-
-//            if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
-//                sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-//                sessionManager.updateNotificationStatus(false);
-//            }
-//            if (!sessionManager.getNotificationStatus())
-                performAlertNotification(remoteMessage.getData());
         }
-//        showNotification(remoteMessage.getData());
     }
 
     /**
@@ -153,60 +172,7 @@ public class AlertService extends FirebaseMessagingService {
      *             notification_message_receiver_id=5
      *             }
      */
-//    Show notification
-//    private void showNotification(Map<String, String> data) {
-//        String notifyTitle = data.get("notification_title");
-//        String notifyBody = data.get("notification_body");
-//        String notifyType = data.get("notification_type");
-//        String notifyId = data.get("notification_id");
-//
-//        Log.e(TAG, "showNotification: notifyType ->" + notifyType);
-//
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//
-//        if(notifyType.equals("message")){
-//            performChatNotification(data);
-//        }else{
-//            performAlertNotification(data);
-//        }
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            createAlertNotificationChannel(notificationManager);
-//        }
-//
-//        NotificationCompat.Builder notificationBuilder =
-//                new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_ID);
-//
-//        notificationBuilder.setAutoCancel(true)
-//                .setDefaults(Notification.DEFAULT_ALL)
-//                .setWhen(System.currentTimeMillis())
-//                .setSmallIcon(R.drawable.ic_school_bus)
-//                .setContentTitle(notifyTitle)
-//                .setContentText(notifyBody)
-//                .setContentIntent(getRespectiveActivityPendingIntent(notifyType));
-
-//        if (checkForCruntActivityInStack(ChatBoardActivity.class.getName())
-//                || checkForCruntActivityInStack(ComplainList.class.getName())) {
-//
-//            /**
-//             * Fire event to update the chat
-//             * list and chat message board for
-//             * new message arrivles
-//             */
-//
-//            if (notifyType.equals("message")) {
-//                try {
-//                    JSONObject jsonObjNotificationItem = new JSONObject(data);
-//                    NotificationItem notificationItem = new Gson().fromJson(jsonObjNotificationItem.toString(), NotificationItem.class);
-//                    EventBus.getDefault().post(new EventNewMessageArrives(notificationItem, true));
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        } else {
-//            notificationManager.notify((int) notificationId, notificationBuilder.build());
-//        }
-//    }
+//    Show notifications
     private void perfromChatReadNotification(Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
@@ -320,10 +286,10 @@ public class AlertService extends FirebaseMessagingService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID);
-            if(notificationChannel != null)
+            if (notificationChannel != null)
                 notificationManager.deleteNotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID);
 
-            switch (notifyTrackStatus){
+            switch (notifyTrackStatus) {
                 case "1":
                     createDriverHomeToSchoolChannel(notificationManager);
                     break;
@@ -471,7 +437,7 @@ public class AlertService extends FirebaseMessagingService {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID);
-            if(notificationChannel != null)
+            if (notificationChannel != null)
                 notificationManager.deleteNotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID);
 
             createAlertNotificationChannel(notificationManager);
@@ -480,9 +446,11 @@ public class AlertService extends FirebaseMessagingService {
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
+        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
         if (mp != null && mp.isPlaying()) {
             mp.stop();
             mp.release();
+            mp = null;
         }
 
         mp = MediaPlayer.create(getApplicationContext(), notificationSound);
@@ -514,6 +482,36 @@ public class AlertService extends FirebaseMessagingService {
 //        }
 
 //        new UserSessionManager(this).updateNotificationStatus(true);
+    }
+
+    private void performGeneralNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long notificationId = System.currentTimeMillis();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createGeneralChannel(notificationManager);
+        }
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, Common.GENERAL_NOTIFICATION_CHANNEL_ID);
+
+        Log.e(TAG, "performGeneralNotification: general notification");
+
+        notificationBuilder.setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_check)
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setContentTitle(notifyTitle)
+                .setContentText(notifyBody)
+                .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+
+        notificationManager.notify((int) notificationId, notificationBuilder.build());
+
     }
 
     private PendingIntent getRespectiveActivityPendingIntent(Map<String, String> data, String notifyType) {
@@ -570,7 +568,7 @@ public class AlertService extends FirebaseMessagingService {
                     );
 
                     intent.putExtra("redirect_to_chat", new Gson().toJson(complaintItem));
-                } else if(notifyType.equals("location")){
+                } else if (notifyType.equals("location")) {
                     intent.putExtra("notification_for_arrive", true);
                 }
             }
@@ -656,7 +654,7 @@ public class AlertService extends FirebaseMessagingService {
                 Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
 
         Uri notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
+                + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
 
         notificationChannel.setDescription("Track Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
@@ -811,6 +809,26 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationChannel.setDescription("Complaint Notification Channel");
         notificationChannel.setLightColor(Color.RED);
+
+        notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createGeneralChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_DELAYED)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.GENERAL_NOTIFICATION_CHANNEL_ID,
+                Common.GENERAL_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+
+        notificationChannel.setDescription("Complaint Notification Channel");
+        notificationChannel.setLightColor(Color.GREEN);
 
         notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, audioAttributes);
 //            notificationChannel.setVibrationPattern(new long[]{0, 200});

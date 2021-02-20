@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.schoolmanager.adapters.PlacesAdapter;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.databinding.ActivityStudentPlaceScreenBinding;
 import com.schoolmanager.model.PlacesItem;
 import com.schoolmanager.services.TrackingService;
@@ -36,6 +37,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
 public class StudentPlaceScreen extends BaseActivity {
 
@@ -196,15 +199,19 @@ public class StudentPlaceScreen extends BaseActivity {
     }
 
     public void onLogOut() {
-        if (TrackingService.isTracking) {
-            Intent serviceIntent = new Intent(this, TrackingService.class);
-            serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
-            startService(serviceIntent);
-        }
-        sessionManager.logoutUser();
-        Intent i = new Intent(this, LogIn.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        LogOutUser.getInstance(this, status -> {
+            if(status == LOG_OUT_SUCCESS){
+                if (TrackingService.isTracking) {
+                    Intent serviceIntent = new Intent(this, TrackingService.class);
+                    serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
+                    startService(serviceIntent);
+                }
+                sessionManager.logoutUser();
+                Intent i = new Intent(this, LogIn.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).performLogOut();
     }
 
     @Override

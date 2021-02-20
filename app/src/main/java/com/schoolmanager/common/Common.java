@@ -59,6 +59,9 @@ public class Common {
     public static final String COMPLAINT_NOTIFICATION_CHANNEL_NAME = "Complaint";
     public static final int COMPLAINT_NOTIFICATION_NOTIFICATION_ID = 8;
 
+    public static final String GENERAL_NOTIFICATION_CHANNEL_ID = "general_channel";
+    public static final String GENERAL_NOTIFICATION_CHANNEL_NAME = "General";
+    public static final int GENERAL_NOTIFICATION_NOTIFICATION_ID = 8;
 
     public static final int REQUEST_IMAGE_PICKER = 1002;
 
@@ -66,4 +69,7 @@ public class Common {
     public static final int AT_SCHOOL = 2;
     public static final int SCHOOL_TO_HOME = 3;
     public static final int DRIVER_DROPPED = 4;
+
+    public static final int LOG_OUT_SUCCESS = 201;
+    public static final int LOG_OUT_FAILED = 202;
 }

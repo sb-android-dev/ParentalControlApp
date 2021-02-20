@@ -16,6 +16,7 @@ import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.dialogs.LogoutDialog;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
@@ -23,6 +24,8 @@ import com.schoolmanager.utilities.UserSessionManager;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
 public class Settings extends BaseActivity {
 
@@ -110,13 +113,19 @@ public class Settings extends BaseActivity {
     }
 
     public void onLogOut() {
-        if (TrackingService.isTracking) {
-            sendCommandToService(Common.ACTION_STOP_SERVICE);
-        }
-        sessionManager.logoutUser();
-        Intent i = new Intent(this, LogIn.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        LogOutUser.getInstance(this, status -> {
+            if(status == LOG_OUT_SUCCESS){
+                if (TrackingService.isTracking) {
+                    Intent serviceIntent = new Intent(this, TrackingService.class);
+                    serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
+                    startService(serviceIntent);
+                }
+                sessionManager.logoutUser();
+                Intent i = new Intent(this, LogIn.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).performLogOut();
     }
 
     @Override
