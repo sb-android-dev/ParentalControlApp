@@ -146,6 +146,8 @@ public class MyProfile extends BaseActivity {
 
         if (userType.equals("1")) {
             relRange.setVisibility(View.VISIBLE);
+            interval.setVisibility(View.VISIBLE);
+
             seekBarRang.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -168,6 +170,7 @@ public class MyProfile extends BaseActivity {
             });
         } else {
             relRange.setVisibility(View.GONE);
+            interval.setVisibility(View.GONE);
         }
 
         getUserProfile();
