@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 public class MyApplication extends LocaleAwareApplication implements Application.ActivityLifecycleCallbacks  {
 
-    public static MediaPlayer mp;
+    public static MediaPlayer mp = null;
     public static MediaPlayer mpCall;
     private int activityReferences = 0;
     private boolean isActivityChangingConfigurations = false;
@@ -39,6 +39,8 @@ public class MyApplication extends LocaleAwareApplication implements Application
         AndroidNetworking.initialize(getApplicationContext());
         registerActivityLifecycleCallbacks(this);
         initTheme(new UserSessionManager(this).getTheme());
+
+
 
     }
 
@@ -194,4 +196,6 @@ public class MyApplication extends LocaleAwareApplication implements Application
     public static void initTheme(int mode) {
         AppCompatDelegate.setDefaultNightMode(mode);
     }
+
+
 }

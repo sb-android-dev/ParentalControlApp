@@ -139,8 +139,8 @@ public class AlertService extends FirebaseMessagingService {
 
                     break;
                 case "location":
-                    if (userType == 1)
-                        performAlertNotification(remoteMessage.getData());
+                    if (userType == 1 && !sessionManager.isAlertNotifying())
+                        performAlertNotification(sessionManager, remoteMessage.getData());
 
 //                    if (sessionManager.getTodaySDay() != Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) {
 //                        sessionManager.updateTodaySDay(Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
@@ -427,13 +427,15 @@ public class AlertService extends FirebaseMessagingService {
         userSessionManager.setInitiatedCallId(notificationId);
     }
 
-    private void performAlertNotification(Map<String, String> data) {
+    private void performAlertNotification(UserSessionManager sessionManager, Map<String, String> data) {
         String notifyTitle = data.get("notification_title");
         String notifyBody = data.get("notification_body");
         String notifyType = data.get("notification_type");
 
+        Log.e(TAG, "performAlertNotification: notifying");
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        long notificationId = System.currentTimeMillis();
+        int notificationId = Common.ALERT_NOTIFICATION_ID;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(Common.ALERT_NOTIFICATION_CHANNEL_ID);
@@ -446,11 +448,12 @@ public class AlertService extends FirebaseMessagingService {
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.alert_notification);
 
-        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
-        if (mp != null && mp.isPlaying()) {
+//        mp = MediaPlayer.create(getApplicationContext(), notificationSound);
+        if (mp != null && !mp.isPlaying()) {
             mp.stop();
             mp.release();
             mp = null;
+            Log.e(TAG, "performAlertNotification: stopping ring");
         }
 
         mp = MediaPlayer.create(getApplicationContext(), notificationSound);
@@ -472,7 +475,9 @@ public class AlertService extends FirebaseMessagingService {
         Notification notification = notificationBuilder.build();
 //        notification.flags |= Notification.FLAG_INSISTENT;
 
-        notificationManager.notify((int) notificationId, notification);
+        notificationManager.notify(notificationId, notification);
+
+        sessionManager.notifyForAlert(true);
 
 //        if (checkForCruntActivityInStack(Dashboard.class.getName())) {
 //            Intent intent = new Intent(getApplicationContext(), Dashboard.class);

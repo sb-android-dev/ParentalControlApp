@@ -65,7 +65,7 @@ public class MyProfile extends BaseActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private RelativeLayout profileImageLayout;
     private ImageView profileImage;
-    private TextInputEditText name, phone, userName, password;
+    private TextInputEditText name, phone, userName, password, interval;
     private SwitchMaterial lastSeen, readUnread, switchReceiveCall;
     private Button update;
     private ProgressBar progressUpdate;
@@ -115,6 +115,7 @@ public class MyProfile extends BaseActivity {
         phone = findViewById(R.id.etPhone);
         userName = findViewById(R.id.etUserName);
         password = findViewById(R.id.etPassword);
+        interval = findViewById(R.id.etNotificationInterval);
         lastSeen = findViewById(R.id.switchLastSeen);
         readUnread = findViewById(R.id.switchReadUnreadMsg);
         switchReceiveCall = findViewById(R.id.switchReceiveCall);
@@ -249,6 +250,15 @@ public class MyProfile extends BaseActivity {
                                     String pNumber = userProfile.getString("user_phone_no");
                                     String uImage = userProfile.getString("user_image");
                                     String uCode = userProfile.getString("user_access_code");
+
+                                    String uInterval;
+                                    if(userProfile.has("user_alert_time")
+                                            && !userProfile.getString("user_alert_time").isEmpty()
+                                            && !userProfile.getString("user_alert_time").equalsIgnoreCase("null"))
+                                        uInterval = userProfile.getString("user_alert_time");
+                                    else
+                                        uInterval = "120";
+
                                     range = userProfile.getString("user_notification_distance");
                                     double km = Double.parseDouble(range);
                                     km = km * 1000;
@@ -270,6 +280,7 @@ public class MyProfile extends BaseActivity {
                                                                     getDimensionPixelSize(R.dimen.image_corner_radius))))
                                             .into(profileImage);
                                     userName.setText(uCode);
+                                    interval.setText(uInterval);
 
                                     sessionManager.updateImageUrl(uImage);
                                     sessionManager.updateLastSeenFlag(isLastSeenEnabled);
@@ -306,57 +317,75 @@ public class MyProfile extends BaseActivity {
     private void validateInputs() {
         String uName = userName.getText().toString();
         String pWord = password.getText().toString();
-        if (uName.isEmpty()) {
-            userName.setError("Enter username!");
-            userName.requestFocus();
-        } else {
-            progressUpdate.setVisibility(View.VISIBLE);
-            update.setVisibility(View.INVISIBLE);
-            if (selectedImageUri == null) {
-                if (!pWord.isEmpty()) {
-                    updateProfile(uName, pWord);
-                } else {
-                    updateProfile(uName);
+        String uInterval = interval.getText().toString();
+        try {
+            if (uName.isEmpty() || uInterval.isEmpty()) {
+                if (uInterval.isEmpty()) {
+                    interval.setError("Enter interval");
+                    interval.requestFocus();
                 }
+                if (uName.isEmpty()) {
+                    userName.setError("Enter username!");
+                    userName.requestFocus();
+                }
+            } else if (Integer.parseInt(uInterval) < 5 || Integer.parseInt(uInterval) > 180) {
+                interval.setError("Enter valid interval");
+                interval.requestFocus();
             } else {
-                imageCompressTask = new ImageCompressTask(this,
-                        new PathFinder(MyProfile.this).getPath(selectedImageUri), 250, 250,
-                        new IImageCompressTaskListener() {
-                            @Override
-                            public void onComplete(List<File> compressed) {
-                                if (compressed.get(0) != null) {
-                                    profileFile = compressed.get(0);
-                                    Log.d("ImageCompressor", "New photo size ==> " + profileFile.length());
+                progressUpdate.setVisibility(View.VISIBLE);
+                update.setVisibility(View.INVISIBLE);
 
-                                    if (!pWord.isEmpty()) {
-                                        updateProfile(profileFile, uName, pWord);
+                if (selectedImageUri == null) {
+                    if (!pWord.isEmpty()) {
+                        updateProfile(uName, pWord, uInterval);
+                    } else {
+                        updateProfile(uName, uInterval);
+                    }
+                } else {
+                    imageCompressTask = new ImageCompressTask(this,
+                            new PathFinder(MyProfile.this).getPath(selectedImageUri), 250, 250,
+                            new IImageCompressTaskListener() {
+                                @Override
+                                public void onComplete(List<File> compressed) {
+                                    if (compressed.get(0) != null) {
+                                        profileFile = compressed.get(0);
+                                        Log.d("ImageCompressor", "New photo size ==> " + profileFile.length());
+
+                                        if (!pWord.isEmpty()) {
+                                            updateProfile(profileFile, uName, pWord, uInterval);
+                                        } else {
+                                            updateProfile(profileFile, uName, uInterval);
+                                        }
+
                                     } else {
-                                        updateProfile(profileFile, uName);
+                                        Log.e("ImageCompressor", "onComplete: received result is null");
+                                        progressUpdate.setVisibility(View.INVISIBLE);
+                                        update.setVisibility(View.VISIBLE);
                                     }
+                                }
 
-                                } else {
-                                    Log.e("ImageCompressor", "onComplete: received result is null");
+                                @Override
+                                public void onError(Throwable error) {
+                                    Log.e(TAG, "onError: " + error.getLocalizedMessage());
                                     progressUpdate.setVisibility(View.INVISIBLE);
                                     update.setVisibility(View.VISIBLE);
                                 }
-                            }
-
-                            @Override
-                            public void onError(Throwable error) {
-                                Log.e(TAG, "onError: " + error.getLocalizedMessage());
-                                progressUpdate.setVisibility(View.INVISIBLE);
-                                update.setVisibility(View.VISIBLE);
-                            }
-                        });
-                mExecutorService.execute(imageCompressTask);
+                            });
+                    mExecutorService.execute(imageCompressTask);
+                }
             }
+        } catch (NumberFormatException e){
+            Log.e(TAG, "validateInputs: " + e.getLocalizedMessage());
+            interval.setError("Enter valid interval");
+            interval.requestFocus();
         }
+
 
         //Update can receive call locally
         sessionManager.updateReceiveCall(isReceiveCall);
     }
 
-    private void updateProfile(String userAccessCode) {
+    private void updateProfile(String userAccessCode, String intervalTime) {
         if (!detector.isConnectingToInternet()) {
             Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
@@ -373,6 +402,7 @@ public class MyProfile extends BaseActivity {
                     .addBodyParameter("device_type", "1")
                     .addBodyParameter("fcm_token", fcmToken)
                     .addBodyParameter("user_access_code", userAccessCode)
+                    .addBodyParameter("user_alert_time", intervalTime)
                     .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .addBodyParameter("user_notification_distance", range)
@@ -410,7 +440,7 @@ public class MyProfile extends BaseActivity {
         }
     }
 
-    private void updateProfile(String userAccessCode, String userPassword) {
+    private void updateProfile(String userAccessCode, String userPassword, String intervalTime) {
         if (!detector.isConnectingToInternet()) {
             Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
@@ -428,6 +458,7 @@ public class MyProfile extends BaseActivity {
                     .addBodyParameter("fcm_token", fcmToken)
                     .addBodyParameter("user_access_code", userAccessCode)
                     .addBodyParameter("user_password", userPassword)
+                    .addBodyParameter("user_alert_time", intervalTime)
                     .addBodyParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addBodyParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .addBodyParameter("user_notification_distance", range)
@@ -465,7 +496,7 @@ public class MyProfile extends BaseActivity {
         }
     }
 
-    private void updateProfile(File profileImageFile, String userAccessCode, String userPassword) {
+    private void updateProfile(File profileImageFile, String userAccessCode, String userPassword, String intervalTime) {
         if (!detector.isConnectingToInternet()) {
             Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
@@ -484,6 +515,7 @@ public class MyProfile extends BaseActivity {
                     .addMultipartParameter("fcm_token", fcmToken)
                     .addMultipartParameter("user_access_code", userAccessCode)
                     .addMultipartParameter("user_password", userPassword)
+                    .addMultipartParameter("user_alert_time", intervalTime)
                     .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .addMultipartParameter("user_notification_distance", range)
@@ -523,7 +555,7 @@ public class MyProfile extends BaseActivity {
         }
     }
 
-    private void updateProfile(File profileImageFile, String userAccessCode) {
+    private void updateProfile(File profileImageFile, String userAccessCode, String intervalTime) {
         if (!detector.isConnectingToInternet()) {
             Toast.makeText(this, getString(R.string.you_are_not_connected),
                     Toast.LENGTH_SHORT).show();
@@ -541,6 +573,7 @@ public class MyProfile extends BaseActivity {
                     .addMultipartParameter("device_type", "1")
                     .addMultipartParameter("fcm_token", fcmToken)
                     .addMultipartParameter("user_access_code", userAccessCode)
+                    .addMultipartParameter("user_alert_time", intervalTime)
                     .addMultipartParameter("user_last_seen_status", isLastSeenEnabled ? "1" : "0")
                     .addMultipartParameter("user_read_status", isReadUnreadMessagesEnabled ? "1" : "0")
                     .addMultipartParameter("user_notification_distance", range)

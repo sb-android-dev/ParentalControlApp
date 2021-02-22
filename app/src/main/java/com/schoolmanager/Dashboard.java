@@ -265,8 +265,8 @@ public class Dashboard extends BaseActivity {
             arrivedLayout.setVisibility(View.VISIBLE);
         }
 
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying())
-            arrivedLayout.setVisibility(View.VISIBLE);
+//        if(MyApplication.mp != null && MyApplication.mp.isPlaying())
+//            arrivedLayout.setVisibility(View.VISIBLE);
 
         fetchGeneralData();
 
@@ -634,7 +634,7 @@ public class Dashboard extends BaseActivity {
             arrivedLayout.setVisibility(View.VISIBLE);
         }
 
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying())
+        if(sessionManager.isAlertNotifying())
             arrivedLayout.setVisibility(View.VISIBLE);
 
         if (locationManager != null) {
@@ -656,6 +656,7 @@ public class Dashboard extends BaseActivity {
             MyApplication.mp.release();
             MyApplication.mp = null;
         }
+        sessionManager.notifyForAlert(false);
     }
 
     public void onLogOut() {
@@ -715,11 +716,16 @@ public class Dashboard extends BaseActivity {
             else
                 locateChildLayout.setVisibility(View.VISIBLE);
         }
+
+        if(sessionManager.isAlertNotifying())
+            arrivedLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void finish() {
         super.finish();
+        stopAlertSound();
+
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
