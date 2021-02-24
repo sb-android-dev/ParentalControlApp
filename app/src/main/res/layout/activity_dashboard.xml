@@ -802,8 +802,8 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintEnd_toStartOf="@id/rlOk"
+            app:layout_constraintHorizontal_weight="1.5"
             app:layout_constraintStart_toEndOf="@id/rlArrived"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -827,6 +827,32 @@
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                 android:textColor="?attr/colorOnPrimary"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlOk"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?attr/pure_bg_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/rlNotArrived"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/btnOk"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?attr/pure_bg_color"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/okay"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+                android:textColor="?attr/pure_txt_color" />
 
         </RelativeLayout>
 

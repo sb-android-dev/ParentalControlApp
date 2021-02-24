@@ -175,6 +175,37 @@
                     android:textColorHint="?attr/caption_color"
                     app:layout_constraintTop_toBottomOf="@id/tvPasswordHeading" />
 
+                <TextView
+                    android:id="@+id/tvIntervalHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Notification Interval"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toBottomOf="@id/etPassword" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etNotificationInterval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_edittext"
+                    android:elevation="2dp"
+                    android:hint="Interval time in minutes"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:padding="15dp"
+                    android:textColor="?attr/pure_txt_color"
+                    android:textColorHint="?attr/caption_color"
+                    app:layout_constraintTop_toBottomOf="@id/tvIntervalHeading" />
+                <TextView
+                    android:id="@+id/tvIntervalHelperText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Enter value between 5 to 180."
+                    app:layout_constraintTop_toBottomOf="@id/etNotificationInterval"/>
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchLastSeen"
                     android:layout_width="match_parent"
@@ -184,7 +215,7 @@
                     android:paddingEnd="5dp"
                     android:visibility="gone"
                     android:text="@string/show_last_seen"
-                    app:layout_constraintTop_toBottomOf="@id/etPassword"/>
+                    app:layout_constraintTop_toBottomOf="@id/tvIntervalHelperText"/>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchReadUnreadMsg"

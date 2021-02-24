@@ -21,6 +21,7 @@ import com.budiyev.android.codescanner.DecodeCallback;
 import com.budiyev.android.codescanner.ScanMode;
 import com.google.zxing.Result;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.model.ScanItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 
 import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;
+import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
 public class QRScanner extends BaseActivity {
 
@@ -171,6 +173,14 @@ public class QRScanner extends BaseActivity {
                                 if (success == 1) {
                                     mCodeScanner.startPreview();
                                 } else if (success == 2) {
+                                    ScanItem scanItem = new ScanItem();
+                                    scanItem.setUserId(userId);
+                                    scanItem.setUserToken(userToken);
+                                    scanItem.setUserType(userType);
+                                    scanItem.setStudentId(studentId);
+                                    scanItem.setTrackStatus(String.valueOf(status));
+                                    scanItem.setTrackTime(String.valueOf(scanTime));
+                                    dbHandler.addScanItem(scanItem);
                                     onLogOut();
                                 } else {
                                     ScanItem scanItem = new ScanItem();
@@ -216,15 +226,19 @@ public class QRScanner extends BaseActivity {
     }
 
     public void onLogOut() {
-        if (TrackingService.isTracking) {
-            Intent serviceIntent = new Intent(this, TrackingService.class);
-            serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
-            startService(serviceIntent);
-        }
-        new UserSessionManager(this).logoutUser();
-        Intent i = new Intent(this, LogIn.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        LogOutUser.getInstance(this, status -> {
+            if(status == LOG_OUT_SUCCESS){
+                if (TrackingService.isTracking) {
+                    Intent serviceIntent = new Intent(this, TrackingService.class);
+                    serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
+                    startService(serviceIntent);
+                }
+                sessionManager.logoutUser();
+                Intent i = new Intent(this, LogIn.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).performLogOut();
     }
 
     @Override

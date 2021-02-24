@@ -96,17 +96,16 @@
     <string name="call_to_parent">తల్లిదండ్రులకు కాల్ చేయండి</string>
     <string name="receive_call">కాల్ స్వీకరించండి</string>
     <string name="ringing">రింగింగ్</string>
-    <string name="call_error">ఎక్కడో తేడ జరిగింది…</string>
+    <string name="call_error">ఎక్కడో తేడ జరిగింది&#8230;</string>
     <string name="call_decliend">క్షీణించింది</string>
     <string name="call_started">కాల్ ప్రారంభమైంది</string>
     <string name="call_ringing">రింగింగ్</string>
     <string name="distance">దూరం</string>
-    <string name="app_theme">App Theme</string>
-    <string name="change_theme_of_the_app">Change theme of the app</string>
-    <string name="calling">Calling...</string>
-    <string name="tap_to_return_to_call">Tap to return to call</string>
-    <string name="place">Place</string>
-    <string name="today">Today</string>
-    <string name="nothing_found_place">No place found</string>
-
+    <string name="app_theme">అనువర్తన థీమ్</string>
+    <string name="change_theme_of_the_app">అనువర్తనం యొక్క థీమ్‌ను మార్చండి</string>
+    <string name="calling">పిలుస్తోంది&#8230;</string>
+    <string name="tap_to_return_to_call">కాల్‌కు తిరిగి రావడానికి నొక్కండి</string>
+    <string name="place">స్థలం</string>
+    <string name="today">ఈ రోజు</string>
+    <string name="nothing_found_place">స్థలం కనుగొనబడలేదు</string>
 </resources>

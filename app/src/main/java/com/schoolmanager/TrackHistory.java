@@ -22,6 +22,7 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.schoolmanager.adapters.TrackingHistorySequenceAdapter;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.model.TrackingHistoryItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
@@ -42,6 +43,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
 public class TrackHistory extends BaseActivity {
 
@@ -294,15 +297,19 @@ public class TrackHistory extends BaseActivity {
     }
 
     public void onLogOut() {
-        if (TrackingService.isTracking) {
-            Intent serviceIntent = new Intent(this, TrackingService.class);
-            serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
-            startService(serviceIntent);
-        }
-        sessionManager.logoutUser();
-        Intent i = new Intent(this, LogIn.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        LogOutUser.getInstance(this, status -> {
+            if(status == LOG_OUT_SUCCESS){
+                if (TrackingService.isTracking) {
+                    Intent serviceIntent = new Intent(this, TrackingService.class);
+                    serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
+                    startService(serviceIntent);
+                }
+                sessionManager.logoutUser();
+                Intent i = new Intent(this, LogIn.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).performLogOut();
     }
 
     @Override

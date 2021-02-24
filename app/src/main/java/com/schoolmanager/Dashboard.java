@@ -36,6 +36,7 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.dialogs.ChildArrivedDialog;
 import com.schoolmanager.dialogs.ChildNotArrivedDialog;
 import com.schoolmanager.model.ScanItem;
@@ -53,6 +54,7 @@ import java.util.List;
 
 import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;
+import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
 public class Dashboard extends BaseActivity {
 
@@ -65,7 +67,7 @@ public class Dashboard extends BaseActivity {
     private TextView userName, userTypeName, complaintNo;
     private ImageView userImage, logOut;
     private SwitchMaterial locationSwitch;
-    private TextView arrived, notArrived;
+    private TextView arrived, notArrived, ok;
     private RelativeLayout notArrivedLayout;
     private ProgressBar progressArrived, progressComplaint;
 
@@ -77,8 +79,9 @@ public class Dashboard extends BaseActivity {
     private UserSessionManager sessionManager;
     private String userId, userType, userToken, uName, uImage, deviceId, fcmToken;
     private String studentId;
+    private int driverId;
 
-    private MediaPlayer mp;
+    private MediaPlayer mpl;
     private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     @Override
@@ -110,14 +113,11 @@ public class Dashboard extends BaseActivity {
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
         Log.e(TAG, "onCreate: deviceId -> " + deviceId);
         studentId = hashMap.get(UserSessionManager.KEY_STUDENT_ID);
+        driverId = sessionManager.getDriverId();
+
         fcmToken = sessionManager.getFcmToken();
 
-        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
-
-        mp = MediaPlayer.create(getApplicationContext(), alarmSound);
+        mpl = MediaPlayer.create(getApplicationContext(), alarmSound);
 
         userName = findViewById(R.id.tvUsername);
         userTypeName = findViewById(R.id.tvUserType);
@@ -143,6 +143,7 @@ public class Dashboard extends BaseActivity {
         notArrivedLayout = findViewById(R.id.rlNotArrived);
         notArrived = findViewById(R.id.btnNotArrived);
         progressComplaint = findViewById(R.id.progressNotArrived);
+        ok = findViewById(R.id.btnOk);
         clParent = findViewById(R.id.clParent);
 
         userName.setText(uName);
@@ -221,6 +222,12 @@ public class Dashboard extends BaseActivity {
                 arrivedLayout.setVisibility(View.GONE);
                 clParent.setVisibility(View.GONE);
 
+                if(driverId == 0){
+                    locateChildLayout.setVisibility(View.GONE);
+                } else {
+                    locateChildLayout.setVisibility(View.VISIBLE);
+                }
+
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
                                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -252,6 +259,14 @@ public class Dashboard extends BaseActivity {
                 arrivedLayout.setVisibility(View.GONE);
                 clParent.setVisibility(View.GONE);
         }
+
+        if(getIntent().hasExtra("notification_for_arrive")
+                && getIntent().getBooleanExtra("notification_for_arrive", false)){
+            arrivedLayout.setVisibility(View.VISIBLE);
+        }
+
+//        if(MyApplication.mp != null && MyApplication.mp.isPlaying())
+//            arrivedLayout.setVisibility(View.VISIBLE);
 
         fetchGeneralData();
 
@@ -320,10 +335,15 @@ public class Dashboard extends BaseActivity {
             startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
         });
         arrived.setOnClickListener(v -> {
+            stopAlertSound();
             childArrived();
         });
         notArrived.setOnClickListener(v -> {
+            stopAlertSound();
             childNotArrived();
+        });
+        ok.setOnClickListener(v -> {
+            stopAlertSound();
         });
 
         locationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -375,12 +395,13 @@ public class Dashboard extends BaseActivity {
                             String message = response.getString("message");
 
                             if (success == 1) {
-                                if (mp.isPlaying()) {
-                                    mp.stop();
-                                    mp.release();
-                                    mp = MediaPlayer.create(getApplicationContext(), alarmSound);
+                                if (mpl.isPlaying()) {
+                                    mpl.stop();
+                                    mpl.release();
+                                    mpl = null;
+                                    mpl = MediaPlayer.create(getApplicationContext(), alarmSound);
                                 }
-                                mp.start();
+                                mpl.start();
                                 ChildArrivedDialog dialogA = new ChildArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildArrivedDialog.TAG);
                                 arrivedLayout.setVisibility(View.GONE);
@@ -432,15 +453,16 @@ public class Dashboard extends BaseActivity {
                             int success = response.getInt("status");
                             String message = response.getString("message");
                             if (success == 1) {
-                                if (mp.isPlaying()) {
-                                    mp.stop();
-                                    mp.release();
-                                    mp = MediaPlayer.create(getApplicationContext(), alarmSound);
+                                if (mpl.isPlaying()) {
+                                    mpl.stop();
+                                    mpl.release();
+                                    mpl = null;
+                                    mpl = MediaPlayer.create(getApplicationContext(), alarmSound);
                                 }
-                                mp.start();
+                                mpl.start();
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
-                                sessionManager.updateNotificationStatus(false);
+//                                sessionManager.updateNotificationStatus(false);
                                 sessionManager.registerComplaint(true);
                                 notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
@@ -495,11 +517,11 @@ public class Dashboard extends BaseActivity {
                                 if (data.has("is_arrived")) {
                                     boolean isArrived = data.getInt("is_arrived") == 1;
                                     if (userType.equals("1")) {
-                                        if (!isArrived) {
-                                            arrivedLayout.setVisibility(View.VISIBLE);
-                                        } else {
-                                            arrivedLayout.setVisibility(View.GONE);
-                                        }
+//                                        if (!isArrived) {
+//                                            arrivedLayout.setVisibility(View.VISIBLE);
+//                                        } else {
+//                                            arrivedLayout.setVisibility(View.GONE);
+//                                        }
 
                                         if (sessionManager.getIsComplaintRegistered()) {
                                             notArrivedLayout.setVisibility(View.GONE);
@@ -607,6 +629,14 @@ public class Dashboard extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
 
+        if(intent.hasExtra("notification_for_arrive")
+                && intent.getBooleanExtra("notification_for_arrive", false)){
+            arrivedLayout.setVisibility(View.VISIBLE);
+        }
+
+        if(sessionManager.isAlertNotifying())
+            arrivedLayout.setVisibility(View.VISIBLE);
+
         if (locationManager != null) {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 locationSwitch.setChecked(true);
@@ -615,24 +645,33 @@ public class Dashboard extends BaseActivity {
 
         fetchGeneralData();
 
-        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
-            MyApplication.mp.stop();
-            MyApplication.mp.release();
-        }
-
         navigateToChatBoardFromNotification(intent);
         navigateToBroadcastFromNotification(intent);
 
     }
 
-    public void onLogOut() {
-        if (TrackingService.isTracking) {
-            sendCommandToService(Common.ACTION_STOP_SERVICE);
+    public void stopAlertSound(){
+        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+            MyApplication.mp.stop();
+            MyApplication.mp.release();
+            MyApplication.mp = null;
         }
-        sessionManager.logoutUser();
-        Intent i = new Intent(this, LogIn.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        sessionManager.notifyForAlert(false);
+    }
+
+    public void onLogOut() {
+        LogOutUser.getInstance(this, status -> {
+            if(status == LOG_OUT_SUCCESS){
+                if (TrackingService.isTracking) {
+                    sendCommandToService(Common.ACTION_STOP_SERVICE);
+                }
+                sessionManager.logoutUser();
+                Intent i = new Intent(this, LogIn.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+            }
+        }).performLogOut();
+
     }
 
     @Override
@@ -669,11 +708,24 @@ public class Dashboard extends BaseActivity {
 
         if (detector.isConnectingToInternet())
             uploadStoredResult();
+
+        if(userType.equals("1")){
+            driverId = sessionManager.getDriverId();
+            if(driverId == 0)
+                locateChildLayout.setVisibility(View.GONE);
+            else
+                locateChildLayout.setVisibility(View.VISIBLE);
+        }
+
+        if(sessionManager.isAlertNotifying())
+            arrivedLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void finish() {
         super.finish();
+        stopAlertSound();
+
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 

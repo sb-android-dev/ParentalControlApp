@@ -46,6 +46,8 @@ public class UserSessionManager {
 
     public static final String KEY_INITIATED_CALL_ID = "call_id";
 
+    public static final String KEY_ALERT_NOTIFYING = "alert_notifying";
+
     public UserSessionManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREFER_NAME, PRIVATE_MODE);
@@ -76,6 +78,11 @@ public class UserSessionManager {
 
     public void setInitiatedCallId(int call_id) {
         editor.putInt(KEY_INITIATED_CALL_ID, call_id);
+        editor.commit();
+    }
+
+    public void notifyForAlert(boolean notifyForAlert){
+        editor.putBoolean(KEY_ALERT_NOTIFYING, notifyForAlert);
         editor.commit();
     }
 
@@ -200,6 +207,10 @@ public class UserSessionManager {
         return id;
     }
 
+    public int getUserId(){
+        return pref.getInt(KEY_USER_ID, 0);
+    }
+
     public int getUserType() {
         return pref.getInt(KEY_USER_TYPE, 0);
     }
@@ -255,6 +266,10 @@ public class UserSessionManager {
 
     public int getTheme() {
         return pref.getInt(KEY_THEME_VALUE, -1);
+    }
+
+    public boolean isAlertNotifying(){
+        return pref.getBoolean(KEY_ALERT_NOTIFYING, false);
     }
 
 //    public HashMap<String, Integer> getLTime(){
