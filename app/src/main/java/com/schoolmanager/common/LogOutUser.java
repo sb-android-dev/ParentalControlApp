@@ -2,15 +2,12 @@ package com.schoolmanager.common;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.schoolmanager.R;
-import com.schoolmanager.Settings;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.UserSessionManager;
 

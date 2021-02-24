@@ -15,7 +15,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -372,7 +371,7 @@ public class ChatBoardActivity extends BaseActivity {
 
         switch (m_message_type) {
             case 1:
-                Toast.makeText(this, "Test : Local message pushed", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Test : Local message pushed", Toast.LENGTH_SHORT).show();
                 pushLocalTextMessage("0", message, userType, String.valueOf(mComplaintModal.getChat_receiver_type()));
                 break;
             case 2:
@@ -388,7 +387,7 @@ public class ChatBoardActivity extends BaseActivity {
 
         binding.edChatboardMessage.setText("");
 
-        Toast.makeText(this, "Test : Api call init", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Test : Api call init", Toast.LENGTH_SHORT).show();
 
 
         String toastText =
@@ -404,7 +403,7 @@ public class ChatBoardActivity extends BaseActivity {
                         "\ndevice_id: " + deviceId +
                         "\ndevice_type: " + "1";
 
-        Toast.makeText(this, "Test : Api call params\n" + toastText, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Test : Api call params\n" + toastText, Toast.LENGTH_LONG).show();
 
         AndroidNetworking.upload(Common.BASE_URL + "app-send-message")
                 .setPriority(Priority.HIGH)
@@ -434,7 +433,7 @@ public class ChatBoardActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Toast.makeText(ChatBoardActivity.this, "Test : Api call response\n" + response.toString(), Toast.LENGTH_LONG).show();
+//                            Toast.makeText(ChatBoardActivity.this, "Test : Api call response\n" + response.toString(), Toast.LENGTH_LONG).show();
                             Log.e("CHAT_RESPONSE", response.toString());
                             binding.edChatboardMessage.setText("");
                             try {
@@ -447,17 +446,17 @@ public class ChatBoardActivity extends BaseActivity {
                                     ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
                                     chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
 
-                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call success\n" + message, Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call success\n" + message, Toast.LENGTH_LONG).show();
 
                                 } else {
-                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call false\n" + message, Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call false\n" + message, Toast.LENGTH_LONG).show();
                                 }
                             } catch (Exception e) {
-                                Toast.makeText(ChatBoardActivity.this, "Test : Api call catch one\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+//                                Toast.makeText(ChatBoardActivity.this, "Test : Api call catch one\n" + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(ChatBoardActivity.this, "Test : Api call catch two\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+//                            Toast.makeText(ChatBoardActivity.this, "Test : Api call catch two\n" + e.getMessage(), Toast.LENGTH_LONG).show();
 
                         }
                     }
@@ -467,9 +466,9 @@ public class ChatBoardActivity extends BaseActivity {
                         anError.printStackTrace();
                         Log.e("ERROR", anError.getErrorDetail() + "");
                         Log.e("ERROR", anError.getMessage() + "");
-                        Toast.makeText(ChatBoardActivity.this, "Test : Api call onError\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(ChatBoardActivity.this, "Test : Api call body\n" + anError.getErrorBody(), Toast.LENGTH_LONG).show();
-                        Toast.makeText(ChatBoardActivity.this, "Test : Api call detail\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call onError\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call body\n" + anError.getErrorBody(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call detail\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
 
                     }
 
@@ -786,7 +785,7 @@ public class ChatBoardActivity extends BaseActivity {
 
         public void onSend(View view) {
             if (StringUtils.isNotEmpty(binding.edChatboardMessage.getText().toString())) {
-                Toast.makeText(ChatBoardActivity.this, "Test : Send message", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ChatBoardActivity.this, "Test : Send message", Toast.LENGTH_SHORT).show();
                 apiCallSendMessage(1, binding.edChatboardMessage.getText().toString(), "", null);
             }
         }

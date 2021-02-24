@@ -13,11 +13,9 @@ import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.schoolmanager.BroadCastMessage;
 import com.schoolmanager.R;
 import com.schoolmanager.databinding.RawApntMessageTextBinding;
 import com.schoolmanager.model.BroadCastMessageItem;
-import com.schoolmanager.model.ChatMessageModal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -122,25 +120,27 @@ public class BroadcastMessageAdapter extends RecyclerView.Adapter<BroadcastMessa
     }
 
     private String formateDate(long milis) {
-        // New date object from millis
-        Date date = new Date(milis);
         // formattter
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy, EEEE");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        // Pass date object
-        String formatted = formatter.format(date);
+//        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+        int offset = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings();
+        Date localDate = new Date((milis * 1000L) - (offset));
+        Log.e("MILIS",milis+"");
+        // Pass date object
+        String formatted = formatter.format(localDate);
         return formatted;
     }
+
 
     private void bindTopDate(int position, CardView relTopDateView, TextView txtTopDateViewDate) {
         final BroadCastMessageItem m = mListBroadCastMsg.get(position);
         long previousTs = 0;
         if (position > 1) {
             BroadCastMessageItem cm = mListBroadCastMsg.get(position - 1);
-            previousTs = getLocalDate(Long.parseLong(cm.getBroadcast_time())).getTime();
+            previousTs = Long.parseLong(cm.getBroadcast_time());
         }
-        setTimeTextVisibility(getLocalDate(Long.parseLong(m.getBroadcast_time())).getTime(), previousTs, relTopDateView, txtTopDateViewDate);
+        setTimeTextVisibility(Long.parseLong(m.getBroadcast_time()), previousTs, relTopDateView, txtTopDateViewDate);
 
     }
 

@@ -148,11 +148,13 @@ public class MyProfile extends BaseActivity {
             relRange.setVisibility(View.VISIBLE);
             interval.setVisibility(View.VISIBLE);
 
+            seekBarRang.setMin(100);
+            seekBarRang.setMax(1000);
             seekBarRang.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                    txtRange.setText(String.format(" : %S %s", i * 10, " m"));
-                    double km = i * 10;
+                    txtRange.setText(String.format(" : %S %s", i, " m"));
+                    double km = i;
                     km = km / 1000;
                     range = String.valueOf(km);
                     Log.e("RANGE", range);
@@ -265,8 +267,8 @@ public class MyProfile extends BaseActivity {
                                     range = userProfile.getString("user_notification_distance");
                                     double km = Double.parseDouble(range);
                                     km = km * 1000;
-                                    range = String.valueOf(km/1000);
-                                    seekBarRang.setProgress((int) km / 10);
+                                    range = String.valueOf(km);
+                                    seekBarRang.setProgress((int) km);
 
                                     Log.e("RANGE", range);
 
