@@ -116,4 +116,9 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!-- CHAT MESSAGE BOX -->
+    <style name="ChatBox" parent="AppTheme">
+        <item name="color">@color/black</item>
+    </style>
+
 </resources>

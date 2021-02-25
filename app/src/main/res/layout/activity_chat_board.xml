@@ -172,6 +172,7 @@
                                 android:src="@drawable/ic_emoji" />
 
                             <com.vanniktech.emoji.EmojiEditText
+                                android:theme="@style/ChatBox"
                                 android:id="@+id/ed_Chatboard_message"
                                 android:textColorHint="@color/dark_gray"
                                 android:textSize="14sp"

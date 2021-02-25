@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +28,6 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
-import com.androidnetworking.interfaces.UploadProgressListener;
 import com.bumptech.glide.Glide;
 import com.devlomi.record_view.OnRecordListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -403,76 +403,106 @@ public class ChatBoardActivity extends BaseActivity {
                         "\ndevice_id: " + deviceId +
                         "\ndevice_type: " + "1";
 
-//        Toast.makeText(this, "Test : Api call params\n" + toastText, Toast.LENGTH_LONG).show();
 
-        AndroidNetworking.upload(Common.BASE_URL + "app-send-message")
-                .setPriority(Priority.HIGH)
-                .addMultipartFile("message_file", file)
-                .addMultipartParameter("user_id", userId)
-                .addMultipartParameter("user_token", userToken)
-                .addMultipartParameter("user_type", userType)
-                .addMultipartParameter("message_type", String.valueOf(m_message_type))
-                .addMultipartParameter("message_text", message)
-                .addMultipartParameter("receiver_id", String.valueOf(mComplaintModal.getChat_receiver_id()))
-                .addMultipartParameter("receiver_type", String.valueOf(mComplaintModal.getChat_receiver_type()))
-                .addMultipartParameter("user_app_code", Common.APP_CODE)
-                .addMultipartParameter("device_id", deviceId)
-                .addMultipartParameter("device_type", "1")
-                .build()
-                .setUploadProgressListener(new UploadProgressListener() {
-                    @Override
-                    public void onProgress(long bytesUploaded, long totalBytes) {
-                        if (bytesUploaded == totalBytes) {
-                            EventBus.getDefault().post(new EventNewMessageArrives(null, true));
-                        }
-                    }
-
-
-                })
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-//                            Toast.makeText(ChatBoardActivity.this, "Test : Api call response\n" + response.toString(), Toast.LENGTH_LONG).show();
-                            Log.e("CHAT_RESPONSE", response.toString());
-                            binding.edChatboardMessage.setText("");
+        if (m_message_type == 1) {
+            AndroidNetworking.post(Common.BASE_URL + "app-send-message")
+                    .setPriority(Priority.MEDIUM)
+                    .addBodyParameter("user_id", userId)
+                    .addBodyParameter("user_token", userToken)
+                    .addBodyParameter("user_type", userType)
+                    .addBodyParameter("message_type", String.valueOf(m_message_type))
+                    .addBodyParameter("message_text", message)
+                    .addBodyParameter("receiver_id", String.valueOf(mComplaintModal.getChat_receiver_id()))
+                    .addBodyParameter("receiver_type", String.valueOf(mComplaintModal.getChat_receiver_type()))
+                    .addBodyParameter("user_app_code", Common.APP_CODE)
+                    .addBodyParameter("device_id", deviceId)
+                    .addBodyParameter("device_type", "1")
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
                             try {
-                                int success = response.getInt("success");
-                                String message = response.getString("message");
+                                Log.e("CHAT_RESPONSE", response.toString());
+                                binding.edChatboardMessage.setText("");
+                                try {
+                                    int success = response.getInt("success");
+                                    String message = response.getString("message");
 
-                                if (success == 1) {
-                                    JSONObject data = response.getJSONObject("data");
+                                    if (success == 1) {
+                                        JSONObject data = response.getJSONObject("data");
 
-                                    ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
-                                    chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
-
-//                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call success\n" + message, Toast.LENGTH_LONG).show();
-
-                                } else {
-//                                    Toast.makeText(ChatBoardActivity.this, "Test : Api call false\n" + message, Toast.LENGTH_LONG).show();
+                                        ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
+                                        chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
+                                    } else {
+                                    }
+                                } catch (Exception e) {
                                 }
                             } catch (Exception e) {
-//                                Toast.makeText(ChatBoardActivity.this, "Test : Api call catch one\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-//                            Toast.makeText(ChatBoardActivity.this, "Test : Api call catch two\n" + e.getMessage(), Toast.LENGTH_LONG).show();
-
                         }
-                    }
 
-                    @Override
-                    public void onError(ANError anError) {
-                        anError.printStackTrace();
-                        Log.e("ERROR", anError.getErrorDetail() + "");
-                        Log.e("ERROR", anError.getMessage() + "");
-//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call onError\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
-//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call body\n" + anError.getErrorBody(), Toast.LENGTH_LONG).show();
-//                        Toast.makeText(ChatBoardActivity.this, "Test : Api call detail\n" + anError.getErrorDetail(), Toast.LENGTH_LONG).show();
+                        @Override
+                        public void onError(ANError anError) {
+                            anError.printStackTrace();
+                            Log.e("ERROR", anError.getErrorDetail() + "");
+                            Log.e("ERROR", anError.getMessage() + "");
+                            Toast.makeText(ChatBoardActivity.this, "Body" + anError.getErrorBody(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatBoardActivity.this, "Detail" + anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                        }
 
-                    }
+                    });
+        } else {
+            AndroidNetworking.upload(Common.BASE_URL + "app-send-message")
+                    .setPriority(Priority.MEDIUM)
+                    .addMultipartFile("message_file", file)
+                    .addMultipartParameter("user_id", userId)
+                    .addMultipartParameter("user_token", userToken)
+                    .addMultipartParameter("user_type", userType)
+                    .addMultipartParameter("message_type", String.valueOf(m_message_type))
+                    .addMultipartParameter("message_text", message)
+                    .addMultipartParameter("receiver_id", String.valueOf(mComplaintModal.getChat_receiver_id()))
+                    .addMultipartParameter("receiver_type", String.valueOf(mComplaintModal.getChat_receiver_type()))
+                    .addMultipartParameter("user_app_code", Common.APP_CODE)
+                    .addMultipartParameter("device_id", deviceId)
+                    .addMultipartParameter("device_type", "1")
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                Log.e("CHAT_RESPONSE", response.toString());
+                                binding.edChatboardMessage.setText("");
+                                try {
+                                    int success = response.getInt("success");
+                                    String message = response.getString("message");
 
-                });
+                                    if (success == 1) {
+                                        JSONObject data = response.getJSONObject("data");
+
+                                        ChatMessageModal chatMessageModal = new Gson().fromJson(data.toString(), ChatMessageModal.class);
+                                        chatMessageAdapter.replaceMyLastMessage(chatMessageModal);
+
+                                    } else {
+                                    }
+                                } catch (Exception e) {
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onError(ANError anError) {
+                            anError.printStackTrace();
+                            Log.e("ERROR", anError.getErrorDetail() + "");
+                            Log.e("ERROR", anError.getMessage() + "");
+                            Toast.makeText(ChatBoardActivity.this, "Body" + anError.getErrorBody(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChatBoardActivity.this, "Detail" + anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
     }
 
     public static String getRealPathFromUri(Context context, Uri contentUri) {
@@ -812,7 +842,7 @@ public class ChatBoardActivity extends BaseActivity {
 
     public void onLogOut() {
         LogOutUser.getInstance(this, status -> {
-            if(status == LOG_OUT_SUCCESS){
+            if (status == LOG_OUT_SUCCESS) {
                 if (TrackingService.isTracking) {
                     Intent serviceIntent = new Intent(this, TrackingService.class);
                     serviceIntent.setAction(Common.ACTION_STOP_SERVICE);

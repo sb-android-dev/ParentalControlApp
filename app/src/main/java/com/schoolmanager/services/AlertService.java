@@ -215,7 +215,8 @@ public class AlertService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, Common.CHAT_NOTIFICATION_CHANNEL_ID);
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                .setPriority(Notification.PRIORITY_HIGH)
+                
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_give_complaint)
                 .setContentTitle(notifyTitle)
@@ -263,7 +264,8 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performComplaintNotification: complaint notification");
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_complaint)
                 .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
@@ -340,7 +342,8 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performTrackNotification: track notification");
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_tracking)
                 .setSound(notificationSound)
@@ -370,7 +373,8 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performBroadcastNotification: broadcast notification");
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_management)
                 .setContentTitle(notifyTitle)
@@ -464,7 +468,8 @@ public class AlertService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_NEW_ID);
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
                 .setContentTitle(notifyTitle)
@@ -507,7 +512,8 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performGeneralNotification: general notification");
 
         notificationBuilder.setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL)
+                
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_check)
                 .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
@@ -636,7 +642,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.CHAT_NOTIFICATION_CHANNEL_ID,
-                Common.CHAT_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.CHAT_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         notificationChannel.setDescription("Chat Notification Channel");
         notificationChannel.setLightColor(Color.GREEN);
@@ -656,7 +662,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_SCHOOL_TO_HOME_CHANNEL_ID,
-                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.driver_school_to_home);
@@ -679,7 +685,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_HOME_TO_SCHOOL_CHANNEL_ID,
-                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.driver_home_to_school);
@@ -702,7 +708,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.SUB_ADMIN_SCHOOL_TO_HOME_CHANNEL_ID,
-                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_school_to_home);
@@ -725,7 +731,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.SUB_ADMIN_HOME_TO_SCHOOL_CHANNEL_ID,
-                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         Uri notificationSound = Uri.parse("android.resource://"
                 + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
@@ -748,7 +754,7 @@ public class AlertService extends FirebaseMessagingService {
 //                .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.TRACK_NOTIFICATION_CHANNEL_ID,
-                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.TRACK_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
 //        Uri notificationSound;
 //        switch (notifyTrackStatus) {
@@ -790,7 +796,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.BROADCAST_NOTIFICATION_CHANNEL_ID,
-                Common.BROADCAST_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.BROADCAST_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         notificationChannel.setDescription("Track Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
@@ -830,7 +836,7 @@ public class AlertService extends FirebaseMessagingService {
                 .build();
 
         NotificationChannel notificationChannel = new NotificationChannel(Common.GENERAL_NOTIFICATION_CHANNEL_ID,
-                Common.GENERAL_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                Common.GENERAL_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
 
         notificationChannel.setDescription("Complaint Notification Channel");
         notificationChannel.setLightColor(Color.GREEN);
