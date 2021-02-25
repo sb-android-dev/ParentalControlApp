@@ -463,8 +463,8 @@ public class Dashboard extends BaseActivity {
                                 ChildNotArrivedDialog dialogA = new ChildNotArrivedDialog();
                                 dialogA.show(getSupportFragmentManager(), ChildNotArrivedDialog.TAG);
 //                                sessionManager.updateNotificationStatus(false);
-                                sessionManager.registerComplaint(true);
-                                notArrivedLayout.setVisibility(View.GONE);
+//                                sessionManager.registerComplaint(true);
+//                                notArrivedLayout.setVisibility(View.GONE);
                             } else if (success == 2) {
                                 onLogOut();
                             } else {
@@ -523,9 +523,9 @@ public class Dashboard extends BaseActivity {
 //                                            arrivedLayout.setVisibility(View.GONE);
 //                                        }
 
-                                        if (sessionManager.getIsComplaintRegistered()) {
-                                            notArrivedLayout.setVisibility(View.GONE);
-                                        }
+//                                        if (sessionManager.getIsComplaintRegistered()) {
+//                                            notArrivedLayout.setVisibility(View.GONE);
+//                                        }
                                     }
                                 }
                             } else if (success == 2) {

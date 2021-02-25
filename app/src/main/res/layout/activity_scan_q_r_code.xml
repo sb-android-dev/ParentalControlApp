@@ -40,59 +40,68 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clDriverScanner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
-            <Button
+            <ImageButton
                 android:id="@+id/btnDriverHomeToBus"
-                style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
                 android:elevation="0dp"
-                android:text="Home To Bus"
+                android:background="@drawable/home_to_bus"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btnDriverBusToSchool" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnDriverBusToSchool"
-                style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="50dp"
                 android:layout_marginStart="50dp"
                 android:layout_marginEnd="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:elevation="0dp"
-                android:text="Bus To School"
+                android:background="@drawable/bus_to_school"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toBottomOf="@id/btnDriverHomeToBus" />
+                app:layout_constraintTop_toBottomOf="@id/btnDriverHomeToBus"
+                app:layout_constraintBottom_toTopOf="@id/btnDriverSchoolToBus" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnDriverSchoolToBus"
-                style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:elevation="0dp"
-                android:text="School To Bus"
+                android:background="@drawable/school_to_bus"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toBottomOf="@id/btnDriverBusToSchool" />
+                app:layout_constraintTop_toBottomOf="@id/btnDriverBusToSchool"
+                app:layout_constraintBottom_toTopOf="@id/btnDriverBusToHome"/>
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnDriverBusToHome"
-                style="@style/RegularButtonStyle"
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_centerInParent="true"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
                 android:layout_marginEnd="50dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
                 android:elevation="0dp"
-                android:text="Bus To Home"
+                android:background="@drawable/bus_to_home"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toBottomOf="@id/btnDriverSchoolToBus" />
+                app:layout_constraintTop_toBottomOf="@id/btnDriverSchoolToBus"
+                app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

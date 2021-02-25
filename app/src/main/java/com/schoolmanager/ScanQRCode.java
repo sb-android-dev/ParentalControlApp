@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -32,7 +33,8 @@ public class ScanQRCode extends BaseActivity {
     private static final String TAG = "scan_qr_code_activity";
 
     private ConstraintLayout driverLayout, subAdminLayout;
-    private Button dHomeToBus, dBusToSchool, dSchoolToBus, dBusToHome, sHomeToSchool, sSchoolToHome;
+    private ImageButton dHomeToBus, dBusToSchool, dSchoolToBus, dBusToHome;
+    private Button sHomeToSchool, sSchoolToHome;
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;

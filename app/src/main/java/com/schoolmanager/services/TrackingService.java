@@ -82,17 +82,18 @@ public class TrackingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         switch (intent.getAction()) {
-            case Common.ACTION_START_SERVICE:
-                Log.d(TAG, "onStartCommand: service started");
-                startForegroundService(intent.getStringExtra("name"), intent.getIntExtra("type", 0));
-                break;
             case Common.ACTION_STOP_SERVICE:
                 Log.d(TAG, "onStartCommand: service stopped");
                 isTracking = false;
                 updateLocationTracking();
-                break;
+                return super.onStartCommand(intent, flags, startId);
+            case Common.ACTION_START_SERVICE:
+            default:
+                Log.d(TAG, "onStartCommand: service started");
+                startForegroundService();
+                return START_STICKY;
         }
-        return super.onStartCommand(intent, flags, startId);
+
     }
 
     @Override
@@ -108,6 +109,12 @@ public class TrackingService extends Service {
         fcmToken = sessionManager.getFcmToken();
 
         fusedLocationProviderClient = getFusedLocationProviderClient(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.e(TAG, "onDestroy: tracking service is dead");
+        super.onDestroy();
     }
 
     @Nullable
@@ -188,12 +195,12 @@ public class TrackingService extends Service {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.e(TAG, "onResponse: " + response.toString());
-                        try{
+                        try {
                             int success = response.getInt("success");
                             if (success == 2) {
                                 onLogOut();
                             }
-                        } catch (JSONException e){
+                        } catch (JSONException e) {
                             Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
                         }
                     }
@@ -206,7 +213,7 @@ public class TrackingService extends Service {
                 });
     }
 
-    private void startForegroundService(String name, int type) {
+    private void startForegroundService() {
         isTracking = true;
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -215,8 +222,10 @@ public class TrackingService extends Service {
             createNotificationChannel(notificationManager);
         }
 
+        UserSessionManager sessionManager = new UserSessionManager(this);
+
         String who;
-        switch (type){
+        switch (sessionManager.getUserType()) {
             case 1:
                 who = "Parent";
                 break;
@@ -234,7 +243,7 @@ public class TrackingService extends Service {
                         .setOngoing(true)
                         .setSmallIcon(R.drawable.ic_my_location)
                         .setContentTitle("Tracking " + who)
-                        .setContentText(name)
+                        .setContentText(sessionManager.getUserName())
                         .setContentIntent(getDashboardPendingIntent());
 
         startForeground(Common.TRACKING_NOTIFICATION_ID, notificationBuilder.build());
