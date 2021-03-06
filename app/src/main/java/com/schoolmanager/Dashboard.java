@@ -465,6 +465,8 @@ public class Dashboard extends BaseActivity {
 //                                sessionManager.updateNotificationStatus(false);
 //                                sessionManager.registerComplaint(true);
 //                                notArrivedLayout.setVisibility(View.GONE);
+                                progressComplaint.setVisibility(View.INVISIBLE);
+                                notArrived.setVisibility(View.VISIBLE);
                             } else if (success == 2) {
                                 onLogOut();
                             } else {
