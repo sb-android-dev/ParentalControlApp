@@ -7,8 +7,10 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.location.Location;
 import android.os.Binder;
 import android.os.Build;
@@ -112,8 +114,15 @@ public class TrackingService extends Service {
     }
 
     @Override
+    public ComponentName startForegroundService(Intent service) {
+        return super.startForegroundService(service);
+    }
+
+    @Override
     public void onDestroy() {
         Log.e(TAG, "onDestroy: tracking service is dead");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            stopForeground(true);
         super.onDestroy();
     }
 
@@ -246,7 +255,11 @@ public class TrackingService extends Service {
                         .setContentText(sessionManager.getUserName())
                         .setContentIntent(getDashboardPendingIntent());
 
-        startForeground(Common.TRACKING_NOTIFICATION_ID, notificationBuilder.build());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startForeground(Common.TRACKING_NOTIFICATION_ID, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+        else
+            startForeground(Common.TRACKING_NOTIFICATION_ID, notificationBuilder.build());
+
 
         updateLocationTracking();
     }
@@ -266,6 +279,8 @@ public class TrackingService extends Service {
     }
 
     private void stopLocationUpdates() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            stopForeground(true);
         stopSelf();
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
