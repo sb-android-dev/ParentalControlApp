@@ -108,4 +108,6 @@
     <string name="place">స్థలం</string>
     <string name="today">ఈ రోజు</string>
     <string name="nothing_found_place">స్థలం కనుగొనబడలేదు</string>
+    <string name="track">Track</string>
+    <string name="see">See</string>
 </resources>

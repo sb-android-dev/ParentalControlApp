@@ -87,7 +87,7 @@
     <string name="home_to_school">Home To School</string>
     <string name="school_to_home">School To Home</string>
     <string name="select_language">Select Language</string>
-    <string name="messages_for_management">Messages for management</string>
+    <string name="messages_for_management">Messages from management</string>
     <string name="see_live_locations">See live locations</string>
     <string name="calendar">Calendar</string>
     <string name="all">All</string>
@@ -114,5 +114,7 @@
     <string name="tap_to_return_to_call">Tap to return to call</string>
     <string name="place">Place</string>
     <string name="nothing_found_place">No place found</string>
+    <string name="track">Track</string>
+    <string name="see">See</string>
 
 </resources>

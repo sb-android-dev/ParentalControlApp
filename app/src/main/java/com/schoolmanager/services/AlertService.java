@@ -65,7 +65,7 @@ public class AlertService extends FirebaseMessagingService {
         int userId = sessionManager.getUserId();
         int userType = sessionManager.getUserType();
 
-        if(userId > 0) {
+        if (userId > 0) {
 
             switch (remoteMessage.getData().get("notification_type")) {
                 case "message":
@@ -148,6 +148,11 @@ public class AlertService extends FirebaseMessagingService {
 //                    }
 //                    if (!sessionManager.getNotificationStatus())
                     break;
+                case "location_status":
+                    if (userType == 1) {
+                        performDriverLocationNotification(remoteMessage.getData());
+                    }
+                    break;
                 default:
                     performGeneralNotification(remoteMessage.getData());
             }
@@ -216,7 +221,7 @@ public class AlertService extends FirebaseMessagingService {
 
         notificationBuilder.setAutoCancel(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                
+
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_give_complaint)
                 .setContentTitle(notifyTitle)
@@ -264,7 +269,7 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performComplaintNotification: complaint notification");
 
         notificationBuilder.setAutoCancel(true)
-                
+
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_complaint)
@@ -342,7 +347,7 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performTrackNotification: track notification");
 
         notificationBuilder.setAutoCancel(true)
-                
+
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_tracking)
@@ -350,6 +355,64 @@ public class AlertService extends FirebaseMessagingService {
                 .setContentTitle(notifyTitle)
                 .setContentText(notifyBody)
                 .setContentIntent(getRespectiveActivityPendingIntent(data, notifyType));
+
+        notificationManager.notify((int) notificationId, notificationBuilder.build());
+
+    }
+
+    private void performDriverLocationNotification(Map<String, String> data) {
+        String notifyTitle = data.get("notification_title");
+        String notifyBody = data.get("notification_body");
+        String notifyType = data.get("notification_type");
+        String driverId = data.get("notification_driver_id");
+        String locationStatus = data.get("notification_location_status");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        long notificationId = System.currentTimeMillis();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            switch (locationStatus) {
+                case "0":
+                    createDriverDisabledLocationChannel(notificationManager);
+                    break;
+                case "1":
+                    createDriverEnabledLocationChannel(notificationManager);
+                    break;
+            }
+
+        }
+
+        Uri notificationSound;
+        String notificationChannelId;
+        switch (locationStatus) {
+            case "0":
+                notificationChannelId = Common.DRIVER_DISABLE_LOCATION_CHANNEL_ID;
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+                break;
+            case "1":
+                notificationChannelId = Common.DRIVER_ENABLE_LOCATION_CHANNEL_ID;
+                notificationSound = Uri.parse("android.resource://"
+                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
+                break;
+            default:
+                notificationSound = null;
+                notificationChannelId = "";
+        }
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, notificationChannelId);
+
+        Log.e(TAG, "performTrackNotification: track notification");
+
+        notificationBuilder.setAutoCancel(true)
+                .setPriority(Notification.PRIORITY_HIGH)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.ic_school_bus)
+                .setSound(notificationSound)
+                .setContentTitle(notifyTitle)
+                .setContentText(notifyBody)
+                .setContentIntent(getRespectiveActivityPendingIntent(driverId));
 
         notificationManager.notify((int) notificationId, notificationBuilder.build());
 
@@ -373,7 +436,7 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performBroadcastNotification: broadcast notification");
 
         notificationBuilder.setAutoCancel(true)
-                
+
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_management)
@@ -468,7 +531,7 @@ public class AlertService extends FirebaseMessagingService {
                 new NotificationCompat.Builder(this, Common.ALERT_NOTIFICATION_CHANNEL_NEW_ID);
 
         notificationBuilder.setAutoCancel(true)
-                
+
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_school_bus)
@@ -512,7 +575,7 @@ public class AlertService extends FirebaseMessagingService {
         Log.e(TAG, "performGeneralNotification: general notification");
 
         notificationBuilder.setAutoCancel(true)
-                
+
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.ic_check)
@@ -584,6 +647,24 @@ public class AlertService extends FirebaseMessagingService {
                 }
             }
 
+
+            Log.e(TAG, "showNotification: is logged in");
+        }
+
+        return PendingIntent.getActivity(this,
+                1, intent, PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    private PendingIntent getRespectiveActivityPendingIntent(String driverId) {
+        Intent intent;
+        if (new UserSessionManager(getApplicationContext()).getEssentials()
+                .get(UserSessionManager.KEY_USER_ID).equals("0")) {
+            intent = new Intent(getApplicationContext(), LogIn.class);
+        } else {
+            intent = new Intent(getApplicationContext(), Dashboard.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setAction(Common.ACTION_OPEN_LOCATE_ON_MAP);
+            intent.putExtra("driver_id", driverId);
 
             Log.e(TAG, "showNotification: is logged in");
         }
@@ -737,6 +818,52 @@ public class AlertService extends FirebaseMessagingService {
                 + getApplicationContext().getPackageName() + "/" + R.raw.sub_admin_home_to_school);
 
         notificationChannel.setDescription("Track Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createDriverEnabledLocationChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_ENABLE_LOCATION_CHANNEL_ID,
+                Common.DRIVER_LOCATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
+
+        notificationChannel.setDescription("Driver Location Notification Channel");
+        notificationChannel.setLightColor(Color.BLUE);
+
+        notificationChannel.setSound(notificationSound, audioAttributes);
+//            notificationChannel.setVibrationPattern(new long[]{0, 200});
+        notificationChannel.enableVibration(true);
+        notificationChannel.enableLights(true);
+        notificationManager.createNotificationChannel(notificationChannel);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createDriverDisabledLocationChannel(NotificationManager notificationManager) {
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                .build();
+
+        NotificationChannel notificationChannel = new NotificationChannel(Common.DRIVER_DISABLE_LOCATION_CHANNEL_ID,
+                Common.DRIVER_LOCATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+
+        Uri notificationSound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+
+        notificationChannel.setDescription("Driver Location Notification Channel");
         notificationChannel.setLightColor(Color.BLUE);
 
         notificationChannel.setSound(notificationSound, audioAttributes);

@@ -32,76 +32,147 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        map:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        map:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="16dp"
-        map:cardCornerRadius="10dp"
-        map:cardElevation="@dimen/_5dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:id="@+id/constrain_Call"
-            android:padding="10dp">
+            android:layout_height="match_parent" />
 
-            <ImageView
-                android:id="@+id/ivCall"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="10dp"
-                android:background="@drawable/bg_call"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="5dp"
-                android:src="@drawable/ic_call"
-                map:layout_constraintBottom_toBottomOf="parent"
-                map:layout_constraintEnd_toStartOf="@id/tvDriverName"
-                map:layout_constraintHorizontal_weight="1"
-                map:layout_constraintStart_toStartOf="parent"
-                map:layout_constraintTop_toTopOf="parent"
-                map:tint="?pure_bg_color" />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mcvDriverDetail"
+            style="@style/DashboardBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            map:cardElevation="@dimen/_5dp"
+            android:layout_marginTop="10dp"
+            map:layout_constraintBottom_toBottomOf="parent">
 
-            <TextView
-                android:id="@+id/tvDriverName"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:textColor="?colorSecondary"
-                android:textStyle="bold"
-                map:layout_constraintBottom_toBottomOf="parent"
-                map:layout_constraintEnd_toStartOf="@id/tvDistance"
-                map:layout_constraintHorizontal_weight="6"
-                map:layout_constraintStart_toEndOf="@id/ivCall"
-                map:layout_constraintTop_toTopOf="parent"
-                tools:text="Driver Name" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/tvDistance"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:textAlignment="viewEnd"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                map:layout_constraintBottom_toBottomOf="parent"
-                map:layout_constraintEnd_toEndOf="parent"
-                map:layout_constraintHorizontal_weight="2"
-                map:layout_constraintStart_toEndOf="@id/tvDriverName"
-                map:layout_constraintTop_toTopOf="parent"
-                tools:text="7.0 km" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constrain_Call"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    map:layout_constraintTop_toTopOf="parent">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:id="@+id/ivDriverProfile"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic_person"
+                        map:layout_constraintBottom_toBottomOf="parent"
+                        map:layout_constraintEnd_toStartOf="@id/tvDriverName"
+                        map:layout_constraintHorizontal_weight="0"
+                        map:layout_constraintStart_toStartOf="parent"
+                        map:layout_constraintTop_toTopOf="parent" />
 
-    </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:id="@+id/tvDriverName"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                        android:textColor="?pure_txt_color"
+                        android:textStyle="bold"
+                        map:layout_constraintBottom_toBottomOf="parent"
+                        map:layout_constraintEnd_toStartOf="@id/switchMapType"
+                        map:layout_constraintHorizontal_weight="6"
+                        map:layout_constraintStart_toEndOf="@id/ivDriverProfile"
+                        map:layout_constraintTop_toTopOf="parent"
+                        tools:text="Driver Name" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchMapType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        map:layout_constraintBottom_toBottomOf="parent"
+                        map:layout_constraintEnd_toStartOf="@id/tvDistance"
+                        map:layout_constraintStart_toEndOf="@id/tvDriverName"
+                        map:layout_constraintTop_toTopOf="parent"
+                        tools:checked="true"/>
+
+                    <TextView
+                        android:id="@+id/tvDistance"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:textAlignment="viewEnd"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        map:layout_constraintBottom_toBottomOf="parent"
+                        map:layout_constraintEnd_toEndOf="parent"
+                        map:layout_constraintHorizontal_weight="2"
+                        map:layout_constraintStart_toEndOf="@id/switchMapType"
+                        map:layout_constraintTop_toTopOf="parent"
+                        tools:text="7.0 km" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <ImageView
+                    android:id="@+id/ivDriverStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:maxHeight="30dp"
+                    android:scaleType="fitCenter"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:src="@drawable/driver_location_disabled_rounded"
+                    map:layout_constraintTop_toBottomOf="@id/constrain_Call"
+                    map:layout_constraintBottom_toBottomOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMyLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?colorSurface"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_my_location"
+            map:tint="?pure_txt_color"
+            map:borderWidth="@dimen/_0dp"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintBottom_toTopOf="@id/mcvDriverDetail"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?colorSurface"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_call"
+            map:tint="?pure_txt_color"
+            map:borderWidth="@dimen/_0dp"
+            map:layout_constraintBottom_toTopOf="@id/fabMyLocation"
+            map:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?colorSurface"
+            android:layout_gravity="top"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_mail"
+            map:tint="?pure_txt_color"
+            map:borderWidth="@dimen/_0dp"
+            map:layout_constraintBottom_toTopOf="@id/fabCall"
+            map:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

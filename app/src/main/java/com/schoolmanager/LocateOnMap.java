@@ -14,6 +14,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,6 +25,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +33,7 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -46,6 +51,10 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,6 +75,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -87,7 +97,8 @@ import java.util.List;
 
 import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
-public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, TrackingService.Callbacks, TaskLoadedCallback {
+public class LocateOnMap extends BaseActivity
+        implements OnMapReadyCallback, TrackingService.Callbacks, TaskLoadedCallback {
 
     private static final String TAG = "locate_on_map_activity";
 
@@ -114,8 +125,10 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
     private UiSettings uiSettings;
 
     private TextView driverName, distanceToParent;
-    private ImageView call;
+    private ImageView driverProfile, driverStatus;
+    private SwitchCompat mapType;
     private ConstraintLayout constrain_Call;
+    private FloatingActionButton fabMyLocation, fabCall, fabMessage;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -159,8 +172,9 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private LatLng currentLatLng, driverLatLng;
-    private String dName, dPhone,dImage;
+    private String dName, dPhone, dImage;
     private int driverId;
+    private int driverLocationStatus;
 
     // Keys for storing activity state.
     private static final String KEY_LOCATION = "location";
@@ -170,6 +184,11 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
     private String userId, userToken, userType, deviceId, fcmToken;
+
+    private int status;
+
+    private MediaPlayer mpl;
+    private Uri sound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +203,6 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
         fcmToken = sessionManager.getFcmToken();
-
 //        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //        fusedLocationProviderClient = getFusedLocationProviderClient(this);
 //
@@ -203,6 +221,10 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
             driverId = getIntent().getIntExtra("driver_id", 0);
         }
 
+        sound = Uri.parse("android.resource://"
+                + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+        mpl = MediaPlayer.create(getApplicationContext(), sound);
+
         doBindService();
 
         Toolbar toolbar = findViewById(R.id.toolBar);
@@ -211,20 +233,35 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
 
         driverName = findViewById(R.id.tvDriverName);
         distanceToParent = findViewById(R.id.tvDistance);
-        call = findViewById(R.id.ivCall);
+        driverProfile = findViewById(R.id.ivDriverProfile);
+        mapType = findViewById(R.id.switchMapType);
+        driverStatus = findViewById(R.id.ivDriverStatus);
+        fabMyLocation = findViewById(R.id.fabMyLocation);
+        fabCall = findViewById(R.id.fabCall);
+        fabMessage = findViewById(R.id.fabMessage);
 
         driverName.setText(dName);
+        Glide.with(this).load(dImage)
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .apply(new RequestOptions()
+                        .transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
+                .into(driverProfile);
+
+        mapType.setEnabled(false);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         constrain_Call = findViewById(R.id.constrain_Call);
-        //Call button
-        call.setOnClickListener(v -> {
 
-        });
-        constrain_Call.setOnClickListener(new View.OnClickListener() {
+        if(userType.equals("1") || userType.equals("2"))
+            getDriverStatus();
+
+        //Call button
+
+        fabCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /**
@@ -239,6 +276,49 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
                         .putExtra("name", dName)
                         .putExtra("image", dImage)
                 );
+            }
+        });
+
+        mapType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    if(mMap != null)
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                } else {
+                    if(mMap != null)
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
+            }
+        });
+
+        fabMyLocation.setOnClickListener(v -> {
+            if(mMap != null && currentLatLng != null){
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20));
+            }
+        });
+
+        driverStatus.setOnClickListener(v -> {
+            Log.e(TAG, "onCreate: clicking on button");
+            if(mpl == null) {
+                Log.e(TAG, "onCreate: clicking on button");
+                if (status == 1) {
+                    sound = Uri.parse("android.resource://"
+                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
+                } else {
+                    sound = Uri.parse("android.resource://"
+                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+                }
+
+                mpl = MediaPlayer.create(getApplicationContext(), sound);
+                mpl.start();
+                mpl.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mpl = null;
+                        Log.e(TAG, "onCompletion: ");
+                    }
+                });
             }
         });
     }
@@ -256,10 +336,16 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 //        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mapType.setEnabled(true);
+        mapType.setChecked(true);
+
         uiSettings = mMap.getUiSettings();
 //        uiSettings.setZoomControlsEnabled(true);
         uiSettings.setZoomGesturesEnabled(true);
         uiSettings.setCompassEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(false);
         if (mMap != null) {
 //            if(driverLatLng != null) {
 //                driverLocationOption = new MarkerOptions().position(driverLatLng).title(driverName)
@@ -591,20 +677,89 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
         }).performLogOut();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_menu, menu);
-        menu.findItem(R.id.menu_satellite).setChecked(true);
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        return true;
+    private void getDriverStatus() {
+        if (!detector.isConnectingToInternet()) {
+            return;
+        }
+
+        AndroidNetworking.post(Common.BASE_URL + "app-driver-location-status")
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("driver_id", String.valueOf(driverId))
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            if (success == 1) {
+                                status = response.getJSONObject("data").getInt("status");
+                                if(status == 1){
+                                    Glide.with(LocateOnMap.this)
+                                            .load(Uri.parse("file:///android_asset/driver_location_enabled_rounded.gif"))
+                                            .fitCenter()
+                                            .into(driverStatus);
+
+                                    sound = Uri.parse("android.resource://"
+                                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
+
+                                } else {
+                                    Glide.with(LocateOnMap.this)
+                                            .load(R.drawable.driver_location_disabled_rounded)
+                                            .fitCenter()
+                                            .into(driverStatus);
+
+                                    sound = Uri.parse("android.resource://"
+                                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+                                }
+
+                                mpl = MediaPlayer.create(getApplicationContext(), sound);
+                                mpl.start();
+                                mpl.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mpl = null;
+                                        Log.e(TAG, "onCompletion: ");
+                                    }
+                                });
+
+                            } else if (success == 2) {
+                                onLogOut();
+                            } else {
+                                Log.e(TAG, "general data get failed");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: " + anError.getErrorBody());
+                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+                    }
+                });
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.map_menu, menu);
+//        menu.findItem(R.id.menu_satellite).setChecked(true);
+//        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
-        } else if (item.getItemId() == R.id.menu_default) {
+        } /*else if (item.getItemId() == R.id.menu_default) {
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             item.setChecked(true);
             return true;
@@ -612,7 +767,7 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
             mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
             item.setChecked(true);
             return true;
-        } else {
+        }*/ else {
             return super.onOptionsItemSelected(item);
         }
     }
@@ -714,7 +869,6 @@ public class LocateOnMap extends BaseActivity implements OnMapReadyCallback, Tra
                     "exist, or this client isn't allowed access to it.");
         }
     }
-
 
     void doUnbindService() {
         if (mShouldUnbind) {

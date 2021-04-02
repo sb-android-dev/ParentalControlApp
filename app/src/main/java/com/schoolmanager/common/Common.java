@@ -18,6 +18,7 @@ public class Common {
     public static final String ACTION_STOP_SERVICE = "stop_service";
     public static final String ACTION_OPEN_DASHBOARD = "open_dashboard";
     public static final String ACTION_OPEN_TRACKING = "open_tracking";
+    public static final String ACTION_OPEN_LOCATE_ON_MAP = "open_locate_on_map";
 
     public static final long UPDATE_INTERVAL = 5 * 1000;  /* 5 secs */
     public static final long FASTEST_INTERVAL = 2 * 1000; /* 2 secs */
@@ -29,6 +30,10 @@ public class Common {
     public static final String SUB_ADMIN_HOME_TO_SCHOOL_CHANNEL_ID = "s_home_school_channel";
     public static final String TRACKING_NOTIFICATION_CHANNEL_NAME = "Tracking User";
     public static final int TRACKING_NOTIFICATION_ID = 1;
+
+    public static final String DRIVER_ENABLE_LOCATION_CHANNEL_ID = "driver_enable_location_channel";
+    public static final String DRIVER_DISABLE_LOCATION_CHANNEL_ID = "driver_disable_location_channel";
+    public static final String DRIVER_LOCATION_CHANNEL_NAME = "Driver Location";
 
     public static final String ALERT_NOTIFICATION_CHANNEL_ID = "alert_channel";
     public static final String ALERT_NOTIFICATION_CHANNEL_NEW_ID = "alert_channel_new";

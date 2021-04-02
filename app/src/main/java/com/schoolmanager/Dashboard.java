@@ -11,6 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -24,9 +28,6 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.karumi.dexter.Dexter;
@@ -44,11 +45,13 @@ import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.DBHandler;
 import com.schoolmanager.utilities.GpsUtils;
+import com.schoolmanager.utilities.SpeakerBox;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -60,12 +63,17 @@ public class Dashboard extends BaseActivity {
 
     private static final String TAG = "dashboard_activity";
 
-    private ConstraintLayout complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
+    private MaterialCardView complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
             locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout,
-            managementMsgLayout, arrivedLayout, clParent;
-    private MaterialCardView complaintCard, locationCard;
-    private TextView userName, userTypeName, complaintNo;
-    private ImageView userImage, logOut;
+            managementMsgLayout, parentLayout;
+    private Button complaints, drivers, students, giveComplaint, locateChild, teachers, tracking, scan,
+            notice, managementMsg, parent;
+    private ImageView driverStatus;
+    private ConstraintLayout arrivedLayout;
+//    private MaterialCardView complaintCard, locationCard;
+    private WebView webView;
+    private TextView userName/*, userTypeName, complaintNo*/;
+    private ImageView greetingImage, settings;
     private SwitchMaterial locationSwitch;
     private TextView arrived, notArrived, ok;
     private RelativeLayout notArrivedLayout;
@@ -84,6 +92,8 @@ public class Dashboard extends BaseActivity {
     private MediaPlayer mpl;
     private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+    private SpeakerBox speakerBox;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +108,9 @@ public class Dashboard extends BaseActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         }
+
+        speakerBox = new SpeakerBox(getApplication());
+        speakerBox.setActivity(this);
 
         detector = new ConnectionDetector(this);
         sessionManager = new UserSessionManager(this);
@@ -119,24 +132,38 @@ public class Dashboard extends BaseActivity {
 
         mpl = MediaPlayer.create(getApplicationContext(), alarmSound);
 
-        userName = findViewById(R.id.tvUsername);
-        userTypeName = findViewById(R.id.tvUserType);
-        userImage = findViewById(R.id.ivUserProfile);
-        logOut = findViewById(R.id.ivLogOut);
-        complaintCard = findViewById(R.id.mcvComplaint);
-        complaintNo = findViewById(R.id.tvComplaintNo);
-        locationCard = findViewById(R.id.mcvShareLocation);
+        webView = findViewById(R.id.webView);
+        userName = findViewById(R.id.tvUserName);
+//        userTypeName = findViewById(R.id.tvUserType);
+        greetingImage = findViewById(R.id.ivGreetingImage);
+        settings = findViewById(R.id.ivSettings);
+//        complaintCard = findViewById(R.id.mcvComplaint);
+//        complaintNo = findViewById(R.id.tvComplaintNo);
+//        locationCard = findViewById(R.id.mcvShareLocation);
         locationSwitch = findViewById(R.id.switchLocation);
-        complaintLayout = findViewById(R.id.clComplaint);
-        driversLayout = findViewById(R.id.clDrivers);
-        studentsLayout = findViewById(R.id.clStudents);
-        giveComplaintLayout = findViewById(R.id.clGiveComplaint);
-        locateChildLayout = findViewById(R.id.clLocateChild);
-        teachersLayout = findViewById(R.id.clTeacherList);
-        trackingLayout = findViewById(R.id.clTrackingHistory);
-        scanLayout = findViewById(R.id.clScanCode);
-        noticeLayout = findViewById(R.id.clNoticeBoard);
-        managementMsgLayout = findViewById(R.id.clManagementMsg);
+        complaintLayout = findViewById(R.id.mcvComplaints);
+        complaints = findViewById(R.id.btnComplaints);
+        driversLayout = findViewById(R.id.mcvDrivers);
+        drivers = findViewById(R.id.btnDrivers);
+        studentsLayout = findViewById(R.id.mcvStudents);
+        students = findViewById(R.id.btnStudents);
+        giveComplaintLayout = findViewById(R.id.mcvGiveComplaint);
+        giveComplaint = findViewById(R.id.btnGiveComplaint);
+        locateChildLayout = findViewById(R.id.mcvLocateChild);
+        locateChild = findViewById(R.id.btnLocateChild);
+        driverStatus = findViewById(R.id.ivDriverStatus);
+        teachersLayout = findViewById(R.id.mcvTeacherList);
+        teachers = findViewById(R.id.btnTeacherList);
+        trackingLayout = findViewById(R.id.mcvTrackingHistory);
+        tracking = findViewById(R.id.btnTrackingHistory);
+        scanLayout = findViewById(R.id.mcvScanCode);
+        scan = findViewById(R.id.btnScanCode);
+        noticeLayout = findViewById(R.id.mcvNoticeBoard);
+        notice = findViewById(R.id.btnNoticeBoard);
+        managementMsgLayout = findViewById(R.id.mcvManagementMsg);
+        managementMsg = findViewById(R.id.btnManagementMsg);
+        parentLayout = findViewById(R.id.mcvParent);
+        parent = findViewById(R.id.btnParent);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -144,14 +171,16 @@ public class Dashboard extends BaseActivity {
         notArrived = findViewById(R.id.btnNotArrived);
         progressComplaint = findViewById(R.id.progressNotArrived);
         ok = findViewById(R.id.btnOk);
-        clParent = findViewById(R.id.clParent);
 
-        userName.setText(uName);
+        initializeWebView();
+
+        greetingUser();
 //        String uType = getIntent().getStringExtra("type");
         switch (userType) {
             case "5":
-                locationCard.setVisibility(View.GONE);
-                complaintCard.setVisibility(View.GONE);
+                locationSwitch.setVisibility(View.GONE);
+//                locationCard.setVisibility(View.GONE);
+//                complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
@@ -162,11 +191,11 @@ public class Dashboard extends BaseActivity {
                 noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-                clParent.setVisibility(View.GONE);
+                parentLayout.setVisibility(View.GONE);
                 break;
             case "4":
-                locationCard.setVisibility(View.GONE);
-                complaintCard.setVisibility(View.GONE);
+                locationSwitch.setVisibility(View.GONE);
+//                complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
@@ -178,11 +207,11 @@ public class Dashboard extends BaseActivity {
                 noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-                clParent.setVisibility(View.GONE);
+                parentLayout.setVisibility(View.GONE);
                 break;
             // For Drivers
             case "3":
-                complaintCard.setVisibility(View.GONE);
+//                complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
@@ -193,7 +222,7 @@ public class Dashboard extends BaseActivity {
 //                noticeLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-                clParent.setVisibility(View.VISIBLE);
+                parentLayout.setVisibility(View.VISIBLE);
 
                 Dexter.withContext(this)
                         .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
@@ -214,13 +243,13 @@ public class Dashboard extends BaseActivity {
 
             //For Parents
             case "1":
-                complaintCard.setVisibility(View.GONE);
+//                complaintCard.setVisibility(View.GONE);
                 complaintLayout.setVisibility(View.GONE);
                 driversLayout.setVisibility(View.GONE);
                 studentsLayout.setVisibility(View.GONE);
                 scanLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-                clParent.setVisibility(View.GONE);
+                parentLayout.setVisibility(View.GONE);
 
                 if(driverId == 0){
                     locateChildLayout.setVisibility(View.GONE);
@@ -239,7 +268,7 @@ public class Dashboard extends BaseActivity {
                                 .withIcon(R.drawable.ic_my_location).build())
                         .check();
 
-                locationSwitch.setText(R.string.see_live_locations);
+//                locationSwitch.setText(R.string.see_live_locations);
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (TrackingService.isTracking) {
                     locationSwitch.setChecked(true);
@@ -249,7 +278,7 @@ public class Dashboard extends BaseActivity {
             // For Teachers or default
             case "2":
             default:
-                locationCard.setVisibility(View.GONE);
+                locationSwitch.setVisibility(View.GONE);
                 giveComplaintLayout.setVisibility(View.GONE);
                 locateChildLayout.setVisibility(View.GONE);
                 teachersLayout.setVisibility(View.GONE);
@@ -257,7 +286,7 @@ public class Dashboard extends BaseActivity {
                 scanLayout.setVisibility(View.GONE);
                 managementMsgLayout.setVisibility(View.GONE);
                 arrivedLayout.setVisibility(View.GONE);
-                clParent.setVisibility(View.GONE);
+                parentLayout.setVisibility(View.GONE);
         }
 
         if(getIntent().hasExtra("notification_for_arrive")
@@ -269,39 +298,41 @@ public class Dashboard extends BaseActivity {
 //            arrivedLayout.setVisibility(View.VISIBLE);
 
         fetchGeneralData();
+        if(userType.equals("1"))
+            getDriverStatus();
 
-        logOut.setOnClickListener(v -> {
+        settings.setOnClickListener(v -> {
             startActivity(new Intent(this, Settings.class));
         });
 
-        complaintCard.setOnClickListener(v -> {
-            // Open chat list of parents that have messaged for teacher.
-            startActivity(new Intent(Dashboard.this, ComplainList.class));
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        });
-        complaintLayout.setOnClickListener(v -> {
+//        complaintCard.setOnClickListener(v -> {
+//            // Open chat list of parents that have messaged for teacher.
+//            startActivity(new Intent(Dashboard.this, ComplainList.class));
+//            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//        });
+        complaints.setOnClickListener(v -> {
             /**
              * Jay
              */
             startActivity(new Intent(Dashboard.this, ComplainList.class));//TeachersList
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        driversLayout.setOnClickListener(v -> {
+        drivers.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, DriversList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        studentsLayout.setOnClickListener(v -> {
+        students.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, ClassList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        giveComplaintLayout.setOnClickListener(v -> {
+        giveComplaint.setOnClickListener(v -> {
             /**
              * Jay
              */
             startActivity(new Intent(Dashboard.this, ComplainList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        locateChildLayout.setOnClickListener(v -> {
+        locateChild.setOnClickListener(v -> {
             HashMap<String, String> driverDetail = sessionManager.getDriverDetails();
             if (!driverDetail.get(UserSessionManager.KEY_DRIVER_ID).equals("0")) {
                 Intent nextIntent = new Intent(Dashboard.this, LocateOnMap.class);
@@ -315,23 +346,23 @@ public class Dashboard extends BaseActivity {
 //            startActivity(new Intent(Dashboard.this, DriversList.class));
 //            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        teachersLayout.setOnClickListener(v -> {
+        teachers.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, TeachersList.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        scanLayout.setOnClickListener(v -> {
+        scan.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, ScanQRCode.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        trackingLayout.setOnClickListener(v -> {
+        tracking.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, TrackHistory.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        noticeLayout.setOnClickListener(v -> {
+        notice.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, NoticeBoard.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
-        managementMsgLayout.setOnClickListener(v -> {
+        managementMsg.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
         });
         arrived.setOnClickListener(v -> {
@@ -362,7 +393,7 @@ public class Dashboard extends BaseActivity {
             }
         });
 
-        clParent.setOnClickListener(new View.OnClickListener() {
+        parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Dashboard.this, StudentPlaceScreen.class));
@@ -372,6 +403,14 @@ public class Dashboard extends BaseActivity {
 
         navigateToChatBoardFromNotification(getIntent());
         navigateToBroadcastFromNotification(getIntent());
+    }
+
+    private void initializeWebView() {
+        WebSettings settings = webView.getSettings();
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setJavaScriptEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient());
     }
 
     private void childArrived() {
@@ -514,7 +553,7 @@ public class Dashboard extends BaseActivity {
                             if (success == 1) {
                                 JSONObject data = response.getJSONObject("data");
                                 int todays_complaints = data.getInt("todays_complaints");
-                                complaintNo.setText(String.valueOf(todays_complaints));
+//                                complaintNo.setText(String.valueOf(todays_complaints));
 
                                 if (data.has("is_arrived")) {
                                     boolean isArrived = data.getInt("is_arrived") == 1;
@@ -621,6 +660,57 @@ public class Dashboard extends BaseActivity {
                 }).check();
     }
 
+    private void getDriverStatus() {
+        if (!detector.isConnectingToInternet()) {
+            return;
+        }
+
+        AndroidNetworking.post(Common.BASE_URL + "app-driver-location-status")
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("driver_id", String.valueOf(sessionManager.getDriverId()))
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            int success = response.getInt("success");
+                            if (success == 1) {
+                                int status = response.getJSONObject("data").getInt("status");
+                                if(status == 1){
+                                    Glide.with(Dashboard.this)
+                                            .load(Uri.parse("file:///android_asset/driver_location_enabled_rounded.gif"))
+                                            .fitCenter()
+                                            .into(driverStatus);
+                                } else {
+                                    Glide.with(Dashboard.this)
+                                            .load(R.drawable.driver_location_disabled_rounded)
+                                            .fitCenter()
+                                            .into(driverStatus);
+                                }
+                            } else if (success == 2) {
+                                onLogOut();
+                            } else {
+                                Log.e(TAG, "general data get failed");
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: " + anError.getErrorBody());
+                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+                    }
+                });
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -630,6 +720,16 @@ public class Dashboard extends BaseActivity {
             startActivity(new Intent(Dashboard.this, TrackHistory.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
+//        else if(intent.getAction().equals(Common.ACTION_OPEN_LOCATE_ON_MAP)) {
+//            Intent i = new Intent(Dashboard.this, LocateOnMap.class);
+//            Intent nextIntent = new Intent(Dashboard.this, LocateOnMap.class);
+//            nextIntent.putExtra("driver_name", driverDetail.get(UserSessionManager.KEY_DRIVER_NAME));
+//            nextIntent.putExtra("driver_phone", driverDetail.get(UserSessionManager.KEY_DRIVER_PHONE));
+//            nextIntent.putExtra("driver_id", Integer.parseInt(driverDetail.get(UserSessionManager.KEY_DRIVER_ID)));
+//            nextIntent.putExtra("driver_image", driverDetail.get(UserSessionManager.KEY_DRIVER_IMAGE));
+//            startActivity(i);
+//            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+//        }
 
         if(intent.hasExtra("notification_for_arrive")
                 && intent.getBooleanExtra("notification_for_arrive", false)){
@@ -703,10 +803,10 @@ public class Dashboard extends BaseActivity {
         }
 
         uImage = sessionManager.getUserImage();
-        Glide.with(this).load(uImage)
-                .placeholder(R.drawable.ic_avatar)
-                .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
-                .into(userImage);
+//        Glide.with(this).load(uImage)
+//                .placeholder(R.drawable.ic_avatar)
+//                .apply(new RequestOptions().transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
+//                .into(userImage);
 
         if (detector.isConnectingToInternet())
             uploadStoredResult();
@@ -721,6 +821,33 @@ public class Dashboard extends BaseActivity {
 
         if(sessionManager.isAlertNotifying())
             arrivedLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void greetingUser(){
+        Calendar calendar = Calendar.getInstance();
+        int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+
+        if(timeOfDay < 12){
+            userName.setText(String.format("%s, %s",  "Good Morning", uName));
+            Glide.with(this).load(R.drawable.good_morning_greeting).into(greetingImage);
+            webView.loadUrl("https://my.famous.co/morning/");
+        } else if(timeOfDay < 16){
+            userName.setText(String.format("%s, %s",  "Good Afternoon", uName));
+            Glide.with(this).load(R.drawable.good_afternoon_greeting).into(greetingImage);
+            webView.loadUrl("https://my.famous.co/noon/");
+        } else if(timeOfDay < 20){
+            userName.setText(String.format("%s, %s",  "Good Evening", uName));
+            Glide.with(this).load(R.drawable.good_evening_greeting).into(greetingImage);
+            webView.loadUrl("https://my.famous.co/evening/");
+        } else {
+            userName.setText(String.format("%s, %s",  "Good Night", uName));
+            Glide.with(this).load(R.drawable.good_night_greeting).into(greetingImage);
+            webView.loadUrl("https://my.famous.co/night/");
+        }
+
+        speakerBox.play(userName.getText().toString());
+
+//        webView.loadData("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head><body><img src=\"" + mStringUrl + "\"></body></html>", "text/html", "utf-8");
     }
 
     @Override

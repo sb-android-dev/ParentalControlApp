@@ -64,4 +64,7 @@
     <color name="localBackground">#827b92</color>
     <color name="remoteBackground">#484258</color>
 
+    <color name="driver_online">#0f9d58</color>
+    <color name="driver_offline">#1db1f2</color>
+
 </resources>

@@ -88,6 +88,8 @@ public class TrackingService extends Service {
                 Log.d(TAG, "onStartCommand: service stopped");
                 isTracking = false;
                 updateLocationTracking();
+                if(sessionManager.getUserType() == 3)
+                    driverLocationEnabledDisabled(false);
                 return super.onStartCommand(intent, flags, startId);
             case Common.ACTION_START_SERVICE:
             default:
@@ -123,6 +125,9 @@ public class TrackingService extends Service {
         Log.e(TAG, "onDestroy: tracking service is dead");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             stopForeground(true);
+        if(sessionManager.getUserType() == 3){
+            driverLocationEnabledDisabled(false);
+        }
         super.onDestroy();
     }
 
@@ -261,6 +266,9 @@ public class TrackingService extends Service {
             startForeground(Common.TRACKING_NOTIFICATION_ID, notificationBuilder.build());
 
 
+        if(sessionManager.getUserType() == 3)
+            driverLocationEnabledDisabled(true);
+
         updateLocationTracking();
     }
 
@@ -276,6 +284,39 @@ public class TrackingService extends Service {
         NotificationChannel channel = new NotificationChannel(Common.TRACKING_NOTIFICATION_CHANNEL_ID,
                 Common.TRACKING_NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
         notificationManager.createNotificationChannel(channel);
+    }
+
+    private void driverLocationEnabledDisabled(boolean isEnabled){
+        AndroidNetworking.post(Common.BASE_URL + "app-user-location-enable")
+                .setPriority(Priority.HIGH)
+                .addBodyParameter("user_app_code", Common.APP_CODE)
+                .addBodyParameter("user_id", userId)
+                .addBodyParameter("user_token", userToken)
+                .addBodyParameter("user_type", userType)
+                .addBodyParameter("device_id", deviceId)
+                .addBodyParameter("device_type", "1")
+                .addBodyParameter("status", isEnabled ? "1" : "0")
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e(TAG, "onResponse: " + response.toString());
+                        try {
+                            int success = response.getInt("success");
+                            if (success == 2) {
+                                onLogOut();
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "onResponse: " + e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Log.e(TAG, "onError: " + anError.getErrorDetail());
+                        Log.e(TAG, "onError: " + anError.getErrorBody());
+                    }
+                });
     }
 
     private void stopLocationUpdates() {

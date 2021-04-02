@@ -109,4 +109,12 @@
         <item name="color">@color/black</item>
     </style>
 
+    <style name="DashboardButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">?pure_txt_color</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="rippleColor">?colorSecondary</item>
+    </style>
+
 </resources>
