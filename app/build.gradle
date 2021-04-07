@@ -113,5 +113,7 @@ dependencies {
 
     implementation 'com.vanniktech:emoji-ios:0.7.0'
 
+    implementation 'com.github.delight-im:Android-AdvancedWebView:v3.2.1'
+
 
 }

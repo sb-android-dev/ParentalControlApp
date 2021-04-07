@@ -15,6 +15,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.utilities.ConnectivityReceiver;
 import com.schoolmanager.utilities.UserSessionManager;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.ios.IosEmojiProvider;
@@ -32,16 +33,22 @@ public class MyApplication extends LocaleAwareApplication implements Application
     private boolean isActivityChangingConfigurations = false;
     public static boolean mIsAppInForground = true;
 
+    public static MyApplication mInstance;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mInstance = this;
+
         EmojiManager.install(new IosEmojiProvider());
         AndroidNetworking.initialize(getApplicationContext());
         registerActivityLifecycleCallbacks(this);
         initTheme(new UserSessionManager(this).getTheme());
+    }
 
-
-
+    public static synchronized MyApplication getInstance(){
+        return mInstance;
     }
 
     @Override
@@ -197,5 +204,8 @@ public class MyApplication extends LocaleAwareApplication implements Application
         AppCompatDelegate.setDefaultNightMode(mode);
     }
 
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener){
+        ConnectivityReceiver.connectivityReceiverListener = listener;
+    }
 
 }

@@ -48,7 +48,8 @@
         <activity
             android:name=".Dashboard"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SchoolManager.FullScreen" />
         <activity
             android:name=".StudentsList"
             android:screenOrientation="portrait" />
@@ -66,7 +67,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".LocateOnMap"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SchoolManager.FullScreen"/>
         <activity
             android:name=".ComplainList"
             android:screenOrientation="portrait" />

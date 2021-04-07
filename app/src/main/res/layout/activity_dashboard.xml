@@ -7,11 +7,20 @@
     android:background="?attr/colorSurface"
     tools:context=".Dashboard">
 
+    <ImageView
+        android:id="@+id/ivBackgroundImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/dashboard_background_placeholder"/>
+
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="-20dp"/>
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="-30dp"/>
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -223,11 +232,11 @@
     <!--    </androidx.core.widget.NestedScrollView>-->
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mcvBottomSheet"
         style="@style/DashboardBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="350dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:cardElevation="5dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

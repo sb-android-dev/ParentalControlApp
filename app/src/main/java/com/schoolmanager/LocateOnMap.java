@@ -15,16 +15,16 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -83,11 +83,15 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.schoolmanager.common.Common;
 import com.schoolmanager.common.LogOutUser;
+import com.schoolmanager.events.EventLocationStatusChanged;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
 import com.schoolmanager.utilities.TaskLoadedCallback;
 import com.schoolmanager.utilities.UserSessionManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -125,10 +129,10 @@ public class LocateOnMap extends BaseActivity
     private UiSettings uiSettings;
 
     private TextView driverName, distanceToParent;
-    private ImageView driverProfile, driverStatus;
+    private ImageView driverProfile, driverStatus, editDriver;
     private SwitchCompat mapType;
     private ConstraintLayout constrain_Call;
-    private FloatingActionButton fabMyLocation, fabCall, fabMessage;
+    private FloatingActionButton fabBack, fabMyLocation, fabCall, fabMessage;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -193,7 +197,10 @@ public class LocateOnMap extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_locate_on_map);
+
+        EventBus.getDefault().register(this);
 
         detector = new ConnectionDetector(this);
         sessionManager = new UserSessionManager(this);
@@ -227,18 +234,26 @@ public class LocateOnMap extends BaseActivity
 
         doBindService();
 
-        Toolbar toolbar = findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Toolbar toolbar = findViewById(R.id.toolBar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        fabBack = findViewById(R.id.fabBack);
         driverName = findViewById(R.id.tvDriverName);
         distanceToParent = findViewById(R.id.tvDistance);
         driverProfile = findViewById(R.id.ivDriverProfile);
+        editDriver = findViewById(R.id.ivEditDriver);
         mapType = findViewById(R.id.switchMapType);
         driverStatus = findViewById(R.id.ivDriverStatus);
         fabMyLocation = findViewById(R.id.fabMyLocation);
         fabCall = findViewById(R.id.fabCall);
         fabMessage = findViewById(R.id.fabMessage);
+
+        if(userType.equals("1")){
+            editDriver.setVisibility(View.VISIBLE);
+        } else {
+            editDriver.setVisibility(View.GONE);
+        }
 
         driverName.setText(dName);
         Glide.with(this).load(dImage)
@@ -256,11 +271,7 @@ public class LocateOnMap extends BaseActivity
         mapFragment.getMapAsync(this);
         constrain_Call = findViewById(R.id.constrain_Call);
 
-        if(userType.equals("1") || userType.equals("2"))
-            getDriverStatus();
-
         //Call button
-
         fabCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,25 +293,25 @@ public class LocateOnMap extends BaseActivity
         mapType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    if(mMap != null)
+                if (isChecked) {
+                    if (mMap != null)
                         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 } else {
-                    if(mMap != null)
+                    if (mMap != null)
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 }
             }
         });
 
         fabMyLocation.setOnClickListener(v -> {
-            if(mMap != null && currentLatLng != null){
+            if (mMap != null && currentLatLng != null) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20));
             }
         });
 
         driverStatus.setOnClickListener(v -> {
             Log.e(TAG, "onCreate: clicking on button");
-            if(mpl == null) {
+            if (mpl == null) {
                 Log.e(TAG, "onCreate: clicking on button");
                 if (status == 1) {
                     sound = Uri.parse("android.resource://"
@@ -321,6 +332,10 @@ public class LocateOnMap extends BaseActivity
                 });
             }
         });
+
+        editDriver.setOnClickListener(v -> startActivity(new Intent(this, SelectDriver.class)));
+
+        fabBack.setOnClickListener(v -> finish());
     }
 
     /**
@@ -663,7 +678,7 @@ public class LocateOnMap extends BaseActivity
 
     public void onLogOut() {
         LogOutUser.getInstance(this, status -> {
-            if(status == LOG_OUT_SUCCESS){
+            if (status == LOG_OUT_SUCCESS) {
                 if (TrackingService.isTracking) {
                     Intent serviceIntent = new Intent(this, TrackingService.class);
                     serviceIntent.setAction(Common.ACTION_STOP_SERVICE);
@@ -698,9 +713,9 @@ public class LocateOnMap extends BaseActivity
                             int success = response.getInt("success");
                             if (success == 1) {
                                 status = response.getJSONObject("data").getInt("status");
-                                if(status == 1){
+                                if (status == 1) {
                                     Glide.with(LocateOnMap.this)
-                                            .load(Uri.parse("file:///android_asset/driver_location_enabled_rounded.gif"))
+                                            .load(Uri.parse("file:///android_asset/driver_location_enabled.gif"))
                                             .fitCenter()
                                             .into(driverStatus);
 
@@ -709,7 +724,7 @@ public class LocateOnMap extends BaseActivity
 
                                 } else {
                                     Glide.with(LocateOnMap.this)
-                                            .load(R.drawable.driver_location_disabled_rounded)
+                                            .load(R.drawable.driver_location_disabled)
                                             .fitCenter()
                                             .into(driverStatus);
 
@@ -754,23 +769,23 @@ public class LocateOnMap extends BaseActivity
 //        return true;
 //    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        } /*else if (item.getItemId() == R.id.menu_default) {
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            item.setChecked(true);
-            return true;
-        } else if (item.getItemId() == R.id.menu_satellite) {
-            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-            item.setChecked(true);
-            return true;
-        }*/ else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        if (item.getItemId() == android.R.id.home) {
+//            finish();
+//            return true;
+//        } /*else if (item.getItemId() == R.id.menu_default) {
+//            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+//            item.setChecked(true);
+//            return true;
+//        } else if (item.getItemId() == R.id.menu_satellite) {
+//            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+//            item.setChecked(true);
+//            return true;
+//        }*/ else {
+//            return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -789,6 +804,12 @@ public class LocateOnMap extends BaseActivity
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    public void onLocationStatusChanged(EventLocationStatusChanged statusChanged) {
+//        chatMessageAdapter.readMessage(readMessage.getMessage_id());
+        getDriverStatus();
+    }
+
     /**
      * Saves the state of the map when the activity is paused.
      */
@@ -804,9 +825,44 @@ public class LocateOnMap extends BaseActivity
 //        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
 //    }
 
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    // Set the content to appear under the system bars so that the
+                    // content doesn't resize when the system bars hide and show.
+                    View.SYSTEM_UI_FLAG_IMMERSIVE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(userType.equals("1")) {
+            HashMap<String, String> driverDetail = sessionManager.getDriverDetails();
+            dName = driverDetail.get(UserSessionManager.KEY_DRIVER_NAME);
+            dPhone = driverDetail.get(UserSessionManager.KEY_DRIVER_PHONE);
+            driverId = Integer.parseInt(driverDetail.get(UserSessionManager.KEY_DRIVER_ID));
+            dImage = driverDetail.get(UserSessionManager.KEY_DRIVER_IMAGE);
+
+            driverName.setText(dName);
+            Glide.with(this).load(dImage)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .apply(new RequestOptions()
+                            .transform(new CenterCrop(), new RoundedCorners(getResources().getDimensionPixelSize(R.dimen.image_corner_radius))))
+                    .into(driverProfile);
+        }
+
+        if (userType.equals("1") || userType.equals("2"))
+            getDriverStatus();
 
         // Display the connection status
 
@@ -847,6 +903,7 @@ public class LocateOnMap extends BaseActivity
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

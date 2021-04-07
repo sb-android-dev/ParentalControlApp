@@ -42,11 +42,25 @@
                     android:textColor="?pure_txt_color"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/ivGreetingImage"
+                    app:layout_constraintEnd_toStartOf="@id/ivEditProfile"
                     app:layout_constraintHorizontal_weight="3"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Good Afternoon, Smit Patel" />
+
+                <ImageView
+                    android:id="@+id/ivEditProfile"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_edit"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?selectableItemBackgroundBorderless"
+                    app:layout_constraintBottom_toBottomOf="@id/ivGreetingImage"
+                    app:layout_constraintEnd_toStartOf="@id/ivGreetingImage"
+                    app:layout_constraintStart_toEndOf="@id/tvUserName"
+                    app:layout_constraintTop_toTopOf="@id/ivGreetingImage" />
 
                 <ImageView
                     android:id="@+id/ivGreetingImage"
@@ -57,7 +71,7 @@
                     android:src="@drawable/good_morning_greeting"
                     app:layout_constraintEnd_toStartOf="@id/switchLocation"
                     app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@id/tvUserName"
+                    app:layout_constraintStart_toEndOf="@id/ivEditProfile"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
@@ -90,9 +104,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivComplaints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/complaint_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvComplaints"
@@ -104,7 +128,6 @@
                         android:textColor="?attr/pure_txt_color"
                         app:layout_constraintBottom_toTopOf="@id/btnComplaints"
                         app:layout_constraintEnd_toStartOf="@id/ivComplaints"
-                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,19 +141,12 @@
                         android:text="@string/complaints"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvComplaints"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivComplaints"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/complaint_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -153,9 +169,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="0dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="15dp">
+
+                    <ImageView
+                        android:id="@+id/ivDrivers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/locate_child_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvDrivers"
@@ -179,19 +205,12 @@
                         android:text="@string/drivers"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvDrivers"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivDrivers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitStart"
-                        android:src="@drawable/locate_child_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -214,9 +233,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivStudents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/teacher_list_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvStudents"
@@ -228,7 +257,6 @@
                         android:textColor="?attr/pure_txt_color"
                         app:layout_constraintBottom_toTopOf="@id/btnStudents"
                         app:layout_constraintEnd_toStartOf="@id/ivStudents"
-                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -242,19 +270,12 @@
                         android:text="@string/students"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvStudents"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivStudents"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/teacher_list_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -278,9 +299,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivGiveComplaint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/complaint_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvGiveComplaint"
@@ -292,18 +323,8 @@
                         android:textColor="?attr/pure_txt_color"
                         app:layout_constraintBottom_toTopOf="@id/btnGiveComplaint"
                         app:layout_constraintEnd_toStartOf="@id/ivGiveComplaint"
-                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/ivGiveComplaint"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/complaint_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <Button
                         android:id="@+id/btnGiveComplaint"
@@ -315,6 +336,8 @@
                         android:text="@string/give_complaint"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvGiveComplaint"
@@ -341,14 +364,24 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/ivLocateChild"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/locate_child_button_bg"
+                        app:layout_constraintBottom_toTopOf="@id/ivDriverStatus"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvLocateChild"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
                         android:layout_marginEnd="15dp"
+                        android:gravity="end"
                         android:text="@string/see_current_location_of_driver"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
                         android:textColor="?attr/pure_txt_color"
@@ -362,24 +395,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:layout_marginBottom="10dp"
                         android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/locate_child"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
+                        app:layout_constraintBottom_toTopOf="@id/ivDriverStatus"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvLocateChild"
-                        app:layout_constraintBottom_toTopOf="@id/ivDriverStatus"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivLocateChild"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitStart"
-                        android:src="@drawable/locate_child_button_bg"
-                        app:layout_constraintBottom_toTopOf="@id/ivDriverStatus"
-                        app:layout_constraintStart_toStartOf="parent" />
 
                     <ImageView
                         android:id="@+id/ivDriverStatus"
@@ -387,80 +413,10 @@
                         android:layout_height="65dp"
                         android:maxHeight="30dp"
                         android:scaleType="fitCenter"
+                        android:background="@android:color/transparent"
                         android:src="@drawable/driver_location_disabled_rounded"
-                        app:layout_constraintTop_toBottomOf="@id/btnLocateChild"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
-
-<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                        android:id="@+id/clDriverStatus"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:padding="5dp"-->
-<!--                        android:background="@color/driver_online"-->
-<!--                        android:clickable="true"-->
-<!--                        android:focusable="true"-->
-<!--                        app:layout_constraintTop_toBottomOf="@id/btnLocateChild"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent">-->
-<!--                        <ImageView-->
-<!--                            android:id="@+id/ivRouteType"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="25dp"-->
-<!--                            android:src="@drawable/ic_up_arrow"-->
-<!--                            app:tint="?colorSurface"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toStartOf="parent"-->
-<!--                            app:layout_constraintEnd_toStartOf="@id/ivSchoolBus"-->
-<!--                            app:layout_constraintHorizontal_weight="1"/>-->
-
-<!--                        <ImageView-->
-<!--                            android:id="@+id/ivSchoolBus"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="25dp"-->
-<!--                            android:src="@drawable/ic_school_bus"-->
-<!--                            app:tint="?colorSurface"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toEndOf="@id/ivRouteType"-->
-<!--                            app:layout_constraintEnd_toStartOf="@id/ivArrow"-->
-<!--                            app:layout_constraintHorizontal_weight="1"/>-->
-
-<!--                        <ImageView-->
-<!--                            android:id="@+id/ivArrow"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="25dp"-->
-<!--                            android:src="@drawable/ic_animated_arrows"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toEndOf="@id/ivSchoolBus"-->
-<!--                            app:layout_constraintEnd_toStartOf="@id/tvDriverStatus"-->
-<!--                            app:layout_constraintHorizontal_weight="2"/>-->
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/tvDriverStatus"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="25dp"-->
-<!--                            android:layout_marginEnd="2dp"-->
-<!--                            android:textColor="?colorSurface"-->
-<!--                            android:textStyle="bold"-->
-<!--                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"-->
-<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                            app:layout_constraintStart_toEndOf="@id/ivArrow"-->
-<!--                            app:layout_constraintEnd_toEndOf="parent"-->
-<!--                            android:text="Running...." />-->
-
-<!--&lt;!&ndash;                        <ImageView&ndash;&gt;-->
-<!--&lt;!&ndash;                            android:id="@+id/ivLoadingDots"&ndash;&gt;-->
-<!--&lt;!&ndash;                            android:layout_width="0dp"&ndash;&gt;-->
-<!--&lt;!&ndash;                            android:layout_height="6dp"&ndash;&gt;-->
-<!--&lt;!&ndash;                            android:layout_marginTop="8dp"&ndash;&gt;-->
-<!--&lt;!&ndash;                            android:src="@drawable/ic_loading_dot"&ndash;&gt;-->
-<!--&lt;!&ndash;                            app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;                            app:layout_constraintBottom_toBottomOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;                            app:layout_constraintEnd_toEndOf="parent"/>&ndash;&gt;-->
-
-<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnLocateChild" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -483,9 +439,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivTeacherList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/teacher_list_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvTeacherList"
@@ -511,19 +477,12 @@
                         android:text="@string/teachers"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvTeacherList"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivTeacherList"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/teacher_list_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -547,9 +506,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="0dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="15dp">
+
+                    <ImageView
+                        android:id="@+id/ivTrackingHistory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/tracking_history_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvTrackingHistory"
@@ -573,19 +542,12 @@
                         android:text="@string/track"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvTrackingHistory"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivTrackingHistory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitStart"
-                        android:src="@drawable/tracking_history_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -609,9 +571,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivScanCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/complaint_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvScanCode"
@@ -637,19 +609,12 @@
                         android:text="@string/scanner"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvScanCode"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivScanCode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/complaint_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -673,9 +638,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="0dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="15dp">
+
+                    <ImageView
+                        android:id="@+id/ivParent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/tracking_history_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvParent"
@@ -699,19 +674,12 @@
                         android:text="@string/call"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvParent"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivParent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitStart"
-                        android:src="@drawable/tracking_history_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -734,9 +702,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="15dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="0dp">
+
+                    <ImageView
+                        android:id="@+id/ivNoticeBoard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitEnd"
+                        android:src="@drawable/notice_board_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                     <TextView
                         android:id="@+id/tvNoticeBoard"
@@ -760,19 +738,12 @@
                         android:text="@string/noticeboard"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
+                        android:clickable="false"
+                        android:focusable="false"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvNoticeBoard"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivNoticeBoard"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitEnd"
-                        android:src="@drawable/notice_board_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>
@@ -797,9 +768,19 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+                    android:background="?selectableItemBackground"
                     android:paddingStart="0dp"
                     android:paddingTop="20dp"
                     android:paddingEnd="15dp">
+
+                    <ImageView
+                        android:id="@+id/ivManagementMsg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="75dp"
+                        android:scaleType="fitStart"
+                        android:src="@drawable/management_message_button_bg"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:id="@+id/tvManagementMsg"
@@ -820,6 +801,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="10dp"
+                        android:clickable="false"
+                        android:focusable="false"
                         android:text="@string/see"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                         android:textStyle="bold"
@@ -827,15 +810,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvManagementMsg"
                         app:strokeColor="?pure_txt_color" />
-
-                    <ImageView
-                        android:id="@+id/ivManagementMsg"
-                        android:layout_width="wrap_content"
-                        android:layout_height="75dp"
-                        android:scaleType="fitStart"
-                        android:src="@drawable/management_message_button_bg"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </com.google.android.material.card.MaterialCardView>

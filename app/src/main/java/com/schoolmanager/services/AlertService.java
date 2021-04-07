@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.schoolmanager.ChatBoardActivity;
 import com.schoolmanager.ComplainList;
 import com.schoolmanager.Dashboard;
+import com.schoolmanager.LocateOnMap;
 import com.schoolmanager.LogIn;
 import com.schoolmanager.R;
 import com.schoolmanager.VoiceCall;
@@ -36,6 +37,7 @@ import com.schoolmanager.events.EventCallEnd;
 import com.schoolmanager.events.EventCallReceive;
 import com.schoolmanager.events.EventCallRinging;
 import com.schoolmanager.events.EventDeleteMessage;
+import com.schoolmanager.events.EventLocationStatusChanged;
 import com.schoolmanager.events.EventNewMessageArrives;
 import com.schoolmanager.events.EventReadMessage;
 import com.schoolmanager.model.ComplaintItem;
@@ -382,39 +384,46 @@ public class AlertService extends FirebaseMessagingService {
 
         }
 
-        Uri notificationSound;
-        String notificationChannelId;
-        switch (locationStatus) {
-            case "0":
-                notificationChannelId = Common.DRIVER_DISABLE_LOCATION_CHANNEL_ID;
-                notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
-                break;
-            case "1":
-                notificationChannelId = Common.DRIVER_ENABLE_LOCATION_CHANNEL_ID;
-                notificationSound = Uri.parse("android.resource://"
-                        + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
-                break;
-            default:
-                notificationSound = null;
-                notificationChannelId = "";
+        if (checkForCruntActivityInStack(Dashboard.class.getName())
+                || checkForCruntActivityInStack(LocateOnMap.class.getName())) {
+
+            EventBus.getDefault().post(new EventLocationStatusChanged(driverId));
+
+        } else {
+            Uri notificationSound;
+            String notificationChannelId;
+            switch (locationStatus) {
+                case "0":
+                    notificationChannelId = Common.DRIVER_DISABLE_LOCATION_CHANNEL_ID;
+                    notificationSound = Uri.parse("android.resource://"
+                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_off);
+                    break;
+                case "1":
+                    notificationChannelId = Common.DRIVER_ENABLE_LOCATION_CHANNEL_ID;
+                    notificationSound = Uri.parse("android.resource://"
+                            + getApplicationContext().getPackageName() + "/" + R.raw.driver_location_on);
+                    break;
+                default:
+                    notificationSound = null;
+                    notificationChannelId = "";
+            }
+
+            NotificationCompat.Builder notificationBuilder =
+                    new NotificationCompat.Builder(this, notificationChannelId);
+
+            Log.e(TAG, "performTrackNotification: track notification");
+
+            notificationBuilder.setAutoCancel(true)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setWhen(System.currentTimeMillis())
+                    .setSmallIcon(R.drawable.ic_school_bus)
+                    .setSound(notificationSound)
+                    .setContentTitle(notifyTitle)
+                    .setContentText(notifyBody)
+                    .setContentIntent(getRespectiveActivityPendingIntent(driverId));
+
+            notificationManager.notify((int) notificationId, notificationBuilder.build());
         }
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, notificationChannelId);
-
-        Log.e(TAG, "performTrackNotification: track notification");
-
-        notificationBuilder.setAutoCancel(true)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_school_bus)
-                .setSound(notificationSound)
-                .setContentTitle(notifyTitle)
-                .setContentText(notifyBody)
-                .setContentIntent(getRespectiveActivityPendingIntent(driverId));
-
-        notificationManager.notify((int) notificationId, notificationBuilder.build());
 
     }
 

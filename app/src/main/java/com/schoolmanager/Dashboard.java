@@ -4,23 +4,35 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Button;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -28,6 +40,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.karumi.dexter.Dexter;
@@ -40,14 +53,19 @@ import com.schoolmanager.common.Common;
 import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.dialogs.ChildArrivedDialog;
 import com.schoolmanager.dialogs.ChildNotArrivedDialog;
+import com.schoolmanager.events.EventLocationStatusChanged;
 import com.schoolmanager.model.ScanItem;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.ConnectivityReceiver;
 import com.schoolmanager.utilities.DBHandler;
 import com.schoolmanager.utilities.GpsUtils;
 import com.schoolmanager.utilities.SpeakerBox;
 import com.schoolmanager.utilities.UserSessionManager;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,21 +77,22 @@ import static com.schoolmanager.common.Common.APP_CODE;
 import static com.schoolmanager.common.Common.BASE_URL;
 import static com.schoolmanager.common.Common.LOG_OUT_SUCCESS;
 
-public class Dashboard extends BaseActivity {
+public class Dashboard extends BaseActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static final String TAG = "dashboard_activity";
 
-    private MaterialCardView complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
+    private MaterialCardView bottomSheetLayout, complaintLayout, driversLayout, studentsLayout, giveComplaintLayout,
             locateChildLayout, teachersLayout, trackingLayout, scanLayout, noticeLayout,
             managementMsgLayout, parentLayout;
-    private Button complaints, drivers, students, giveComplaint, locateChild, teachers, tracking, scan,
+    private ConstraintLayout complaints, drivers, students, giveComplaint, locateChild, teachers, tracking, scan,
             notice, managementMsg, parent;
     private ImageView driverStatus;
     private ConstraintLayout arrivedLayout;
-//    private MaterialCardView complaintCard, locationCard;
+    //    private MaterialCardView complaintCard, locationCard;
     private WebView webView;
+    private ImageView backgroundImage;
     private TextView userName/*, userTypeName, complaintNo*/;
-    private ImageView greetingImage, settings;
+    private ImageView editProfile, greetingImage, settings;
     private SwitchMaterial locationSwitch;
     private TextView arrived, notArrived, ok;
     private RelativeLayout notArrivedLayout;
@@ -93,6 +112,11 @@ public class Dashboard extends BaseActivity {
     private final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
     private SpeakerBox speakerBox;
+    private String preUrl = "<html><head><meta name=\"viewport\" content=\"user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1, width=device-width\"><style>body{width:100%;height:100%;margin:0px;padding:0px}iframe{margin:0px;padding:0px}</style></head><body> <iframe width=\"100%\" height=\"100%\" src=\"";
+    private String wUrl;
+    private String postUrl = "\" frameborder=\"0px\" allowfullscreen title=\"Background Image\"></iframe></body></html>";
+
+    ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +132,8 @@ public class Dashboard extends BaseActivity {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         }
+
+        EventBus.getDefault().register(this);
 
         speakerBox = new SpeakerBox(getApplication());
         speakerBox.setActivity(this);
@@ -133,8 +159,12 @@ public class Dashboard extends BaseActivity {
         mpl = MediaPlayer.create(getApplicationContext(), alarmSound);
 
         webView = findViewById(R.id.webView);
+        backgroundImage = findViewById(R.id.ivBackgroundImage);
+        bottomSheetLayout = findViewById(R.id.mcvBottomSheet);
+
         userName = findViewById(R.id.tvUserName);
 //        userTypeName = findViewById(R.id.tvUserType);
+        editProfile = findViewById(R.id.ivEditProfile);
         greetingImage = findViewById(R.id.ivGreetingImage);
         settings = findViewById(R.id.ivSettings);
 //        complaintCard = findViewById(R.id.mcvComplaint);
@@ -142,28 +172,28 @@ public class Dashboard extends BaseActivity {
 //        locationCard = findViewById(R.id.mcvShareLocation);
         locationSwitch = findViewById(R.id.switchLocation);
         complaintLayout = findViewById(R.id.mcvComplaints);
-        complaints = findViewById(R.id.btnComplaints);
+        complaints = findViewById(R.id.clComplaints);
         driversLayout = findViewById(R.id.mcvDrivers);
-        drivers = findViewById(R.id.btnDrivers);
+        drivers = findViewById(R.id.clDrivers);
         studentsLayout = findViewById(R.id.mcvStudents);
-        students = findViewById(R.id.btnStudents);
+        students = findViewById(R.id.clStudents);
         giveComplaintLayout = findViewById(R.id.mcvGiveComplaint);
-        giveComplaint = findViewById(R.id.btnGiveComplaint);
+        giveComplaint = findViewById(R.id.clGiveComplaint);
         locateChildLayout = findViewById(R.id.mcvLocateChild);
-        locateChild = findViewById(R.id.btnLocateChild);
+        locateChild = findViewById(R.id.clLocateChild);
         driverStatus = findViewById(R.id.ivDriverStatus);
         teachersLayout = findViewById(R.id.mcvTeacherList);
-        teachers = findViewById(R.id.btnTeacherList);
+        teachers = findViewById(R.id.clTeacherList);
         trackingLayout = findViewById(R.id.mcvTrackingHistory);
-        tracking = findViewById(R.id.btnTrackingHistory);
+        tracking = findViewById(R.id.clTrackingHistory);
         scanLayout = findViewById(R.id.mcvScanCode);
-        scan = findViewById(R.id.btnScanCode);
+        scan = findViewById(R.id.clScanCode);
         noticeLayout = findViewById(R.id.mcvNoticeBoard);
-        notice = findViewById(R.id.btnNoticeBoard);
+        notice = findViewById(R.id.clNoticeBoard);
         managementMsgLayout = findViewById(R.id.mcvManagementMsg);
-        managementMsg = findViewById(R.id.btnManagementMsg);
+        managementMsg = findViewById(R.id.clManagementMsg);
         parentLayout = findViewById(R.id.mcvParent);
-        parent = findViewById(R.id.btnParent);
+        parent = findViewById(R.id.clParent);
         arrivedLayout = findViewById(R.id.clArrive);
         arrived = findViewById(R.id.btnArrived);
         progressArrived = findViewById(R.id.progressArrived);
@@ -172,7 +202,14 @@ public class Dashboard extends BaseActivity {
         progressComplaint = findViewById(R.id.progressNotArrived);
         ok = findViewById(R.id.btnOk);
 
+        webView.setVisibility(View.INVISIBLE);
         initializeWebView();
+
+        BottomSheetBehavior.from(bottomSheetLayout).setPeekHeight((int) (Resources.getSystem().getDisplayMetrics().heightPixels * 0.60));
+
+        if (BuildConfig.DEBUG) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
         greetingUser();
 //        String uType = getIntent().getStringExtra("type");
@@ -251,7 +288,7 @@ public class Dashboard extends BaseActivity {
                 arrivedLayout.setVisibility(View.GONE);
                 parentLayout.setVisibility(View.GONE);
 
-                if(driverId == 0){
+                if (driverId == 0) {
                     locateChildLayout.setVisibility(View.GONE);
                 } else {
                     locateChildLayout.setVisibility(View.VISIBLE);
@@ -289,8 +326,8 @@ public class Dashboard extends BaseActivity {
                 parentLayout.setVisibility(View.GONE);
         }
 
-        if(getIntent().hasExtra("notification_for_arrive")
-                && getIntent().getBooleanExtra("notification_for_arrive", false)){
+        if (getIntent().hasExtra("notification_for_arrive")
+                && getIntent().getBooleanExtra("notification_for_arrive", false)) {
             arrivedLayout.setVisibility(View.VISIBLE);
         }
 
@@ -298,7 +335,7 @@ public class Dashboard extends BaseActivity {
 //            arrivedLayout.setVisibility(View.VISIBLE);
 
         fetchGeneralData();
-        if(userType.equals("1"))
+        if (userType.equals("1"))
             getDriverStatus();
 
         settings.setOnClickListener(v -> {
@@ -326,6 +363,7 @@ public class Dashboard extends BaseActivity {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
         giveComplaint.setOnClickListener(v -> {
+            Log.e(TAG, "onCreate: give complaint");
             /**
              * Jay
              */
@@ -358,6 +396,13 @@ public class Dashboard extends BaseActivity {
             startActivity(new Intent(Dashboard.this, TrackHistory.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
+        parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Dashboard.this, StudentPlaceScreen.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }
+        });
         notice.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, NoticeBoard.class));
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -365,6 +410,7 @@ public class Dashboard extends BaseActivity {
         managementMsg.setOnClickListener(v -> {
             startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
         });
+
         arrived.setOnClickListener(v -> {
             stopAlertSound();
             childArrived();
@@ -375,6 +421,11 @@ public class Dashboard extends BaseActivity {
         });
         ok.setOnClickListener(v -> {
             stopAlertSound();
+        });
+
+        editProfile.setOnClickListener(v -> {
+//            startActivity(new Intent(this, MyProfile.class));
+            startActivity(new Intent(this, Settings.class));
         });
 
         locationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -393,14 +444,6 @@ public class Dashboard extends BaseActivity {
             }
         });
 
-        parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(Dashboard.this, StudentPlaceScreen.class));
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            }
-        });
-
         navigateToChatBoardFromNotification(getIntent());
         navigateToBroadcastFromNotification(getIntent());
     }
@@ -409,8 +452,69 @@ public class Dashboard extends BaseActivity {
         WebSettings settings = webView.getSettings();
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
+        settings.setAllowContentAccess(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
         settings.setJavaScriptEnabled(true);
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        webView.setLayerType(WebView.LAYER_TYPE_HARDWARE, null);
         webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                webView.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                Log.e(TAG, "onPageStarted: url -> " + url);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Log.e(TAG, "onPageFinished: url -> " + url);
+                webView.setVisibility(View.VISIBLE);
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                Log.e(TAG, "onReceivedError: request -> " + request.getUrl());
+                Log.e(TAG, "onReceivedError: error -> " + error.getErrorCode());
+                Log.e(TAG, "onReceivedError: error -> " + error.getDescription());
+                webView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                Log.e(TAG, "onReceivedError: errorCode -> " + errorCode);
+                Log.e(TAG, "onReceivedError: description -> " + description);
+                Log.e(TAG, "onReceivedError: failingUrl -> " + failingUrl);
+                webView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request,
+                                            WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                Log.e(TAG, "onReceivedError: request -> " + request.getUrl());
+                Log.e(TAG, "onReceivedError: errorResponse -> " + errorResponse.getStatusCode());
+                Log.e(TAG, "onReceivedError: errorResponse -> " + errorResponse.getReasonPhrase());
+                webView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                super.onReceivedSslError(view, handler, error);
+                Log.e(TAG, "onReceivedError: handler -> " + handler);
+                Log.e(TAG, "onReceivedError: error -> " + error);
+                webView.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     private void childArrived() {
@@ -660,7 +764,7 @@ public class Dashboard extends BaseActivity {
                 }).check();
     }
 
-    private void getDriverStatus() {
+    public void getDriverStatus() {
         if (!detector.isConnectingToInternet()) {
             return;
         }
@@ -681,7 +785,7 @@ public class Dashboard extends BaseActivity {
                             int success = response.getInt("success");
                             if (success == 1) {
                                 int status = response.getJSONObject("data").getInt("status");
-                                if(status == 1){
+                                if (status == 1) {
                                     Glide.with(Dashboard.this)
                                             .load(Uri.parse("file:///android_asset/driver_location_enabled_rounded.gif"))
                                             .fitCenter()
@@ -731,12 +835,12 @@ public class Dashboard extends BaseActivity {
 //            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 //        }
 
-        if(intent.hasExtra("notification_for_arrive")
-                && intent.getBooleanExtra("notification_for_arrive", false)){
+        if (intent.hasExtra("notification_for_arrive")
+                && intent.getBooleanExtra("notification_for_arrive", false)) {
             arrivedLayout.setVisibility(View.VISIBLE);
         }
 
-        if(sessionManager.isAlertNotifying())
+        if (sessionManager.isAlertNotifying())
             arrivedLayout.setVisibility(View.VISIBLE);
 
         if (locationManager != null) {
@@ -752,8 +856,15 @@ public class Dashboard extends BaseActivity {
 
     }
 
-    public void stopAlertSound(){
-        if(MyApplication.mp != null && MyApplication.mp.isPlaying()){
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLocationStatusChanged(EventLocationStatusChanged statusChanged) {
+//        chatMessageAdapter.readMessage(readMessage.getMessage_id());
+        Log.e(TAG, "onLocationStatusChanged: " + statusChanged.getDriver_id());
+        getDriverStatus();
+    }
+
+    public void stopAlertSound() {
+        if (MyApplication.mp != null && MyApplication.mp.isPlaying()) {
             MyApplication.mp.stop();
             MyApplication.mp.release();
             MyApplication.mp = null;
@@ -763,7 +874,7 @@ public class Dashboard extends BaseActivity {
 
     public void onLogOut() {
         LogOutUser.getInstance(this, status -> {
-            if(status == LOG_OUT_SUCCESS){
+            if (status == LOG_OUT_SUCCESS) {
                 if (TrackingService.isTracking) {
                     sendCommandToService(Common.ACTION_STOP_SERVICE);
                 }
@@ -796,8 +907,32 @@ public class Dashboard extends BaseActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    // Set the content to appear under the system bars so that the
+                    // content doesn't resize when the system bars hide and show.
+                    View.SYSTEM_UI_FLAG_IMMERSIVE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(connectivityReceiver, filter);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        MyApplication.getInstance().setConnectivityListener(this);
+
         if (TrackingService.isTracking) {
             locationSwitch.setChecked(true);
         }
@@ -811,43 +946,65 @@ public class Dashboard extends BaseActivity {
         if (detector.isConnectingToInternet())
             uploadStoredResult();
 
-        if(userType.equals("1")){
+        if (userType.equals("1")) {
             driverId = sessionManager.getDriverId();
-            if(driverId == 0)
+            if (driverId == 0)
                 locateChildLayout.setVisibility(View.GONE);
             else
                 locateChildLayout.setVisibility(View.VISIBLE);
         }
 
-        if(sessionManager.isAlertNotifying())
+        if (sessionManager.isAlertNotifying())
             arrivedLayout.setVisibility(View.VISIBLE);
     }
 
-    private void greetingUser(){
+    private void greetingUser() {
         Calendar calendar = Calendar.getInstance();
         int timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
 
-        if(timeOfDay < 12){
-            userName.setText(String.format("%s, %s",  "Good Morning", uName));
+//        wUrl = "http://inlancer.in";
+//        wUrl = "https://en.m.wikipedia.org/wiki/File:Google_Images_2015_logo.svg";
+
+        if (timeOfDay < 12) {
+            userName.setText(String.format("%s, %s", "Good Morning", uName));
             Glide.with(this).load(R.drawable.good_morning_greeting).into(greetingImage);
-            webView.loadUrl("https://my.famous.co/morning/");
-        } else if(timeOfDay < 16){
-            userName.setText(String.format("%s, %s",  "Good Afternoon", uName));
+//            Glide.with(this).load("https://my.famous.co/morning/").into(backgroundImage);
+            wUrl = "https://my.famous.co/morning/";
+
+        } else if (timeOfDay < 16) {
+            userName.setText(String.format("%s, %s", "Good Afternoon", uName));
             Glide.with(this).load(R.drawable.good_afternoon_greeting).into(greetingImage);
-            webView.loadUrl("https://my.famous.co/noon/");
-        } else if(timeOfDay < 20){
-            userName.setText(String.format("%s, %s",  "Good Evening", uName));
+//            Glide.with(this).load("https://my.famous.co/noon/").into(backgroundImage);
+            wUrl = "https://my.famous.co/noon/";
+        } else if (timeOfDay < 20) {
+            userName.setText(String.format("%s, %s", "Good Evening", uName));
             Glide.with(this).load(R.drawable.good_evening_greeting).into(greetingImage);
-            webView.loadUrl("https://my.famous.co/evening/");
+//            Glide.with(this).load("https://my.famous.co/evening/").into(backgroundImage);
+            wUrl = "https://my.famous.co/evening/";
         } else {
-            userName.setText(String.format("%s, %s",  "Good Night", uName));
+            userName.setText(String.format("%s, %s", "Good Night", uName));
             Glide.with(this).load(R.drawable.good_night_greeting).into(greetingImage);
-            webView.loadUrl("https://my.famous.co/night/");
+//            Glide.with(this).load("https://my.famous.co/night/").into(backgroundImage);
+            wUrl = "https://my.famous.co/night/";
         }
 
         speakerBox.play(userName.getText().toString());
+        if (detector.isConnectingToInternet())
+            webView.loadUrl(wUrl);
 
 //        webView.loadData("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head><body><img src=\"" + mStringUrl + "\"></body></html>", "text/html", "utf-8");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -873,5 +1030,13 @@ public class Dashboard extends BaseActivity {
                 startActivity(new Intent(Dashboard.this, BroadCastMessage.class));
             }
         }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected)
+            webView.loadUrl(wUrl);
+
+        Log.e(TAG, "onNetworkConnectionChanged: " + isConnected);
     }
 }

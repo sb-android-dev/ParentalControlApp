@@ -6,42 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".LocateOnMap">
 
-    <com.google.android.material.appbar.AppBarLayout
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:theme="@style/Theme.SchoolManager.AppBarOverlay">-->
+
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolBar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?actionBarSize"-->
+<!--            android:background="?attr/colorPrimary"-->
+<!--            map:contentInsetEnd="56dp"-->
+<!--            map:contentInsetStartWithNavigation="0dp"-->
+<!--            map:popupTheme="@style/Theme.SchoolManager.PopupOverlay">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/current_location"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"-->
+<!--                android:textStyle="bold" />-->
+
+<!--        </androidx.appcompat.widget.Toolbar>-->
+
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.SchoolManager.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?attr/colorPrimary"
-            map:contentInsetEnd="56dp"
-            map:contentInsetStartWithNavigation="0dp"
-            map:popupTheme="@style/Theme.SchoolManager.PopupOverlay">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/current_location"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                android:textStyle="bold" />
-
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        map:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/mcvDriverDetail"
@@ -50,6 +50,7 @@
             android:layout_height="wrap_content"
             map:cardElevation="@dimen/_5dp"
             android:layout_marginTop="10dp"
+            map:cardPreventCornerOverlap="false"
             map:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,14 +61,17 @@
                     android:id="@+id/constrain_Call"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
                     map:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:id="@+id/ivDriverProfile"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="5dp"
                         android:src="@drawable/ic_person"
                         map:layout_constraintBottom_toBottomOf="parent"
                         map:layout_constraintEnd_toStartOf="@id/tvDriverName"
@@ -83,11 +87,22 @@
                         android:textColor="?pure_txt_color"
                         android:textStyle="bold"
                         map:layout_constraintBottom_toBottomOf="parent"
-                        map:layout_constraintEnd_toStartOf="@id/switchMapType"
+                        map:layout_constraintEnd_toStartOf="@id/ivEditDriver"
                         map:layout_constraintHorizontal_weight="6"
                         map:layout_constraintStart_toEndOf="@id/ivDriverProfile"
                         map:layout_constraintTop_toTopOf="parent"
                         tools:text="Driver Name" />
+
+                    <ImageView
+                        android:id="@+id/ivEditDriver"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/ic_edit"
+                        map:layout_constraintTop_toTopOf="parent"
+                        map:layout_constraintBottom_toBottomOf="parent"
+                        map:layout_constraintStart_toEndOf="@id/tvDriverName"
+                        map:layout_constraintEnd_toStartOf="@id/switchMapType"/>
 
                     <androidx.appcompat.widget.SwitchCompat
                         android:id="@+id/switchMapType"
@@ -95,7 +110,7 @@
                         android:layout_height="wrap_content"
                         map:layout_constraintBottom_toBottomOf="parent"
                         map:layout_constraintEnd_toStartOf="@id/tvDistance"
-                        map:layout_constraintStart_toEndOf="@id/tvDriverName"
+                        map:layout_constraintStart_toEndOf="@id/ivEditDriver"
                         map:layout_constraintTop_toTopOf="parent"
                         tools:checked="true"/>
 
@@ -122,10 +137,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
                     android:maxHeight="30dp"
-                    android:scaleType="fitCenter"
+                    android:scaleType="fitXY"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/driver_location_disabled_rounded"
+                    android:src="@drawable/driver_location_disabled"
                     map:layout_constraintTop_toBottomOf="@id/constrain_Call"
                     map:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -172,6 +187,21 @@
             map:borderWidth="@dimen/_0dp"
             map:layout_constraintBottom_toTopOf="@id/fabCall"
             map:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?colorSurface"
+            android:layout_gravity="top"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            map:fabSize="mini"
+            android:src="@drawable/ic_arrow_back_black_24dp"
+            map:tint="?pure_txt_color"
+            map:borderWidth="@dimen/_0dp"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintStart_toStartOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

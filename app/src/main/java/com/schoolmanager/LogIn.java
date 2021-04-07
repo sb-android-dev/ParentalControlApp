@@ -1,6 +1,8 @@
 package com.schoolmanager;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +18,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.schoolmanager.common.Common;
+import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.ConnectivityReceiver;
 import com.schoolmanager.utilities.UserSessionManager;
 
 import org.json.JSONException;
@@ -24,7 +28,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class LogIn extends BaseActivity {
+public class LogIn extends BaseActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static final String TAG = "log_in_activity";
 
@@ -32,8 +36,11 @@ public class LogIn extends BaseActivity {
     private Button logIn;
     private ProgressBar progressSignIn;
 
+    private ConnectionDetector detector;
     private UserSessionManager sessionManager;
     private String deviceId, fcmToken;
+
+    ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +54,7 @@ public class LogIn extends BaseActivity {
         fcmToken = sessionManager.getFcmToken();
         Log.e(TAG, "onCreate: deviceId -> " + deviceId);
 
-        if (fcmToken == null) {
+        if (ConnectivityReceiver.isConnected() && fcmToken == null) {
             FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
                 if (!task.isSuccessful()) {
                     Log.w("getInstanceId failed", task.getException());
@@ -250,5 +257,52 @@ public class LogIn extends BaseActivity {
                         logIn.setVisibility(View.VISIBLE);
                     }
                 });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(connectivityReceiver, filter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MyApplication.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(connectivityReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if(isConnected) {
+            if (fcmToken == null) {
+                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("getInstanceId failed", task.getException());
+//                    return;
+                    }
+                    Log.e(TAG, "onCreate: task completed");
+
+                    // Get new Instance ID token
+                    sessionManager.upsertFcmToken(Objects.requireNonNull(task.getResult()));
+                    Log.e("MainActivity", "onComplete: " + sessionManager.getFcmToken());
+                    fcmToken = task.getResult();
+
+                });
+            } else {
+                Log.e("MainActivity", "onCreate: checking for token -> " + sessionManager.getFcmToken());
+            }
+        }
     }
 }

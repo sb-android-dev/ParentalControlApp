@@ -36,6 +36,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="Theme.SchoolManager.FullScreen" parent="Theme.SchoolManager">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:ignore="NewApi">shortEdges</item>
+    </style>
+
     <style name="Theme.SchoolManager.Splash" parent="Theme.SchoolManager.NoActionBar">
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorSurface</item>
         <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
@@ -138,7 +144,7 @@
         <item name="strokeColor">?pure_txt_color</item>
         <item name="cornerRadius">20dp</item>
         <item name="android:textColor">?colorSecondary</item>
-        <item name="rippleColor">?colorSecondary</item>
+        <item name="rippleColor">@null</item>
     </style>
 
 </resources>
