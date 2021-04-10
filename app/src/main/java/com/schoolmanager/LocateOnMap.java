@@ -86,6 +86,7 @@ import com.schoolmanager.common.LogOutUser;
 import com.schoolmanager.events.EventLocationStatusChanged;
 import com.schoolmanager.services.TrackingService;
 import com.schoolmanager.utilities.ConnectionDetector;
+import com.schoolmanager.utilities.GpsUtils;
 import com.schoolmanager.utilities.TaskLoadedCallback;
 import com.schoolmanager.utilities.UserSessionManager;
 
@@ -187,7 +188,7 @@ public class LocateOnMap extends BaseActivity
 
     private ConnectionDetector detector;
     private UserSessionManager sessionManager;
-    private String userId, userToken, userType, deviceId, fcmToken;
+    private String userId, userToken, userType, userName, deviceId, fcmToken;
 
     private int status;
 
@@ -204,11 +205,12 @@ public class LocateOnMap extends BaseActivity
 
         detector = new ConnectionDetector(this);
         sessionManager = new UserSessionManager(this);
-        HashMap<String, String> hashMap = sessionManager.getEssentials();
+        HashMap<String, String> hashMap = sessionManager.getUserDetails();
         userId = hashMap.get(UserSessionManager.KEY_USER_ID);
         userToken = hashMap.get(UserSessionManager.KEY_USER_TOKEN);
         userType = hashMap.get(UserSessionManager.KEY_USER_TYPE);
         deviceId = hashMap.get(UserSessionManager.KEY_DEVICE_ID);
+        userName = hashMap.get(UserSessionManager.KEY_USER_NAME);
         fcmToken = sessionManager.getFcmToken();
 //        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //        fusedLocationProviderClient = getFusedLocationProviderClient(this);
@@ -251,8 +253,10 @@ public class LocateOnMap extends BaseActivity
 
         if(userType.equals("1")){
             editDriver.setVisibility(View.VISIBLE);
+            fabMyLocation.setVisibility(View.VISIBLE);
         } else {
             editDriver.setVisibility(View.GONE);
+            fabMyLocation.setVisibility(View.INVISIBLE);
         }
 
         driverName.setText(dName);
@@ -306,6 +310,16 @@ public class LocateOnMap extends BaseActivity
         fabMyLocation.setOnClickListener(v -> {
             if (mMap != null && currentLatLng != null) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 20));
+            } else {
+                if(userType.equals("1")){
+                    new GpsUtils(this).turnGPSOn(isGPSEnable -> {
+                        // turn on GPS
+                        sendCommandToService(Common.ACTION_START_SERVICE);
+//                isGPS = isGPSEnable;
+//                askLocationPermission();
+                    });
+
+                }
             }
         });
 
@@ -761,6 +775,29 @@ public class LocateOnMap extends BaseActivity
                 });
     }
 
+    void sendCommandToService(String action) {
+        Dexter.withContext(this)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
+                        if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                            Intent serviceIntent = new Intent(LocateOnMap.this, TrackingService.class);
+                            serviceIntent.setAction(action);
+                            serviceIntent.putExtra("name", userName);
+                            serviceIntent.putExtra("type", Integer.valueOf(userType));
+                            startService(serviceIntent);
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> list, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+                    }
+                }).check();
+    }
+
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        getMenuInflater().inflate(R.menu.map_menu, menu);
@@ -795,6 +832,7 @@ public class LocateOnMap extends BaseActivity
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     Log.i(TAG, "User agreed to make required location settings changes.");
+                    sendCommandToService(Common.ACTION_START_SERVICE);
                     // Nothing to do. startLocationupdates() gets called in onResume again.
                     break;
                 case Activity.RESULT_CANCELED:

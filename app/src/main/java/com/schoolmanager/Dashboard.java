@@ -207,9 +207,9 @@ public class Dashboard extends BaseActivity implements ConnectivityReceiver.Conn
 
         BottomSheetBehavior.from(bottomSheetLayout).setPeekHeight((int) (Resources.getSystem().getDisplayMetrics().heightPixels * 0.60));
 
-        if (BuildConfig.DEBUG) {
-            WebView.setWebContentsDebuggingEnabled(true);
-        }
+//        if (BuildConfig) {
+//            WebView.setWebContentsDebuggingEnabled(true);
+//        }
 
         greetingUser();
 //        String uType = getIntent().getStringExtra("type");
@@ -430,15 +430,17 @@ public class Dashboard extends BaseActivity implements ConnectivityReceiver.Conn
 
         locationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                new GpsUtils(Dashboard.this).turnGPSOn(isGPSEnable -> {
-                    // turn on GPS
-                    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        locationSwitch.setChecked(true);
-                    }
+                if(!TrackingService.isTracking) {
+                    new GpsUtils(Dashboard.this).turnGPSOn(isGPSEnable -> {
+                        // turn on GPS
+                        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                            locationSwitch.setChecked(true);
+                        }
+                        sendCommandToService(Common.ACTION_START_SERVICE);
 //                isGPS = isGPSEnable;
 //                askLocationPermission();
-                });
-                sendCommandToService(Common.ACTION_START_SERVICE);
+                    });
+                }
             } else {
                 sendCommandToService(Common.ACTION_STOP_SERVICE);
             }
@@ -891,11 +893,14 @@ public class Dashboard extends BaseActivity implements ConnectivityReceiver.Conn
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // Check for the integer request code originally supplied to startResolutionForResult().
+        Log.e(TAG, "onActivityResult: requestCode -> " + requestCode);
+        Log.e(TAG, "onActivityResult: resultCode -> " + resultCode);
         if (requestCode == Common.GPS_REQUEST) {
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     Log.i(TAG, "User agreed to make required location settings changes.");
                     locationSwitch.setChecked(true);
+                    sendCommandToService(Common.ACTION_START_SERVICE);
                     // Nothing to do. startLocationupdates() gets called in onResume again.
                     break;
                 case Activity.RESULT_CANCELED:
